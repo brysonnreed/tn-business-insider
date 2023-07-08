@@ -6,6 +6,8 @@ const postFields = groq`
   date,
   _updatedAt,
   excerpt,
+  metaDescription,
+  keywords,
   coverImage,
   "slug": slug.current,
   "author": author->{name, picture},
@@ -24,7 +26,7 @@ export const postAndMoreStoriesQuery = groq`
     content,
     ${postFields}
   },
-  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...2] {
+  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...6] {
     content,
     ${postFields}
   }
@@ -46,11 +48,13 @@ export interface Author {
 }
 
 export interface Post {
+  metaDescription?: string
+  keywords?: string[]
   _id: string
   title?: string
   coverImage?: any
   date?: string
-  _updatedAt?: string;
+  _updatedAt?: string
   excerpt?: string
   author?: Author
   slug?: string

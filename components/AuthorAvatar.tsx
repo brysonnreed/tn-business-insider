@@ -13,7 +13,7 @@ export default function AuthorAvatar(props: Author) {
               ? urlForImage(picture).height(96).width(96).fit('crop').url()
               : 'https://source.unsplash.com/96x96/?face'
           }
-          className="rounded-full"
+          className="h-10 w-10 rounded-full"
           height={96}
           width={96}
           alt={picture.alt ?? name}

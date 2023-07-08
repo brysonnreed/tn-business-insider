@@ -1,4 +1,4 @@
-import AlertBanner from 'components/AlertBanner'
+import Header from './Header'
 
 export default function BlogLayout({
   preview,
@@ -11,8 +11,8 @@ export default function BlogLayout({
 }) {
   return (
     <>
-      <div className="min-h-screen">
-        <AlertBanner preview={preview} loading={loading} />
+      <Header />
+      <div className="mx-auto min-h-screen max-w-5xl pt-10">
         <main>{children}</main>
       </div>
     </>

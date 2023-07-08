@@ -1,5 +1,6 @@
 import { BookIcon } from '@sanity/icons'
 import { format, parseISO } from 'date-fns'
+import { description } from 'lib/demo.data'
 import { defineField, defineType } from 'sanity'
 
 import authorType from './author'
@@ -43,6 +44,8 @@ export default defineType({
       name: 'content',
       title: 'Content',
       type: 'array',
+      description:
+        'Be sure each post contains good keyword density. Include popular keywords in content that people will be searching for',
       of: [
         { type: 'block' },
         {
@@ -55,7 +58,7 @@ export default defineType({
               name: 'caption',
               type: 'string',
               title: 'Image caption',
-              description: 'Caption displayed below the image.'
+              description: 'Caption displayed below the image.',
             },
             {
               name: 'alt',
@@ -64,13 +67,33 @@ export default defineType({
               description: 'Important for SEO and accessiblity.',
             },
           ],
-        }
+        },
       ],
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'excerpt',
       title: 'Excerpt',
       type: 'text',
+      description: 'Goes below the blog-post card',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'metaDescription',
+      title: 'Meta Description',
+      type: 'string',
+      description: 'Used for SEO, keep around 150-160 characters',
+      validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'keywords',
+      title: 'Keywords',
+      type: 'array',
+      of: [{ type: 'string' }],
+      description:
+        'Be sure to use specific and relevant Keywords that accurately reflect the content of your blog post or article. Avoid keyword stuffing. Long-tail keywords are more specific phrases that target a narrower audience but often have less competition. Using long-tail keywords can help you rank higher in targeted searches.',
+      validation: (rule) =>
+        rule.required().min(1).max(6).error('Limit keywords between 1-6.'),
     }),
     defineField({
       name: 'coverImage',
@@ -79,6 +102,7 @@ export default defineType({
       options: {
         hotspot: true,
       },
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'date',

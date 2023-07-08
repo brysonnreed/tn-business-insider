@@ -1,3 +1,10 @@
+import {
+  faFacebook,
+  faInstagram,
+  faLinkedin,
+  faTwitter,
+} from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import AuthorAvatar from 'components/AuthorAvatar'
 import CoverImage from 'components/CoverImage'
 import Date from 'components/PostDate'
@@ -12,7 +19,7 @@ export default function HeroPost(
 ) {
   const { title, coverImage, date, excerpt, author, slug } = props
   return (
-    <section>
+    <section className="mb-5 border-b-2 border-black">
       <div className="mb-8 md:mb-16">
         <CoverImage slug={slug} title={title} image={coverImage} priority />
       </div>
@@ -23,15 +30,16 @@ export default function HeroPost(
               {title || 'Untitled'}
             </Link>
           </h3>
-          <div className="mb-4 text-lg md:mb-0">
+          <div className="mb-4 flex flex-col gap-5 text-lg md:mb-0">
             <Date dateString={date} />
+
+            {author && (
+              <AuthorAvatar name={author.name} picture={author.picture} />
+            )}
           </div>
         </div>
-        <div>
-          {excerpt && <p className="mb-4 text-lg leading-relaxed">{excerpt}</p>}
-          {author && (
-            <AuthorAvatar name={author.name} picture={author.picture} />
-          )}
+        <div className="flex flex-col justify-between gap-4">
+          <p className=" overflow-hidden text-lg">{excerpt}</p>
         </div>
       </div>
     </section>
