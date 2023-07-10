@@ -1,15 +1,11 @@
-import {
-  faFacebook,
-  faInstagram,
-  faLinkedin,
-  faTwitter,
-} from '@fortawesome/free-brands-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import 'react-multi-carousel/lib/styles.css'
+
 import AuthorAvatar from 'components/AuthorAvatar'
 import CoverImage from 'components/CoverImage'
 import Date from 'components/PostDate'
 import type { Post } from 'lib/sanity.queries'
 import Link from 'next/link'
+import Carousel from 'react-multi-carousel'
 
 export default function HeroPost(
   props: Pick<
@@ -18,6 +14,7 @@ export default function HeroPost(
   >
 ) {
   const { title, coverImage, date, excerpt, author, slug } = props
+
   return (
     <section className="mb-5 border-b-2 border-black">
       <div className="mb-8 md:mb-16">

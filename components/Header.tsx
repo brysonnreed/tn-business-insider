@@ -1,4 +1,4 @@
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faUser } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
@@ -9,12 +9,20 @@ import Link from 'next/link'
 import { groq } from 'next-sanity'
 import { useEffect, useRef, useState } from 'react'
 
+import logo from '../public/images/Primary-Logo-Even-Border.jpg'
+
 function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [active, setActive] = useState(false)
+
+  const toggleNav = () => {
+    setActive((prevActive) => !prevActive)
+  }
 
   const searchRef = useRef<HTMLInputElement>(null)
+  const navRef = useRef<HTMLUListElement>(null)
 
   const handleSearch = async (e) => {
     const query = e.target.value
@@ -31,14 +39,23 @@ function Header() {
 
   const searchBlogPosts = async (query) => {
     const searchQuery = groq`
-      *[_type == "post" && title match "${query}*"] {
+      *[
+        (_type == "post" && title match "${query}*") ||
+        (_type == "businessProfile" && name match "${query}*")
+      ] {
         _id,
+        _type,
         title,
         slug,
         excerpt,
-        coverImage
+        coverImage,
+        name,
+        "categories": categories[]->{name},
+        logo,
+        description
       }
     `
+
     const results = await getClient().fetch(searchQuery, { query })
     return results
   }
@@ -52,6 +69,14 @@ function Header() {
       setSearchQuery('')
       setSearchResults([])
       setIsSearchFocused(false)
+    }
+
+    if (
+      navRef.current &&
+      e.target instanceof Node &&
+      !navRef.current.contains(e.target)
+    ) {
+      setActive(false)
     }
   }
 
@@ -69,61 +94,92 @@ function Header() {
   const handleSearchBlur = () => {
     setIsSearchFocused(false)
   }
+  const handleNavButtonClick = (e) => {
+    if (searchQuery) {
+      return setSearchQuery('') // Stop event propagation
+    } else {
+      return toggleNav(), e.stopPropagation()
+    }
+
+    // Reset the search query
+  }
 
   return (
     <header className="sticky top-0 z-50 ">
       <nav className="flex flex-col items-center justify-between space-x-2 space-y-4 bg-orange-500 px-5 py-5 font-bold sm:flex-row sm:space-y-0 xl:px-40 ">
         <div className="flex items-center space-x-2">
           <Link href="/">
-            <div className="bg-white p-2 md:p-4">
-              <h1 className="text-lg font-bold uppercase text-orange-500 md:text-2xl">
-                TN<span className="text-black">Business</span>Insider
-              </h1>
-            </div>
+            <Image
+              src={logo}
+              width={170}
+              height={170}
+              alt="TN Business Insider"
+            />
           </Link>
         </div>
-        <div
-          className="relative flex items-center justify-center"
-          ref={searchRef}
-        >
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleSearch}
-            onFocus={handleSearchFocus}
-            onBlur={handleSearchBlur}
-            className="rounded-full border-none py-2 pl-4 pr-12 focus:outline-none active:outline-none"
+        <div className="flex w-3/4 items-center justify-center gap-1 xs:w-auto sm:gap-5">
+          <FontAwesomeIcon
+            icon={faUser}
+            className="block h-7 w-7 text-white sm:hidden"
           />
-          {searchQuery && (
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-500/40 p-2 focus:outline-none"
-              onClick={() => setSearchQuery('')}
-            >
-              <FontAwesomeIcon
-                icon={faTimes}
-                className="h-5 w-5 cursor-pointer text-gray-500 hover:text-gray-700"
-              />
-            </motion.button>
-          )}
-          {!searchQuery && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-500/40 p-2"
-            >
-              <FontAwesomeIcon
-                icon={faSearch}
-                className="h-5 w-5 text-gray-500"
-              />
-            </motion.div>
-          )}
+          <div
+            className="relative flex items-center justify-center"
+            ref={searchRef}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={handleSearch}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              className=" rounded-full border-none py-2 pl-4 focus:outline-none active:outline-none sm:pr-12 "
+            />
+            {searchQuery && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-500/40 p-2 focus:outline-none"
+                onClick={() => setSearchQuery('')}
+              >
+                <FontAwesomeIcon
+                  icon={faTimes}
+                  className="h-5 w-5 cursor-pointer text-gray-500 transition-all hover:scale-105 hover:text-gray-700"
+                />
+              </motion.button>
+            )}
+            {!searchQuery && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-500/40 p-2"
+              >
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className="h-5 w-5 text-gray-500 transition-all hover:scale-105"
+                />
+              </motion.div>
+            )}
+          </div>
+
+          <FontAwesomeIcon
+            icon={faUser}
+            className="hidden h-7 w-7 text-white sm:block"
+          />
+          <button
+            onClick={handleNavButtonClick}
+            aria-label="Open the mobile navigation"
+            className={`hamburger  p-2 ${active === true ? 'active' : ''}`}
+          >
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </button>
         </div>
       </nav>
+
       {searchResults.length > 0 && (
-        <div className="flex justify-end">
+        <div className="absolute flex w-full justify-end">
           <motion.div
             initial={{ x: 100 }}
             animate={{ x: 0 }}
@@ -132,23 +188,49 @@ function Header() {
             {searchResults.map((result) => (
               <Link
                 key={result.slug.current}
-                href={`/posts/${result.slug.current}`}
+                href={
+                  result._type === 'post'
+                    ? `/posts/${result.slug.current}`
+                    : `/businesses/business-profile/${result.slug.current}`
+                }
               >
-                <div className="block max-h-[10vh] overflow-hidden border-b border-gray-300 px-4 py-2 text-gray-800 hover:bg-gray-200">
-                  <div className="flex space-x-2">
-                    {result.coverImage && (
+                <div className="block overflow-hidden border-b border-gray-300 px-4 py-2 pb-3 text-gray-800 hover:bg-gray-200 ">
+                  <div className="flex w-full space-x-2">
+                    {result._type === 'post' && result.coverImage && (
                       <Image
-                        src={urlForImage(result.coverImage.asset).url()}
+                        src={urlForImage(result.coverImage).url()}
                         alt={`Cover image for ${result.title}`}
                         className="h-12 w-12 object-cover object-center md:h-20 md:w-20"
                         width={500}
                         height={500}
                       />
                     )}
-                    <div>
-                      <h3 className="font-bold capitalize">{result.title}</h3>
+                    {result._type === 'businessProfile' && result.logo && (
+                      <Image
+                        src={urlForImage(result.logo).url()}
+                        alt={`Icon for ${result.name}`}
+                        className="h-12 w-12 object-cover object-center md:h-20 md:w-20"
+                        width={500}
+                        height={500}
+                      />
+                    )}
+                    <div className="w-full">
+                      <div className="flex w-full justify-between">
+                        <h3 className="font-bold capitalize">
+                          {result._type === 'businessProfile'
+                            ? result.name
+                            : result.title}
+                        </h3>
+                        <p className="text-gray-400">
+                          {result._type === 'businessProfile'
+                            ? 'Business'
+                            : result.categories[0].name}
+                        </p>
+                      </div>
                       <p className="line-clamp-3 overflow-hidden text-sm">
-                        {result.excerpt}
+                        {result._type === 'businessProfile'
+                          ? result.description
+                          : result.excerpt}
                       </p>
                     </div>
                   </div>
@@ -158,6 +240,55 @@ function Header() {
           </motion.div>
         </div>
       )}
+      <nav className=" z-[21] bg-white drop-shadow-2xl">
+        {active === true && (
+          <ul
+            ref={navRef}
+            className="absolute right-0 top-0 z-[21] w-full text-center text-lg  uppercase tracking-wider text-black sm:w-auto xl:right-[90px]"
+          >
+            <button
+              onClick={() => setActive(false)}
+              className="w-full border-t"
+            >
+              <Link href="/">
+                <motion.li
+                  initial={{ x: 200, opacity: 0.5 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="mobileNavItem bg-white"
+                >
+                  Home
+                </motion.li>
+              </Link>
+            </button>
+            <button onClick={() => setActive(false)} className="w-full">
+              <Link href="/businesses">
+                <motion.li
+                  initial={{ x: 200, opacity: 0.5 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.4 }}
+                  className="mobileNavItem bg-white"
+                >
+                  Businesses
+                </motion.li>
+              </Link>
+            </button>
+
+            <button onClick={() => setActive(false)} className="w-full">
+              <Link href="/contact">
+                <motion.li
+                  initial={{ x: 200, opacity: 0.5 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.7 }}
+                  className="mobileNavItem bg-white"
+                >
+                  Contact
+                </motion.li>
+              </Link>
+            </button>
+          </ul>
+        )}
+      </nav>
     </header>
   )
 }

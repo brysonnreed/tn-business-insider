@@ -1,5 +1,13 @@
 import { apiVersion, dataset, projectId, useCdn } from 'lib/sanity.api'
 import {
+  type BusinessProfile,
+  businessProfileBySlugQuery,
+  businessProfileCategoriesQuery,
+  type BusinessProfileCategory,
+  businessProfileSlugsQuery,
+  businessProfilesQuery,
+  type Category,
+  categoryQuery,
   indexQuery,
   type Post,
   postAndMoreStoriesQuery,
@@ -60,4 +68,40 @@ export async function getPostAndMoreStories(
   slug: string
 ): Promise<{ post: Post; morePosts: Post[] }> {
   return await client.fetch(postAndMoreStoriesQuery, { slug })
+}
+
+export async function getAllBusinessProfiles(
+  client: SanityClient
+): Promise<BusinessProfile[]> {
+  return (await client.fetch(businessProfilesQuery)) || []
+}
+
+export async function getAllBusinessProfileCategories(): Promise<
+  BusinessProfileCategory[]
+> {
+  const client = getClient()
+  return (await client.fetch(businessProfileCategoriesQuery)) || []
+}
+
+export async function getBusinessProfileBySlug(
+  client: SanityClient,
+  slug: string
+): Promise<BusinessProfile> {
+  return (
+    (await client.fetch(businessProfileBySlugQuery, { slug })) || ({} as any)
+  )
+}
+
+export async function getAllBusinessProfileSlugs(): Promise<
+  Pick<BusinessProfile, 'slug'>[]
+> {
+  const client = getClient()
+  const slugs = (await client.fetch<string[]>(businessProfileSlugsQuery)) || []
+  return slugs.map((slug) => ({ slug }))
+}
+
+export async function getAllCategories(
+  client: SanityClient
+): Promise<Category[]> {
+  return (await client.fetch(categoryQuery)) || []
 }

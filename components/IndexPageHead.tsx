@@ -26,6 +26,26 @@ export default function IndexPageHead({ settings }: IndexPageHeadProps) {
         content={toPlainText(description)}
       />
       <meta
+        name="keywords"
+        content="Businesses in Tennessee, Business Trends, Business Resources"
+      />
+      <meta
+        name="news_keywords"
+        content="Businesses in Tennessee, Business Trends, Business Resources"
+      />
+      <meta property="og:title" content={`${title}`} />
+      <meta property="og:description" content={toPlainText(description)} />
+      <meta property="og:site_name" content={`${title}`} />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={`${title}`} />
+      <meta name="twitter:description" content={toPlainText(description)} />
+      <meta
+        name="twitter:image"
+        content={`${
+          process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : ''
+        }/api/og?${new URLSearchParams({ title: ogImageTitle })}`}
+      />
+      <meta
         property="og:image"
         // Because OG images must have a absolute URL, we use the
         // `VERCEL_URL` environment variable to get the deployment’s URL.

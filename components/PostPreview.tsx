@@ -3,6 +3,7 @@ import CoverImage from 'components/CoverImage'
 import Date from 'components/PostDate'
 import type { Post } from 'lib/sanity.queries'
 import Link from 'next/link'
+import Router from 'next/router'
 
 export default function PostPreview({
   title,
@@ -13,21 +14,25 @@ export default function PostPreview({
   slug,
 }: Omit<Post, '_id'>) {
   return (
-    <div className="flex min-h-[450px] flex-col justify-between rounded-lg border border-gray-200 p-2 shadow-2xl transition-all hover:scale-105 md:p-4">
-      <Link href={`/posts/${slug}`}>
-        <div className="mb-5">
-          <CoverImage
-            slug={slug}
-            title={title}
-            image={coverImage}
-            priority={false}
-          />
-        </div>
-      </Link>
+    <div
+      className="flex min-h-[450px] flex-col justify-between rounded-lg border border-gray-200 p-2 shadow-2xl transition-all hover:scale-105 md:p-4"
+      onClick={() => {
+        // Handle the click event and navigate to the desired URL
+        Router.push(`/posts/${slug}`)
+      }}
+    >
+      <div className="mb-5">
+        <CoverImage
+          slug={slug}
+          title={title}
+          image={coverImage}
+          priority={false}
+        />
+      </div>
       <h3 className="mb-3 text-2xl font-semibold leading-snug">
-        <Link className=" hover:underline" href={`/posts/${slug}`}>
+        <a className="hover:underline" href={`/posts/${slug}`}>
           {title}
-        </Link>
+        </a>
       </h3>
       <div className="mb-4 text-lg">
         <Date dateString={date} />
