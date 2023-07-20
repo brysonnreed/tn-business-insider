@@ -14,6 +14,7 @@ import authorType from 'schemas/author'
 import businessProfileType from 'schemas/businessProfile'
 import businessProfileCategoryType from 'schemas/businessProfileCategory'
 import categoryType from 'schemas/category'
+import cityType from 'schemas/cities'
 import postType from 'schemas/post'
 import settingsType from 'schemas/settings'
 
@@ -34,6 +35,7 @@ export default defineConfig({
       businessProfileType,
       businessProfileCategoryType,
       settingsType,
+      cityType,
     ],
   },
   plugins: [

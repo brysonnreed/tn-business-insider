@@ -2,12 +2,14 @@ import PostPage from 'components/Post/PostPage'
 import PreviewPostPage from 'components/PreviewPages/PreviewPostPage'
 import { readToken } from 'lib/sanity.api'
 import {
+  getAllCategories,
+  getAllCategoriesSlugs,
   getAllPostsSlugs,
   getClient,
   getPostAndMoreStories,
   getSettings,
 } from 'lib/sanity.client'
-import { Post, Settings } from 'lib/sanity.queries'
+import { Category, Post, Settings } from 'lib/sanity.queries'
 import { GetStaticProps } from 'next'
 import type { SharedPageProps } from 'pages/_app'
 
@@ -21,7 +23,7 @@ interface Query {
   [key: string]: string
 }
 
-export default function ProjectSlugRoute(props: PageProps) {
+export default function BlogPostRoute(props: PageProps) {
   const { settings, post, morePosts, draftMode } = props
 
   if (draftMode) {
@@ -35,22 +37,28 @@ export default function ProjectSlugRoute(props: PageProps) {
 
 export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
   const { draftMode = false, params = {} } = ctx
+  const { category, post } = params // Use category and post slugs from params
+
   const client = getClient(draftMode ? { token: readToken } : undefined)
 
-  const [settings, { post, morePosts }] = await Promise.all([
+  const [settings, { post: postData, morePosts }] = await Promise.all([
     getSettings(client),
-    getPostAndMoreStories(client, params.slug),
+    getPostAndMoreStories(client, post), // Use post slug here
   ])
 
-  if (!post) {
+  console.log('params.slug:', params.slug)
+
+  if (!postData) {
     return {
       notFound: true,
     }
   }
+  console.log('post:', post)
+  console.log('morePosts:', morePosts)
 
   return {
     props: {
-      post,
+      post: postData,
       morePosts,
       settings,
       draftMode,
@@ -60,10 +68,22 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
 }
 
 export const getStaticPaths = async () => {
-  const slugs = await getAllPostsSlugs()
+  const [categories, postSlugs] = await Promise.all([
+    getAllCategoriesSlugs(),
+    getAllPostsSlugs(),
+  ])
+
+  const paths = postSlugs.flatMap(({ slug }) =>
+    categories.map(({ slug: categorySlug }) => ({
+      params: {
+        category: categorySlug,
+        post: slug,
+      },
+    }))
+  )
 
   return {
-    paths: slugs?.map(({ slug }) => `/posts/${slug}`) || [],
+    paths,
     fallback: 'blocking',
   }
 }

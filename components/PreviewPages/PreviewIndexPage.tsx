@@ -20,6 +20,7 @@ export default function PreviewIndexPage(props: IndexPageProps) {
       loading={loadingPosts || loadingSettings}
       posts={posts || []}
       settings={settings || {}}
+      categories={[]}
     />
   )
 }

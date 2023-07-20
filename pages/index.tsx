@@ -1,8 +1,13 @@
 import IndexPage from 'components/IndexPage'
-import PreviewIndexPage from 'components/PreviewIndexPage'
+import PreviewIndexPage from 'components/PreviewPages/PreviewIndexPage'
 import { readToken } from 'lib/sanity.api'
 import {
+  getAllBusinessCategoriesSlugs,
+  getAllBusinessProfileCategories,
   getAllCategories,
+  getAllCategoriesSlugs,
+  getAllCities,
+  getAllCitiesSlugs,
   getAllPosts,
   getClient,
   getSettings,
@@ -44,8 +49,17 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
   const [settings, posts = [], categories = []] = await Promise.all([
     getSettings(client),
     getAllPosts(client),
-    getAllCategories(client), // Fetch all categories
+    getAllCategories(client),
+    // Fetch all categories
   ])
+  const city = await getAllCities(client)
+  console.log(city)
+  const slugs = await getAllCitiesSlugs()
+  console.log(slugs)
+  const categorySlugs = await getAllBusinessCategoriesSlugs()
+  console.log(categorySlugs)
+  const busProCat = await getAllBusinessProfileCategories(client)
+  console.log(busProCat)
 
   return {
     props: {
@@ -54,6 +68,7 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
       settings,
       draftMode,
       token: draftMode ? readToken : '',
+      city,
     },
   }
 }

@@ -1,7 +1,12 @@
-import { faSearch, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCaretDown,
+  faSearch,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
+import { getAllCategories } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
@@ -9,13 +14,15 @@ import Link from 'next/link'
 import { groq } from 'next-sanity'
 import { useEffect, useRef, useState } from 'react'
 
-import logo from '../public/images/Primary-Logo-Even-Border.jpg'
+import logo from '../public/images/logo.jpg'
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [active, setActive] = useState(false)
+  const [categories, setCategories] = useState([])
+  const [isBlogActive, setIsBlogActive] = useState(false)
 
   const toggleNav = () => {
     setActive((prevActive) => !prevActive)
@@ -59,6 +66,15 @@ function Header() {
     const results = await getClient().fetch(searchQuery, { query })
     return results
   }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const allCategories = await getAllCategories(getClient()) // Replace this with your function to fetch categories
+      setCategories(allCategories)
+    }
+
+    fetchCategories()
+  }, [])
 
   const handleClickOutside = (e: MouseEvent) => {
     if (
@@ -244,11 +260,11 @@ function Header() {
         {active === true && (
           <ul
             ref={navRef}
-            className="absolute right-0 top-0 z-[21] w-full text-center text-lg  uppercase tracking-wider text-black sm:w-auto xl:right-[90px]"
+            className="absolute right-0 top-0 z-[21] h-screen w-full text-center  text-lg uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
           >
             <button
               onClick={() => setActive(false)}
-              className="w-full border-t"
+              className="w-full border-y"
             >
               <Link href="/">
                 <motion.li
@@ -261,7 +277,64 @@ function Header() {
                 </motion.li>
               </Link>
             </button>
-            <button onClick={() => setActive(false)} className="w-full">
+            <div
+              onMouseEnter={() => setIsBlogActive(true)}
+              onMouseLeave={() => setIsBlogActive(false)}
+            >
+              <button
+                onMouseEnter={() => setIsBlogActive(true)}
+                onClick={() => {
+                  setIsBlogActive(!isBlogActive)
+                  setActive(false)
+                }}
+                className="w-full"
+              >
+                <Link href="/blog">
+                  <motion.li
+                    initial={{ x: 200, opacity: 0.5 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className={`mobileNavItem flex items-center justify-center gap-1 bg-white ${
+                      isBlogActive ? 'active' : ''
+                    }`}
+                  >
+                    Blog{' '}
+                    <FontAwesomeIcon
+                      icon={faCaretDown}
+                      className={`h-4 w-4 transition-all duration-300 ${
+                        isBlogActive ? `rotate-180` : ``
+                      }`}
+                    />
+                  </motion.li>
+                </Link>
+              </button>
+              <ul>
+                {isBlogActive &&
+                  categories.map((category) => (
+                    <button
+                      onClick={() => setActive(false)}
+                      className="w-full"
+                      key={category._id}
+                    >
+                      <Link href={`/blog/${category.slug}`}>
+                        <motion.li
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                          className="mobileNavItem border-y border-gray-100 bg-white py-2 text-sm text-gray-500"
+                        >
+                          {category.name}
+                        </motion.li>
+                      </Link>
+                    </button>
+                  ))}
+              </ul>
+            </div>
+
+            <button
+              onClick={() => setActive(false)}
+              className="w-full border-y"
+            >
               <Link href="/businesses">
                 <motion.li
                   initial={{ x: 200, opacity: 0.5 }}
@@ -274,7 +347,10 @@ function Header() {
               </Link>
             </button>
 
-            <button onClick={() => setActive(false)} className="w-full">
+            <button
+              onClick={() => setActive(false)}
+              className="w-full border-b"
+            >
               <Link href="/contact">
                 <motion.li
                   initial={{ x: 200, opacity: 0.5 }}

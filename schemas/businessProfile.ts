@@ -39,7 +39,12 @@ export default defineType({
       type: 'boolean',
       initialValue: false,
     }),
-    defineField({ name: 'city', title: 'City', type: 'string' }),
+    defineField({
+      name: 'city',
+      title: 'City',
+      type: 'reference',
+      to: [{ type: 'city' }],
+    }),
 
     defineField({
       name: 'description',

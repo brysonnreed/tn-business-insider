@@ -2,8 +2,8 @@ import { TagIcon } from '@sanity/icons'
 import { defineField, defineType } from 'sanity'
 
 export default defineType({
-  name: 'businessProfileCategory',
-  title: 'Business Profile Category',
+  name: 'city',
+  title: 'City',
   icon: TagIcon,
   type: 'document',
   fields: [

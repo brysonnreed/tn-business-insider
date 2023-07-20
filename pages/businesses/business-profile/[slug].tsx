@@ -1,5 +1,5 @@
-import BusinessProfilePage from 'components/BusinessProfilePage'
-import PreviewBusinessProfilePage from 'components/PreviewBusinessProfilePage'
+import BusinessProfilePage from 'components/BusinessProfile/BusinessProfilePage'
+import PreviewBusinessProfilePage from 'components/PreviewPages/PreviewBusinessProfilePage'
 import { readToken } from 'lib/sanity.api'
 import {
   getAllBusinessProfileSlugs,

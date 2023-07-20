@@ -1,5 +1,6 @@
 import 'tailwindcss/tailwind.css'
 import '../globals.css'
+
 import { AppProps } from 'next/app'
 import { lazy } from 'react'
 
@@ -8,7 +9,9 @@ export interface SharedPageProps {
   token: string
 }
 
-const PreviewProvider = lazy(() => import('components/PreviewProvider'))
+const PreviewProvider = lazy(
+  () => import('components/PreviewPages/PreviewProvider')
+)
 
 export default function App({
   Component,

@@ -3,7 +3,7 @@ import { urlForImage } from 'lib/sanity.image'
 import { BusinessProfile, Settings } from 'lib/sanity.queries'
 import Head from 'next/head'
 
-import BlogMeta from './BlogMeta'
+import BlogMeta from '../Blog/BlogMeta'
 
 export interface BusinessProfilePageHeadProps {
   settings: Settings

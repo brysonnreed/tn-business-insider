@@ -1,12 +1,12 @@
 import 'react-multi-carousel/lib/styles.css'
 
 import AuthorAvatar from 'components/AuthorAvatar'
-import Date from 'components/PostDate'
 import { Post } from 'lib/sanity.queries'
 import { useRouter } from 'next/router'
 import Carousel from 'react-multi-carousel'
 
 import CoverImage from './CoverImage'
+import Date from './Post/PostDate'
 
 interface ShowcaseSliderProps {
   posts: Post[]
@@ -15,13 +15,9 @@ interface ShowcaseSliderProps {
 const ShowcaseSlider: React.FC<ShowcaseSliderProps> = ({ posts }) => {
   const router = useRouter()
 
-  console.log('All Posts:', posts)
-
   const showcasePosts = posts.filter((post) =>
     post.categories?.some((category) => category.name === 'Showcase')
   )
-
-  console.log('Showcase Posts:', showcasePosts)
 
   if (showcasePosts.length === 0) {
     return <h2>There are no posts to showcase!</h2>

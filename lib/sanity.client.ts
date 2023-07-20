@@ -1,22 +1,29 @@
 import { apiVersion, dataset, projectId, useCdn } from 'lib/sanity.api'
 import {
+  BusinessCategoriesSlugsQuery,
   type BusinessProfile,
   businessProfileBySlugQuery,
-  businessProfileCategoriesQuery,
   type BusinessProfileCategory,
+  businessProfileCategoryFields,
+  businessProfileFields,
   businessProfileSlugsQuery,
   businessProfilesQuery,
+  CategoriesSlugsQuery,
   type Category,
   categoryQuery,
+  Cities,
+  CitiesSlugsQuery,
+  cityFields,
   indexQuery,
   type Post,
   postAndMoreStoriesQuery,
   postBySlugQuery,
+  postFields,
   postSlugsQuery,
   type Settings,
   settingsQuery,
 } from 'lib/sanity.queries'
-import { createClient, type SanityClient } from 'next-sanity'
+import { createClient, groq, type SanityClient } from 'next-sanity'
 
 export function getClient(preview?: { token: string }): SanityClient {
   const client = createClient({
@@ -45,7 +52,7 @@ export const getSanityImageConfig = () => getClient()
 export async function getSettings(client: SanityClient): Promise<Settings> {
   return (await client.fetch(settingsQuery)) || {}
 }
-
+// Posts
 export async function getAllPosts(client: SanityClient): Promise<Post[]> {
   return (await client.fetch(indexQuery)) || []
 }
@@ -55,7 +62,6 @@ export async function getAllPostsSlugs(): Promise<Pick<Post, 'slug'>[]> {
   const slugs = (await client.fetch<string[]>(postSlugsQuery)) || []
   return slugs.map((slug) => ({ slug }))
 }
-
 export async function getPostBySlug(
   client: SanityClient,
   slug: string
@@ -69,18 +75,38 @@ export async function getPostAndMoreStories(
 ): Promise<{ post: Post; morePosts: Post[] }> {
   return await client.fetch(postAndMoreStoriesQuery, { slug })
 }
+export async function getPostsByCategory(
+  client: SanityClient,
+  categorySlug: string
+): Promise<Post[]> {
+  const query = groq`
+    *[
+      _type == "post" &&
+      $categorySlug in categories[]->slug.current
+    ]
+    {
+      ${postFields}
+    }
+  `
+  const params = {
+    categorySlug,
+  }
 
+  const result = await client.fetch(query, params)
+  return result
+}
+
+// Businesses
 export async function getAllBusinessProfiles(
   client: SanityClient
 ): Promise<BusinessProfile[]> {
   return (await client.fetch(businessProfilesQuery)) || []
 }
 
-export async function getAllBusinessProfileCategories(): Promise<
-  BusinessProfileCategory[]
-> {
-  const client = getClient()
-  return (await client.fetch(businessProfileCategoriesQuery)) || []
+export async function getAllBusinessProfileCategories(
+  client: SanityClient
+): Promise<BusinessProfileCategory[]> {
+  return (await client.fetch(businessProfileCategoryFields)) || []
 }
 
 export async function getBusinessProfileBySlug(
@@ -100,8 +126,144 @@ export async function getAllBusinessProfileSlugs(): Promise<
   return slugs.map((slug) => ({ slug }))
 }
 
+export async function getAllBusinessCategoriesSlugs(): Promise<
+  Pick<BusinessProfileCategory, 'slug'>[]
+> {
+  const client = getClient()
+  const slugs =
+    (await client.fetch<string[]>(BusinessCategoriesSlugsQuery)) || []
+  return slugs.map((slug) => ({ slug }))
+}
+export async function getBusinessCategoryBySlug(
+  client: SanityClient,
+  slug: string
+) {
+  const query = groq`
+    *[_type == "businessProfileCategory" && slug.current == $slug][0] {
+      name,
+      "slug": slug.current
+    }
+  `
+  const params = { slug }
+  const result = await client.fetch(query, params)
+  return result
+}
+
+// Categories
 export async function getAllCategories(
   client: SanityClient
 ): Promise<Category[]> {
   return (await client.fetch(categoryQuery)) || []
+}
+export async function getAllCategoriesSlugs(): Promise<
+  Pick<Category, 'slug'>[]
+> {
+  const client = getClient()
+  const slugs = (await client.fetch<string[]>(CategoriesSlugsQuery)) || []
+  return slugs.map((slug) => ({ slug }))
+}
+export async function getCategoryBySlug(
+  client: SanityClient,
+  slug: string
+): Promise<Category> {
+  const query = groq`
+    *[_type == "category" && slug.current == $slug][0] {
+      _id,
+      name,
+      "slug": slug.current
+    }
+  `
+  const params = { slug }
+  const result = await client.fetch(query, params)
+  return result
+}
+
+// Cities
+export async function getAllCities(client: SanityClient): Promise<Cities[]> {
+  return (await client.fetch(cityFields)) || []
+}
+
+export async function getAllCitiesSlugs(): Promise<Pick<Cities, 'slug'>[]> {
+  const client = getClient()
+  const slugs = (await client.fetch<string[]>(CitiesSlugsQuery)) || []
+  return slugs.map((slug) => ({ slug }))
+}
+export async function getCityBySlug(
+  client: SanityClient,
+  slug: string
+): Promise<Cities> {
+  const query = groq`
+    *[_type == "city" && slug.current == $slug][0] {
+      name,
+      "slug": slug.current
+    }
+  `
+  const params = { slug }
+  const result = await client.fetch(query, params)
+  return result
+}
+
+// New method for Dynamic routing
+export async function getBusinessProfilesByCityAndCategory(
+  client: SanityClient,
+  citySlug: string,
+  categorySlug: string
+): Promise<BusinessProfile[]> {
+  const query = groq`
+    *[
+      _type == "businessProfile" &&
+      city->slug.current == $citySlug &&
+      category->slug.current == $categorySlug
+    ]
+    {
+      ${businessProfileFields}
+    }
+  `
+  const params = {
+    citySlug,
+    categorySlug,
+  }
+
+  const result = await client.fetch(query, params)
+  return result
+}
+export async function getBusinessProfilesByCity(
+  client: SanityClient,
+  citySlug: string
+): Promise<BusinessProfile[]> {
+  const query = groq`
+    *[
+      _type == "businessProfile" &&
+      city->slug.current == $citySlug
+    ]
+    {
+      ${businessProfileFields}
+    }
+  `
+  const params = {
+    citySlug,
+  }
+
+  const result = await client.fetch(query, params)
+  return result
+}
+export async function getBusinessProfilesByCategory(
+  client: SanityClient,
+  categorySlug: string
+): Promise<BusinessProfile[]> {
+  const query = groq`
+    *[
+      _type == "businessProfile" &&
+      category->slug.current == $categorySlug
+    ]
+    {
+      ${businessProfileFields}
+    }
+  `
+  const params = {
+    categorySlug,
+  }
+
+  const result = await client.fetch(query, params)
+  return result
 }

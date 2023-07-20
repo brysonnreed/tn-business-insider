@@ -1,14 +1,15 @@
-import Container from 'components/BlogContainer'
-import Layout from 'components/BlogLayout'
+import Container from 'components/Blog/BlogContainer'
+import Layout from 'components/Layout'
 import MoreStories from 'components/MoreStories'
-import PostBody from 'components/PostBody'
-import PostHeader from 'components/PostHeader'
-import PostPageHead from 'components/PostPageHead'
-import PostTitle from 'components/PostTitle'
 import SectionSeparator from 'components/SectionSeparator'
 import * as demo from 'lib/demo.data'
 import type { Post, Settings } from 'lib/sanity.queries'
 import { notFound } from 'next/navigation'
+
+import PostBody from './PostBody'
+import PostHeader from './PostHeader'
+import PostPageHead from './PostPageHead'
+import PostTitle from './PostTitle'
 
 export interface PostPageProps {
   preview?: boolean

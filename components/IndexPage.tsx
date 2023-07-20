@@ -1,7 +1,7 @@
-import Container from 'components/BlogContainer'
-import Layout from 'components/BlogLayout'
+import Container from 'components/Blog/BlogContainer'
 import HeroPost from 'components/HeroPost'
 import IndexPageHead from 'components/IndexPageHead'
+import Layout from 'components/Layout'
 import MoreStories from 'components/MoreStories'
 import type { Category, Post, Settings } from 'lib/sanity.queries'
 

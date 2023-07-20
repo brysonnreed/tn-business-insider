@@ -1,4 +1,4 @@
-import BusinessProfileIndexPage from 'components/BusinessProfileIndexPage'
+import BusinessProfileIndexPage from 'components/BusinessProfile/BusinessProfileIndexPage'
 import {
   BusinessProfile,
   businessProfilesQuery,

@@ -135,7 +135,10 @@ export default function BusinessProfile({
           />
           <h3 className="">{city}, Tennessee</h3>
         </div>
-        <Link href={`businesses/business-profile/${slug}`}>
+        <Link
+          href={`/businesses/business-profile/[slug]`}
+          as={`/businesses/business-profile/${slug}`}
+        >
           <button className="mt-2 flex items-center justify-center gap-2 rounded-full bg-orange-500 px-3 py-1 text-base text-white transition-all hover:scale-105 sm:mt-0 ">
             Read More{' '}
             <FontAwesomeIcon

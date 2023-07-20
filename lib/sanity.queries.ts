@@ -1,6 +1,6 @@
 import { groq } from 'next-sanity'
 
-const postFields = groq`
+export const postFields = groq`
   _id,
   title,
   date,
@@ -11,16 +11,16 @@ const postFields = groq`
   coverImage,
   "slug": slug.current,
   "author": author->{name, picture},
-  "categories": categories[]->{_id, name},
+  "categories": categories[]->{_id, name, slug},
 `
 
-const businessProfileFields = groq`
+export const businessProfileFields = groq`
   _id,
   name,
   "slug": slug.current,
   logo,
   verified,
-  city,
+  
   description,
   services,
   images,
@@ -30,14 +30,37 @@ const businessProfileFields = groq`
   address,
   mapLocation,
   "category": category->name,
+  "city": city->name,
 `
 
 export const categoryQuery = groq`
   *[_type == "category"] {
     _id,
     name,
-    
+    "slug": slug.current
   }
+`
+export const cityFields = groq`
+  *[_type == "city"] {
+    name,
+    "slug": slug.current
+  }
+`
+export const businessProfileCategoryFields = groq`
+  *[_type == "businessProfileCategory"] {
+    name,
+    "slug": slug.current,
+  }
+`
+
+export const CitiesSlugsQuery = groq`
+*[_type == "city" && defined(slug.current)][].slug.current
+`
+export const CategoriesSlugsQuery = groq`
+*[_type == "category" && defined(slug.current)][].slug.current
+`
+export const BusinessCategoriesSlugsQuery = groq`
+*[_type == "businessProfileCategory" && defined(slug.current)][].slug.current
 `
 
 export const settingsQuery = groq`*[_type == "settings"][0]`
@@ -123,10 +146,18 @@ export interface Settings {
 }
 export interface BusinessProfileCategory {
   name: string
+  slug: string
+  _id: string
 }
 export interface Category {
   _id: string
   name: string
+  slug: string
+}
+export interface Cities {
+  _id: string
+  name: string
+  slug: string
 }
 
 export interface SocialMedia {

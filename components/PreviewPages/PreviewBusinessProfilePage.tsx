@@ -1,6 +1,6 @@
 import BusinessProfilePage, {
   BusinessProfilePageProps,
-} from 'components/BusinessProfilePage'
+} from 'components/BusinessProfile/BusinessProfilePage'
 import {
   type BusinessProfile,
   businessProfileBySlugQuery,

@@ -1,9 +1,10 @@
 import Avatar from 'components/AuthorAvatar'
 import CoverImage from 'components/CoverImage'
-import Date from 'components/PostDate'
 import type { Post } from 'lib/sanity.queries'
 import Link from 'next/link'
 import Router from 'next/router'
+
+import Date from './PostDate'
 
 export default function PostPreview({
   title,
@@ -14,10 +15,9 @@ export default function PostPreview({
   slug,
 }: Omit<Post, '_id'>) {
   return (
-    <div
+    <article
       className="flex min-h-[450px] flex-col justify-between rounded-lg border border-gray-200 p-2 shadow-2xl transition-all hover:scale-105 md:p-4"
       onClick={() => {
-        // Handle the click event and navigate to the desired URL
         Router.push(`/posts/${slug}`)
       }}
     >
@@ -43,6 +43,6 @@ export default function PostPreview({
         </p>
       )}
       {author && <Avatar name={author.name} picture={author.picture} />}
-    </div>
+    </article>
   )
 }
