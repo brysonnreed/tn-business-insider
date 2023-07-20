@@ -45,6 +45,8 @@ export async function getStaticProps({ params }) {
   const categoryData = await getCategoryBySlug(client, category)
   const blogPosts = await getPostsByCategory(client, categoryData.slug)
 
+  console.log(blogPosts)
+
   return {
     props: {
       category: categoryData,
