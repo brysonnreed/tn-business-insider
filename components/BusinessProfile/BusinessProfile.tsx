@@ -34,7 +34,6 @@ export default function BusinessProfile({
     amenities,
     socialMedia,
     address,
-    mapLocation,
     slug,
   } = businessProfile
 
