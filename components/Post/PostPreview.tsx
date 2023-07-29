@@ -13,6 +13,7 @@ export default function PostPreview({
   excerpt,
   author,
   slug,
+  comments,
 }: Omit<Post, '_id'>) {
   return (
     <article

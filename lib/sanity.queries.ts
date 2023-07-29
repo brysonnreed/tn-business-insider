@@ -16,7 +16,7 @@ export const postFields = groq`
   "categories": categories[]->{_id, name, slug},
   
   "comments":*[_type == 'comment' && post._ref == ^._id]
-  // likes
+  
 `
 
 export const businessProfileFields = groq`
@@ -159,7 +159,7 @@ export interface Post {
   slug?: string
   content?: any
   categories?: any[]
-  likes: number
+
   comments: any
 }
 
