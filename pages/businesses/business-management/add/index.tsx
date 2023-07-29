@@ -1,0 +1,65 @@
+import BlogContainer from 'components/Blog/BlogContainer'
+import Header from 'components/Header'
+import CreateBusiness from 'components/User/CreateBusiness'
+import {
+  getAllBusinessProfileCategories,
+  getAllCities,
+  getSocialMedias,
+} from 'lib/sanity.client'
+import { getClient } from 'lib/sanity.client.cdn'
+
+const BusinessManagementAddForm = ({ cities, categories, socials }) => {
+  return (
+    <>
+      <Header />
+      <section className="mx-auto min-h-screen max-w-5xl pt-10">
+        <BlogContainer>
+          <div className=" mb-5 flex flex-col gap-2 border-b border-black pb-10 leading-8">
+            <p className="text-2xl font-semibold text-orange-500 sm:text-3xl">
+              Interested in growing your business?
+            </p>
+            <p className="text-5xl font-bold capitalize text-black sm:text-6xl">
+              Add your Business here
+            </p>
+          </div>
+          <div className="pt-5">
+            <CreateBusiness
+              cities={cities}
+              categories={categories}
+              socials={socials}
+            />
+          </div>
+        </BlogContainer>
+      </section>
+    </>
+  )
+}
+
+export default BusinessManagementAddForm
+
+export async function getServerSideProps() {
+  const client = getClient()
+
+  try {
+    const cities = await getAllCities(client)
+    const categories = await getAllBusinessProfileCategories(client)
+    const socials = await getSocialMedias(client)
+
+    return {
+      props: {
+        cities,
+        categories,
+        socials,
+      },
+    }
+  } catch (error) {
+    console.error(error)
+    return {
+      props: {
+        cities: [],
+        categories: [],
+        socials: [],
+      },
+    }
+  }
+}

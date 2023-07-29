@@ -15,9 +15,12 @@ import businessProfileType from 'schemas/businessProfile'
 import businessProfileCategoryType from 'schemas/businessProfileCategory'
 import categoryType from 'schemas/category'
 import cityType from 'schemas/cities'
+import commentType from 'schemas/comment'
+import EventType from 'schemas/events'
 import postType from 'schemas/post'
 import settingsType from 'schemas/settings'
-
+import SocialType from 'schemas/socials'
+import UserType from 'schemas/users'
 const title =
   process.env.NEXT_PUBLIC_SANITY_PROJECT_TITLE || 'Next.js Blog with Sanity.io'
 
@@ -36,6 +39,10 @@ export default defineConfig({
       businessProfileCategoryType,
       settingsType,
       cityType,
+      EventType,
+      commentType,
+      UserType,
+      SocialType,
     ],
   },
   plugins: [

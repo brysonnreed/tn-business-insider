@@ -13,6 +13,7 @@ import {
   faMapPin,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { GoogleMap, Marker } from '@react-google-maps/api'
 import Container from 'components/Blog/BlogContainer'
 import BusinessProfilePageHead from 'components/BusinessProfile/BusinessProfilePageHead'
 import Layout from 'components/Layout'
@@ -22,7 +23,10 @@ import { urlForImage } from 'lib/sanity.image'
 import { BusinessProfile, Post, Settings } from 'lib/sanity.queries'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import Carousel from 'react-multi-carousel'
+
+import MapComponent from './MapComponent'
 
 export interface BusinessProfilePageProps {
   preview?: boolean
@@ -75,6 +79,30 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
     urlForImage(image).url()
   )
 
+  // const [latitude, setLatitude] = useState(null)
+  // const [longitude, setLongitude] = useState(null)
+
+  // useEffect(() => {
+  //   const geocoder = new window.google.maps.Geocoder()
+  //   geocoder.geocode(
+  //     { address: businessProfile.address.formatted_address },
+  //     (results, status) => {
+  //       if (status === 'OK') {
+  //         const { lat, lng } = results[0].geometry.location
+  //         setLatitude(lat())
+  //         setLongitude(lng())
+  //       } else {
+  //         console.error(
+  //           'Geocode was not successful for the following reason:',
+  //           status
+  //         )
+  //       }
+  //     }
+  //   )
+  // }, [businessProfile.address.formatted_address])
+
+  // const center = { lat: latitude, lng: longitude }
+
   return (
     <>
       <BusinessProfilePageHead
@@ -121,9 +149,10 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                           style={{ color: 'red' }}
                           className="h-4 w-4"
                         />
-                        <h3 className="">
+                        <h3 className="flex flex-row gap-1">
                           <span className="hidden sm:block">
-                            {businessProfile?.address}
+                            {businessProfile?.address.name}
+                            {', '}
                           </span>
                           {businessProfile?.city}{' '}
                           <span className="invisible sm:visible">
@@ -140,7 +169,7 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                     <ul className="flex flex-row items-center justify-center gap-2 sm:justify-start md:justify-center">
                       {businessProfile.socialMedia.map((platform, index) => (
                         <li key={index}>
-                          {platform.platform === 'facebook' && (
+                          {platform.platform === 'Facebook' && (
                             <a href={platform.url} target="_blank">
                               <FontAwesomeIcon
                                 icon={faFacebook}
@@ -148,7 +177,7 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                               />
                             </a>
                           )}
-                          {platform.platform === 'twitter' && (
+                          {platform.platform === 'Twitter' && (
                             <a href={platform.url} target="_blank">
                               <FontAwesomeIcon
                                 icon={faTwitter}
@@ -156,7 +185,7 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                               />
                             </a>
                           )}
-                          {platform.platform === 'instagram' && (
+                          {platform.platform === 'Instagram' && (
                             <a href={platform.url} target="_blank">
                               <FontAwesomeIcon
                                 icon={faInstagram}
@@ -164,7 +193,7 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                               />
                             </a>
                           )}
-                          {platform.platform === 'linkedIn' && (
+                          {platform.platform === 'LinkedIn' && (
                             <a href={platform.url} target="_blank">
                               <FontAwesomeIcon
                                 icon={faLinkedin}
@@ -210,17 +239,18 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                     swipeable={true}
                   >
                     {imageUrls.map((imageUrl, index) => (
-                      <div key={index} className="h-[30vh]">
+                      <div key={index} className="relative h-[30vh]">
                         <Image
                           src={imageUrl}
                           alt={`Slide ${index + 1} for ${businessProfile.name}`}
                           //   width={2000}
                           //   height={2000}
-                          objectFit="cover"
+
                           fill
                           draggable={false}
-                          className="pb-10 "
+                          className="object-cover pb-10"
                           priority={true}
+                          sizes="(max-width: 768px)"
                         />
                       </div>
                     ))}
@@ -276,16 +306,7 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                     </div>
                   </div>
                 </section>
-                <section className="flex items-center justify-center rounded-md border border-gray-300  shadow-lg">
-                  {businessProfile.mapLocation && (
-                    <iframe
-                      src={businessProfile.mapLocation}
-                      width="1000"
-                      height="650"
-                      loading="lazy"
-                    ></iframe>
-                  )}
-                </section>
+                <MapComponent businessProfile={businessProfile} />
               </article>
             </>
           )}

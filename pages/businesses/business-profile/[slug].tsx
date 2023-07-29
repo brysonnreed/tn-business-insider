@@ -56,6 +56,7 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async ({
       notFound: true,
     }
   }
+  console.log(businessProfile)
 
   return {
     props: {

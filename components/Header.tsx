@@ -11,10 +11,13 @@ import { getClient } from 'lib/sanity.client.cdn'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import Link from 'next/link'
+import { signIn, signOut, useSession } from 'next-auth/react'
 import { groq } from 'next-sanity'
 import { useEffect, useRef, useState } from 'react'
 
 import logo from '../public/images/logo.jpg'
+import AuthorAvatar from './AuthorAvatar'
+import UserAvatar from './User/UserAvatar'
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -23,9 +26,14 @@ function Header() {
   const [active, setActive] = useState(false)
   const [categories, setCategories] = useState([])
   const [isBlogActive, setIsBlogActive] = useState(false)
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false)
 
   const toggleNav = () => {
     setActive((prevActive) => !prevActive)
+  }
+
+  const toggleDropdown = () => {
+    setIsDropdownVisible((prevIsDropdownVisible) => !prevIsDropdownVisible)
   }
 
   const searchRef = useRef<HTMLInputElement>(null)
@@ -116,13 +124,12 @@ function Header() {
     } else {
       return toggleNav(), e.stopPropagation()
     }
-
-    // Reset the search query
   }
+  const { data: session } = useSession()
 
   return (
     <header className="sticky top-0 z-50 ">
-      <nav className="flex flex-col items-center justify-between space-x-2 space-y-4 bg-orange-500 px-5 py-5 font-bold sm:flex-row sm:space-y-0 xl:px-40 ">
+      <nav className="flex flex-col items-center justify-between space-y-4 bg-orange-500 p-2 font-bold shadow-2xl sm:flex-row sm:space-x-2 sm:space-y-0 sm:px-5 sm:py-5 xl:px-40">
         <div className="flex items-center space-x-2">
           <Link href="/">
             <Image
@@ -133,11 +140,32 @@ function Header() {
             />
           </Link>
         </div>
-        <div className="flex w-3/4 items-center justify-center gap-1 xs:w-auto sm:gap-5">
-          <FontAwesomeIcon
-            icon={faUser}
-            className="block h-7 w-7 text-white sm:hidden"
-          />
+        <div className="flex w-screen items-center justify-between gap-2 px-3 xs:px-4 sm:w-auto sm:gap-5 sm:px-0">
+          {session ? (
+            <button
+              onClick={toggleDropdown}
+              aria-label="Open user dropdown menu"
+              className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
+            >
+              <UserAvatar image={session?.user!.image} />{' '}
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
+                  isDropdownVisible
+                    ? `rotate-180 transition-all duration-300`
+                    : ''
+                }`}
+              />
+            </button>
+          ) : (
+            <button
+              onClick={toggleDropdown}
+              aria-label="Open user dropdown menu"
+              className=" focus:outline-none sm:hidden"
+            >
+              <FontAwesomeIcon icon={faUser} className="h-7 w-7 text-white" />
+            </button>
+          )}
           <div
             className="relative flex items-center justify-center"
             ref={searchRef}
@@ -149,13 +177,13 @@ function Header() {
               onChange={handleSearch}
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
-              className=" rounded-full border-none py-2 pl-4 focus:outline-none active:outline-none sm:pr-12 "
+              className=" w-[180px] rounded-full border-none py-2 pl-4 focus:outline-none active:outline-none xs:w-[260px] sm:w-auto sm:pr-12 "
             />
             {searchQuery && (
               <motion.button
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-500/40 p-2 focus:outline-none"
+                className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-300 p-2 focus:outline-none"
                 onClick={() => setSearchQuery('')}
               >
                 <FontAwesomeIcon
@@ -177,14 +205,39 @@ function Header() {
               </motion.div>
             )}
           </div>
+          {session ? (
+            <button
+              onClick={toggleDropdown}
+              aria-label="Open user dropdown menu"
+              className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
+            >
+              <UserAvatar image={session?.user.image} />{' '}
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
+                  isDropdownVisible
+                    ? `rotate-180 transition-all duration-300`
+                    : ''
+                }`}
+              />
+            </button>
+          ) : (
+            <button
+              onClick={toggleDropdown}
+              aria-label="Open user dropdown menu"
+              className=" hidden items-center justify-center gap-2 focus:outline-none sm:flex"
+            >
+              <FontAwesomeIcon icon={faUser} className="h-7 w-7 text-white" />
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                className="h-5 w-5 text-white"
+              />
+            </button>
+          )}
 
-          <FontAwesomeIcon
-            icon={faUser}
-            className="hidden h-7 w-7 text-white sm:block"
-          />
           <button
             onClick={handleNavButtonClick}
-            aria-label="Open the mobile navigation"
+            aria-label="Open the navigation"
             className={`hamburger  p-2 ${active === true ? 'active' : ''}`}
           >
             <span className="bar"></span>
@@ -256,11 +309,58 @@ function Header() {
           </motion.div>
         </div>
       )}
-      <nav className=" z-[21] bg-white drop-shadow-2xl">
+      <nav className=" z-[21] drop-shadow-2xl">
+        {isDropdownVisible && (
+          <ul
+            ref={navRef}
+            className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
+          >
+            {session ? (
+              <div>
+                <Link href={'/businesses/business-management'}>
+                  <button className="w-full border-y">
+                    <motion.li
+                      initial={{ x: 200, opacity: 0.5 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ duration: 0.2 }}
+                      className="mobileNavItem bg-white"
+                    >
+                      My Businesses
+                    </motion.li>
+                  </button>
+                </Link>
+                <button onClick={() => signOut()} className="w-full border-y">
+                  <motion.li
+                    initial={{ x: 200, opacity: 0.5 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="mobileNavItem bg-white"
+                  >
+                    Sign Out
+                  </motion.li>
+                </button>
+              </div>
+            ) : (
+              <Link href={'/login'}>
+                <button className="w-full border-y">
+                  <motion.li
+                    initial={{ x: 200, opacity: 0.5 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className="mobileNavItem bg-white"
+                  >
+                    Sign In
+                  </motion.li>
+                </button>
+              </Link>
+            )}
+          </ul>
+        )}
+
         {active === true && (
           <ul
             ref={navRef}
-            className="absolute right-0 top-0 z-[21] h-screen w-full text-center  text-lg uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
+            className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
           >
             <button
               onClick={() => setActive(false)}
@@ -312,7 +412,7 @@ function Header() {
                 {isBlogActive &&
                   categories.map((category) => (
                     <button
-                      onClick={() => setActive(false)}
+                      onClick={() => [setActive(false), setIsBlogActive(false)]}
                       className="w-full"
                       key={category._id}
                     >

@@ -84,7 +84,7 @@ export default function BusinessProfile({
           <ul className="flex flex-row items-center justify-center gap-2 sm:justify-start md:justify-center">
             {socialMedia.map((platform, index) => (
               <li key={index}>
-                {platform.platform === 'facebook' && (
+                {platform.platform === 'Facebook' && (
                   <a href={platform.url} target="_blank">
                     <FontAwesomeIcon
                       icon={faFacebook}
@@ -92,7 +92,7 @@ export default function BusinessProfile({
                     />
                   </a>
                 )}
-                {platform.platform === 'twitter' && (
+                {platform.platform === 'Twitter' && (
                   <a href={platform.url} target="_blank">
                     <FontAwesomeIcon
                       icon={faTwitter}
@@ -100,7 +100,7 @@ export default function BusinessProfile({
                     />
                   </a>
                 )}
-                {platform.platform === 'instagram' && (
+                {platform.platform === 'Instagram' && (
                   <a href={platform.url} target="_blank">
                     <FontAwesomeIcon
                       icon={faInstagram}
@@ -108,7 +108,7 @@ export default function BusinessProfile({
                     />
                   </a>
                 )}
-                {platform.platform === 'linkedIn' && (
+                {platform.platform === 'LinkedIn' && (
                   <a href={platform.url} target="_blank">
                     <FontAwesomeIcon
                       icon={faLinkedin}

@@ -2,6 +2,7 @@ import Container from 'components/Blog/BlogContainer'
 import Layout from 'components/Layout'
 import MoreStories from 'components/MoreStories'
 import SectionSeparator from 'components/SectionSeparator'
+import CommentForm from 'components/User/CommentForm'
 import * as demo from 'lib/demo.data'
 import type { Post, Settings } from 'lib/sanity.queries'
 import { notFound } from 'next/navigation'
@@ -47,11 +48,15 @@ export default function PostPage(props: PostPageProps) {
                   coverImage={post.coverImage}
                   date={post.date}
                   author={post.author}
+                  // likes={post.likes}
+                  slug={post.slug}
                 />
                 <PostBody content={post.content} />
               </article>
               <SectionSeparator />
               {morePosts?.length > 0 && <MoreStories posts={morePosts} />}
+              <SectionSeparator />
+              <CommentForm post={post} />
             </>
           )}
         </Container>

@@ -1,5 +1,7 @@
 import { groq } from 'next-sanity'
 
+import { description } from './demo.data'
+
 export const postFields = groq`
   _id,
   title,
@@ -12,6 +14,9 @@ export const postFields = groq`
   "slug": slug.current,
   "author": author->{name, picture},
   "categories": categories[]->{_id, name, slug},
+  
+  "comments":*[_type == 'comment' && post._ref == ^._id]
+  // likes
 `
 
 export const businessProfileFields = groq`
@@ -26,9 +31,17 @@ export const businessProfileFields = groq`
   images,
   hours,
   amenities,
-  socialMedia,
-  address,
-  mapLocation,
+  socialMedia[] {
+    'platform': platform->platform,
+    url
+  },
+  'address': {
+    'formatted_address': address.formatted_address,
+    'name': address.name,
+    'place_id': address.place_id,
+    'url': address.url,
+  },
+  
   "category": category->name,
   "city": city->name,
 `
@@ -50,6 +63,17 @@ export const businessProfileCategoryFields = groq`
   *[_type == "businessProfileCategory"] {
     name,
     "slug": slug.current,
+  }
+`
+
+export const eventsFields = groq`
+*[_type == "events"] {
+    _id,
+    name,
+    description,
+    date,
+    dateEstimate,
+    link
   }
 `
 
@@ -135,6 +159,8 @@ export interface Post {
   slug?: string
   content?: any
   categories?: any[]
+  likes: number
+  comments: any
 }
 
 export interface Settings {
@@ -154,6 +180,14 @@ export interface Category {
   name: string
   slug: string
 }
+export interface Events {
+  _id: string
+  name: string
+  description: string
+  date: any
+  dateEstimate: string
+  link: string
+}
 export interface Cities {
   _id: string
   name: string
@@ -163,6 +197,12 @@ export interface Cities {
 export interface SocialMedia {
   platform: string
   url: string
+}
+
+export interface Users {
+  name: string
+  email: string
+  businesses: any[]
 }
 
 export interface BusinessProfile {
@@ -228,7 +268,12 @@ export interface BusinessProfile {
   }
   amenities?: string[]
   socialMedia?: SocialMedia[]
-  address?: string
-  mapLocation?: any
+  address?: {
+    formatted_address: any
+    url: string
+    name: string
+    place_id: any
+  }
+
   category?: string
 }

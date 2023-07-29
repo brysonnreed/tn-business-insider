@@ -1,0 +1,67 @@
+.imgStyle {
+  @apply rounded-b-none rounded-l-md rounded-t-md bg-gradient-to-r from-blue-300 to-indigo-400 lg:rounded-r-none;
+  position: relative;
+  overflow: hidden;
+}
+
+.cartoonImg {
+  background: url('../public/images/LightHouse.png') no-repeat;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+
+.cloud1 {
+  background: url('../public/images/cloud.png') no-repeat;
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  width: 160px;
+  height: 80px;
+  background-size: contain;
+  z-index: 0;
+  animation: cloud1 25.5s ease-in 2s infinite;
+  transform: translateX(220%);
+}
+.cloud2 {
+  background: url('../public/images/cloud.png') no-repeat;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  width: 150px;
+  height: 60px;
+  background-size: contain;
+  z-index: 2;
+  transform: rotateY(180deg);
+  animation: cloud2 35.5s ease-in 3s infinite;
+  transform: translateX(220%);
+  opacity: 80%;
+}
+.button_custom {
+  @apply flex w-full items-center justify-center gap-2 rounded border bg-white px-2 py-3 text-lg font-medium shadow-2xl hover:bg-gray-200;
+}
+/* css keyframes */
+
+@keyframes cloud1 {
+  0% {
+    transform: translateX(220%);
+  }
+  100% {
+    transform: translateX(-300%);
+  }
+}
+@keyframes cloud2 {
+  0% {
+    transform: translateX(220%);
+  }
+  100% {
+    transform: translateX(-300%);
+  }
+}

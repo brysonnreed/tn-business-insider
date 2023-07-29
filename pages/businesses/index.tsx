@@ -59,9 +59,6 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
   const categories = await getAllBusinessProfileCategories(client)
   const cities = await getAllCities(client)
 
-  console.log(cities)
-  console.log(categories)
-
   return {
     props: {
       businessProfiles,

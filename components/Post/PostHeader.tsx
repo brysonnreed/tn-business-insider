@@ -4,19 +4,26 @@ import {
   faLinkedin,
   faTwitter,
 } from '@fortawesome/free-brands-svg-icons'
+import { faCalendar, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Avatar from 'components/AuthorAvatar'
 import CoverImage from 'components/CoverImage'
 import type { Post } from 'lib/sanity.queries'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
+// import { updatePostLikes } from '../../pages/api/likes'
+// import LikeElement from './LikeElement'
 import Date from './PostDate'
 import PostTitle from './PostTitle'
 
 export default function PostHeader(
-  props: Pick<Post, 'title' | 'coverImage' | 'date' | 'author' | 'slug'>
+  props: Pick<
+    Post,
+    'title' | 'coverImage' | 'date' | 'author' | 'slug' //| 'likes'
+  >
 ) {
-  const { title, coverImage, date, author, slug } = props
+  const { title, coverImage, date, author, slug /*likes*/ } = props
   const router = useRouter()
 
   const shareToSocialMedia = (platform) => {
@@ -55,12 +62,19 @@ export default function PostHeader(
   return (
     <section className="mb-10">
       <PostTitle>{title}</PostTitle>
+
       <div className="hidden justify-between md:mb-10 md:flex">
         <div className="flex flex-col items-end justify-end">
           {author && <Avatar name={author.name} picture={author.picture} />}
-          <Date dateString={date} />
+          <div className="flex flex-row items-center justify-center gap-2">
+            <FontAwesomeIcon
+              icon={faCalendar}
+              className="h-4 w-4 text-orange-500"
+            />
+            <Date dateString={date} />
+          </div>
         </div>
-
+        {/* <LikeElement likes={likes} slug={slug} /> */}
         <div className="flex flex-row items-center justify-center space-x-4">
           <FontAwesomeIcon
             icon={faFacebook}
@@ -88,10 +102,16 @@ export default function PostHeader(
         <CoverImage title={title} image={coverImage} priority slug={slug} />
       </div>
       <div className="mx-auto max-w-2xl">
-        <div className="flex justify-between md:mb-10 md:hidden">
-          <div className="flex flex-col items-end justify-end">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row md:mb-10 md:hidden">
+          <div className="flex flex-col items-center justify-center sm:items-start sm:justify-center">
             {author && <Avatar name={author.name} picture={author.picture} />}
-            <Date dateString={date} />
+            <div className="flex flex-row items-center justify-center gap-2">
+              <FontAwesomeIcon
+                icon={faCalendar}
+                className="h-4 w-4 text-orange-500"
+              />
+              <Date dateString={date} />
+            </div>
           </div>
 
           <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:flex-nowrap sm:space-x-4">

@@ -4,6 +4,7 @@ import { defineField, defineType } from 'sanity'
 
 import authorType from './author'
 import categoryType from './category'
+import comment from './comment'
 
 /**
  * This file is the schema definition for a post.
@@ -123,6 +124,14 @@ export default defineType({
       type: 'array',
       of: [{ type: 'reference', to: [{ type: categoryType.name }] }],
     }),
+
+    // defineField({
+    //   name: 'likes',
+    //   title: 'Likes',
+    //   type: 'number',
+    //   initialValue: 0, // Set the initial value to 0 likes
+    //   readOnly: true, // The "Likes" field should be read-only and only updated via the backend.
+    // }),
   ],
   preview: {
     select: {

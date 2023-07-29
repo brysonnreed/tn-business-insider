@@ -2,7 +2,10 @@ import 'tailwindcss/tailwind.css'
 import '../globals.css'
 
 import { AppProps } from 'next/app'
-import { lazy } from 'react'
+import { Session } from 'next-auth'
+import { SessionProvider, useSession } from 'next-auth/react'
+import { lazy, useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 
 export interface SharedPageProps {
   draftMode: boolean
@@ -15,9 +18,10 @@ const PreviewProvider = lazy(
 
 export default function App({
   Component,
-  pageProps,
-}: AppProps<SharedPageProps>) {
+  pageProps: { session, ...pageProps },
+}: AppProps<SharedPageProps & { session: Session | null }>) {
   const { draftMode, token } = pageProps
+
   return (
     <>
       {draftMode ? (
@@ -25,7 +29,10 @@ export default function App({
           <Component {...pageProps} />
         </PreviewProvider>
       ) : (
-        <Component {...pageProps} />
+        <SessionProvider session={session}>
+          <Toaster />
+          <Component {...pageProps} />
+        </SessionProvider>
       )}
     </>
   )

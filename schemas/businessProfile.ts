@@ -88,6 +88,7 @@ export default defineType({
       ],
       description: 'Images of the business',
     }),
+    defineField({ name: 'website', title: 'Website', type: 'url' }),
 
     defineField({
       name: 'amenities',
@@ -107,16 +108,8 @@ export default defineType({
             {
               name: 'platform',
               title: 'Platform',
-              type: 'string',
-              options: {
-                list: [
-                  { title: 'Facebook', value: 'facebook' },
-                  { title: 'Twitter', value: 'twitter' },
-                  { title: 'Instagram', value: 'instagram' },
-                  { title: 'LinkedIn', value: 'linkedIn' },
-                  // Add more social media platforms as needed
-                ],
-              },
+              type: 'reference',
+              to: [{ type: 'socialMediaPlatform' }],
             },
             {
               name: 'url',
@@ -128,18 +121,43 @@ export default defineType({
         },
       ],
     }),
+
     defineField({
       name: 'address',
       title: 'Address',
-      type: 'string',
+      type: 'object',
+      fields: [
+        {
+          name: 'formatted_address',
+          title: 'Formatted Address',
+          type: 'string',
+        },
+
+        {
+          name: 'name',
+          title: 'Name',
+          type: 'string',
+        },
+        {
+          name: 'place_id',
+          title: 'Place ID',
+          type: 'string',
+        },
+        {
+          name: 'url',
+          title: 'URL',
+          type: 'url',
+        },
+      ],
     }),
     defineField({
-      name: 'mapLocation',
-      title: 'Map Location',
-      type: 'url',
-      description: 'Paste the Google Maps iframe url code here',
-      icon: PinIcon,
+      name: 'openAllDay',
+      title: 'Open 24/7',
+      description: 'Check if the business is open 24/7',
+      type: 'boolean',
+      initialValue: false,
     }),
+
     defineField({
       name: 'hours',
       title: 'Business Hours',

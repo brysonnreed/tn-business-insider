@@ -14,6 +14,7 @@ import {
   Cities,
   CitiesSlugsQuery,
   cityFields,
+  eventsFields,
   indexQuery,
   type Post,
   postAndMoreStoriesQuery,
@@ -94,6 +95,11 @@ export async function getPostsByCategory(
 
   const result = await client.fetch(query, params)
   return result
+}
+
+// Events
+export async function getAllEvents(client: SanityClient): Promise<Event[]> {
+  return (await client.fetch(eventsFields)) || []
 }
 
 // Businesses
@@ -266,4 +272,35 @@ export async function getBusinessProfilesByCategory(
 
   const result = await client.fetch(query, params)
   return result
+}
+
+// User
+export async function getBusinessProfilesByUser(
+  client: SanityClient,
+  user: string
+): Promise<BusinessProfile[]> {
+  const query = groq`
+    *[
+      _type == "businessProfile" &&
+      category->slug.current == $user
+    ]
+    {
+      ${businessProfileFields}
+    }
+  `
+  const params = {
+    user,
+  }
+
+  const result = await client.fetch(query, params)
+  return result
+}
+
+// Social Media
+export async function getSocialMedias(
+  client: SanityClient
+): Promise<BusinessProfile[]> {
+  return await client.fetch(groq`
+ *[_type == "socialMediaPlatform"]{_id, platform}
+`)
 }
