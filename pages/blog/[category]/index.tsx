@@ -33,6 +33,7 @@ export default function CategoryIndexPage({ category, blogPosts, events }) {
                   author={blogPost.author}
                   slug={blogPost.slug}
                   excerpt={blogPost.excerpt}
+                  comments={blogPost.comments}
                 />
               ))}
             </main>
