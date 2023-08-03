@@ -70,20 +70,26 @@ export const authOptions = {
     // session: async (session, user) => {
     //   return Promise.resolve(session);
     // },
-    async session(session, user) {
-      console.log('Session data:', session)
-      console.log('User data:', user)
+    // async session(session, user) {
+    //   console.log('Session data:', session)
+    //   console.log('User data:', user)
 
-      if (user && user.id) {
-        session.user.id = user.id // Set the user's id in the session
-      } else {
-        console.log('User id is missing or undefined')
-      }
+    //   if (user && user.id) {
+    //     session.user.id = user.id // Set the user's id in the session
+    //   } else {
+    //     console.log('User id is missing or undefined')
+    //   }
 
-      return session
-    },
+    //   return session
+    // },
     // jwt: async (token, user, account, profile, isNewUser) => {
     //   return Promise.resolve(token);
+    // },
+    // async jwt(token, user) {
+    //   if (user) {
+    //     token.id = user.id
+    //   }
+    //   return token
     // },
   },
 }
