@@ -151,7 +151,7 @@ function Header() {
               <UserAvatar image={session?.user!.image} />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
-                className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
+                className={`flex h-4 w-4 text-white xs:h-5 xs:w-5 ${
                   isDropdownVisible
                     ? `rotate-180 transition-all duration-300`
                     : ''
@@ -179,7 +179,7 @@ function Header() {
               onChange={handleSearch}
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
-              className=" w-[180px] rounded-full border-none py-2 pl-4 focus:outline-none active:outline-none xs:w-[260px] sm:w-auto sm:pr-12 "
+              className="w-full rounded-full border-none py-2 pl-4 focus:outline-none active:outline-none  sm:pr-12 "
             />
             {searchQuery && (
               <motion.button
@@ -256,8 +256,8 @@ function Header() {
       {searchResults.length > 0 && (
         <div className="absolute flex w-full justify-end">
           <motion.div
-            initial={{ x: 100 }}
-            animate={{ x: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="z-50 w-full bg-white shadow-2xl lg:w-1/2 xl:w-1/3"
           >
             {searchResults.map((result) => (
@@ -315,9 +315,11 @@ function Header() {
           </motion.div>
         </div>
       )}
-      <nav className=" z-[21] drop-shadow-2xl">
+      <nav className="z-[21] drop-shadow-2xl">
         {isDropdownVisible && (
-          <ul
+          <motion.ul
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             ref={navRef}
             className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
           >
@@ -325,14 +327,7 @@ function Header() {
               <div>
                 <Link href={'/businesses/business-management'}>
                   <button className="w-full border-y" type="button">
-                    <motion.li
-                      initial={{ x: 200, opacity: 0.5 }}
-                      animate={{ x: 0, opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                      className="mobileNavItem bg-white"
-                    >
-                      My Businesses
-                    </motion.li>
+                    <li className="mobileNavItem bg-white">My Businesses</li>
                   </button>
                 </Link>
                 <button
@@ -340,14 +335,7 @@ function Header() {
                   className="w-full border-y"
                   type="button"
                 >
-                  <motion.li
-                    initial={{ x: 200, opacity: 0.5 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.2 }}
-                    className="mobileNavItem bg-white"
-                  >
-                    Sign Out
-                  </motion.li>
+                  <li className="mobileNavItem bg-white">Sign Out</li>
                 </button>
               </div>
             ) : (
@@ -356,21 +344,16 @@ function Header() {
                 onClick={() => signIn()}
                 type="button"
               >
-                <motion.li
-                  initial={{ x: 200, opacity: 0.5 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="mobileNavItem bg-white"
-                >
-                  Sign In
-                </motion.li>
+                <li className="mobileNavItem bg-white">Sign In</li>
               </button>
             )}
-          </ul>
+          </motion.ul>
         )}
 
         {active === true && (
-          <ul
+          <motion.ul
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             ref={navRef}
             className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
           >
@@ -380,14 +363,7 @@ function Header() {
               type="button"
             >
               <Link href="/">
-                <motion.li
-                  initial={{ x: 200, opacity: 0.5 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="mobileNavItem bg-white"
-                >
-                  Home
-                </motion.li>
+                <li className="mobileNavItem bg-white">Home</li>
               </Link>
             </button>
             <div
@@ -404,10 +380,7 @@ function Header() {
                 className="w-full"
               >
                 <Link href="/blog">
-                  <motion.li
-                    initial={{ x: 200, opacity: 0.5 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.2 }}
+                  <li
                     className={`mobileNavItem flex items-center justify-center gap-1 bg-white ${
                       isBlogActive ? 'active' : ''
                     }`}
@@ -419,7 +392,7 @@ function Header() {
                         isBlogActive ? `rotate-180` : ``
                       }`}
                     />
-                  </motion.li>
+                  </li>
                 </Link>
               </button>
               <ul>
@@ -432,14 +405,9 @@ function Header() {
                       type="button"
                     >
                       <Link href={`/blog/${category.slug}`}>
-                        <motion.li
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.2 }}
-                          className="mobileNavItem border-y border-gray-100 bg-white py-2 text-sm text-gray-500"
-                        >
+                        <li className="mobileNavItem border-y border-gray-100 bg-white py-2 text-sm text-gray-500">
                           {category.name}
-                        </motion.li>
+                        </li>
                       </Link>
                     </button>
                   ))}
@@ -452,14 +420,7 @@ function Header() {
               type="button"
             >
               <Link href="/businesses">
-                <motion.li
-                  initial={{ x: 200, opacity: 0.5 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                  className="mobileNavItem bg-white"
-                >
-                  Businesses
-                </motion.li>
+                <li className="mobileNavItem bg-white">Businesses</li>
               </Link>
             </button>
 
@@ -469,17 +430,10 @@ function Header() {
               type="button"
             >
               <Link href="/contact">
-                <motion.li
-                  initial={{ x: 200, opacity: 0.5 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ duration: 0.7 }}
-                  className="mobileNavItem bg-white"
-                >
-                  Contact
-                </motion.li>
+                <li className="mobileNavItem bg-white">Contact</li>
               </Link>
             </button>
-          </ul>
+          </motion.ul>
         )}
       </nav>
     </header>
