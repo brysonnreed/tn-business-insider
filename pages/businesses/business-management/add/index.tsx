@@ -53,6 +53,40 @@ export async function getServerSideProps({ req }) {
   const client = getClient()
 
   try {
+    const userEmail = session.user?.email
+    // Fetch the user document based on the email
+    let user = await client.fetch('*[_type == "users" && email == $email][0]', {
+      email: userEmail,
+    })
+
+    if (!user) {
+      // Make a POST request to your addUser API route
+      const baseUrl = req.headers.host
+      const url = `http://${baseUrl}/api/addUser`
+
+      await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          // Include any other relevant user information
+          name: session.user.name,
+          email: session.user.email,
+        }),
+      })
+      // After creating the user, fetch the updated user document
+      // This ensures that the user is now present in the database
+      const updatedUser = await client.fetch(
+        '*[_type == "users" && email == $email][0]',
+        {
+          email: userEmail,
+        }
+      )
+      // Set the user variable to the updated user
+      // Now you can access the businesses property safely
+      user = updatedUser
+    }
     const cities = await getAllCities(client)
     const categories = await getAllBusinessProfileCategories(client)
     const socials = await getSocialMedias(client)

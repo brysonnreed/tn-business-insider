@@ -74,7 +74,9 @@ function BusinessManagement({ businesses }) {
 export default BusinessManagement
 
 export async function getServerSideProps({ req }) {
+  console.log('req: ', { req })
   const session = await getSession({ req })
+  console.log('session: ', session)
 
   if (!session) {
     // If the session is not active, redirect to the login page
