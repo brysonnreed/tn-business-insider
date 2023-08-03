@@ -1,5 +1,4 @@
 import imageUrlBuilder from '@sanity/image-url'
-import axios from 'axios'
 import { createClient } from 'next-sanity'
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
