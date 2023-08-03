@@ -148,7 +148,7 @@ function Header() {
               aria-label="Open user dropdown menu"
               className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
             >
-              {/* <UserAvatar image={session?.user!.image} />{' '} */}
+              <UserAvatar image={session?.user!.image} />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
@@ -212,7 +212,7 @@ function Header() {
               aria-label="Open user dropdown menu"
               className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
             >
-              {/* <UserAvatar image={session?.user.image} />{' '} */}
+              <UserAvatar image={session?.user.image} />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
