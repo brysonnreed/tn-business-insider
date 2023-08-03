@@ -56,7 +56,6 @@ export const authOptions = {
     //   return Promise.resolve(true);
     // },
     async signIn(user, account, profile) {
-      console.log('User data from Google:', user)
       return true // Allow sign-in
     },
     // redirect: async (url, baseUrl) => {

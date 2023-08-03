@@ -6,7 +6,10 @@ import BusinessAccordian from 'components/User/BusinessAccordian'
 import ManageBusinessProfile from 'components/User/ManageBusinessProfile'
 import { getClient } from 'lib/sanity.client.cdn'
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
 import { getSession, useSession } from 'next-auth/react'
+
+import { authOptions } from '../../api/auth/[...nextauth]'
 
 function BusinessManagement({ businesses }) {
   return (
@@ -73,10 +76,8 @@ function BusinessManagement({ businesses }) {
 
 export default BusinessManagement
 
-export async function getServerSideProps({ req }) {
-  console.log('req: ', { req })
-  const session = await getSession({ req })
-  console.log('session: ', session)
+export async function getServerSideProps({ req, res }) {
+  const session = await getServerSession(req, res, authOptions)
 
   if (!session) {
     // If the session is not active, redirect to the login page

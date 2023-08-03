@@ -7,7 +7,10 @@ import {
   getSocialMedias,
 } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
+import { getServerSession } from 'next-auth'
 import { getSession, useSession } from 'next-auth/react'
+
+import { authOptions } from '../../../api/auth/[...nextauth]'
 
 const BusinessManagementAddForm = ({ cities, categories, socials }) => {
   return (
@@ -38,8 +41,8 @@ const BusinessManagementAddForm = ({ cities, categories, socials }) => {
 
 export default BusinessManagementAddForm
 
-export async function getServerSideProps({ req }) {
-  const session = await getSession({ req })
+export async function getServerSideProps({ req, res }) {
+  const session = await getServerSession(req, res, authOptions)
 
   if (!session) {
     // If the session is not active, redirect to the login page
