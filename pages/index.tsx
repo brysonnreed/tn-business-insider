@@ -31,6 +31,7 @@ interface Query {
 export default function Page(props: PageProps) {
   const { posts, settings, draftMode, categories } = props
   const { data: session } = useSession()
+  console.log(session)
   useEffect(() => {
     // When the session changes from "loading" to "authenticated",
     // it means the user just logged in successfully.

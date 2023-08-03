@@ -18,11 +18,9 @@ export const authOptions = {
     // Use JSON Web Tokens for session instead of database sessions.
     // This option can be used with or without a database for users/accounts.
     // Note: `jwt` is automatically set to `true` if no database is specified.
-    jwt: true,
-
+    // jwt: true,
     // Seconds - How long until an idle session expires and is no longer valid.
     // maxAge: 30 * 24 * 60 * 60, // 30 days
-
     // Seconds - Throttle how frequently to write to database to extend a session.
     // Use it to limit write operations. Set to 0 to always update the database.
     // Note: This option is ignored if using JSON Web Tokens
@@ -62,12 +60,28 @@ export const authOptions = {
     // signIn: async (user, account, profile) => {
     //   return Promise.resolve(true);
     // },
+    async signIn(user, account, profile) {
+      console.log('User data from Google:', user)
+      return true // Allow sign-in
+    },
     // redirect: async (url, baseUrl) => {
     //   return Promise.resolve(baseUrl);
     // },
     // session: async (session, user) => {
     //   return Promise.resolve(session);
     // },
+    async session(session, user) {
+      console.log('Session data:', session)
+      console.log('User data:', user)
+
+      if (user && user.id) {
+        session.user.id = user.id // Set the user's id in the session
+      } else {
+        console.log('User id is missing or undefined')
+      }
+
+      return session
+    },
     // jwt: async (token, user, account, profile, isNewUser) => {
     //   return Promise.resolve(token);
     // },

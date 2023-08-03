@@ -126,7 +126,6 @@ function Header() {
     }
   }
   const { data: session } = useSession()
-  console.log(session)
 
   return (
     <header className="sticky top-0 z-50 ">
@@ -145,10 +144,11 @@ function Header() {
           {session ? (
             <button
               onClick={toggleDropdown}
+              type="button"
               aria-label="Open user dropdown menu"
               className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
             >
-              <UserAvatar image={session?.user!.image} />{' '}
+              <UserAvatar image={session?.session.user!.image} />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
@@ -160,6 +160,7 @@ function Header() {
             </button>
           ) : (
             <button
+              type="button"
               onClick={toggleDropdown}
               aria-label="Open user dropdown menu"
               className=" focus:outline-none sm:hidden"
@@ -186,6 +187,7 @@ function Header() {
                 animate={{ opacity: 1 }}
                 className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-300 p-2 focus:outline-none"
                 onClick={() => setSearchQuery('')}
+                type="button"
               >
                 <FontAwesomeIcon
                   icon={faTimes}
@@ -209,10 +211,11 @@ function Header() {
           {session ? (
             <button
               onClick={toggleDropdown}
+              type="button"
               aria-label="Open user dropdown menu"
               className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
             >
-              <UserAvatar image={session?.user.image} />{' '}
+              <UserAvatar image={session?.session.user.image} />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
@@ -225,6 +228,7 @@ function Header() {
           ) : (
             <button
               onClick={toggleDropdown}
+              type="button"
               aria-label="Open user dropdown menu"
               className=" hidden items-center justify-center gap-2 focus:outline-none sm:flex"
             >
@@ -238,6 +242,7 @@ function Header() {
 
           <button
             onClick={handleNavButtonClick}
+            type="button"
             aria-label="Open the navigation"
             className={`hamburger  p-2 ${active === true ? 'active' : ''}`}
           >
@@ -319,7 +324,7 @@ function Header() {
             {session ? (
               <div>
                 <Link href={'/businesses/business-management'}>
-                  <button className="w-full border-y">
+                  <button className="w-full border-y" type="button">
                     <motion.li
                       initial={{ x: 200, opacity: 0.5 }}
                       animate={{ x: 0, opacity: 1 }}
@@ -330,7 +335,11 @@ function Header() {
                     </motion.li>
                   </button>
                 </Link>
-                <button onClick={() => signOut()} className="w-full border-y">
+                <button
+                  onClick={() => signOut()}
+                  className="w-full border-y"
+                  type="button"
+                >
                   <motion.li
                     initial={{ x: 200, opacity: 0.5 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -342,7 +351,11 @@ function Header() {
                 </button>
               </div>
             ) : (
-              <button className="w-full border-y" onClick={() => signIn()}>
+              <button
+                className="w-full border-y"
+                onClick={() => signIn()}
+                type="button"
+              >
                 <motion.li
                   initial={{ x: 200, opacity: 0.5 }}
                   animate={{ x: 0, opacity: 1 }}
@@ -364,6 +377,7 @@ function Header() {
             <button
               onClick={() => setActive(false)}
               className="w-full border-y"
+              type="button"
             >
               <Link href="/">
                 <motion.li
@@ -386,6 +400,7 @@ function Header() {
                   setIsBlogActive(!isBlogActive)
                   setActive(false)
                 }}
+                type="button"
                 className="w-full"
               >
                 <Link href="/blog">
@@ -414,6 +429,7 @@ function Header() {
                       onClick={() => [setActive(false), setIsBlogActive(false)]}
                       className="w-full"
                       key={category._id}
+                      type="button"
                     >
                       <Link href={`/blog/${category.slug}`}>
                         <motion.li
@@ -433,6 +449,7 @@ function Header() {
             <button
               onClick={() => setActive(false)}
               className="w-full border-y"
+              type="button"
             >
               <Link href="/businesses">
                 <motion.li
@@ -449,6 +466,7 @@ function Header() {
             <button
               onClick={() => setActive(false)}
               className="w-full border-b"
+              type="button"
             >
               <Link href="/contact">
                 <motion.li
