@@ -24,6 +24,7 @@ export default defineType({
       },
       validation: (rule) => rule.required(),
     }),
+    // Define the 'logo' field with image and URL fields
     defineField({
       name: 'logo',
       title: 'Logo',
@@ -66,6 +67,7 @@ export default defineType({
       description: 'List of services offered by the business',
     }),
 
+    // Define the 'images' field with array of images and array of URLs fields
     defineField({
       name: 'images',
       title: 'Images',
@@ -76,14 +78,6 @@ export default defineType({
           options: {
             hotspot: true,
           },
-          fields: [
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Alternative text',
-              description: 'Important for SEO and accessibility.',
-            },
-          ],
         },
       ],
       description: 'Images of the business',

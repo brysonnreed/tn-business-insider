@@ -61,7 +61,9 @@ const CategorySection: React.FC<CategorySectionProps> = ({
   }, [selectedCategory, setValue])
   return (
     <div className="relative w-full">
-      <label>Category</label>
+      <label>
+        Category <span className="text-lg font-semibold text-red-600">*</span>
+      </label>
       <div className="flex w-full flex-row justify-between gap-2 rounded-md border-b border-slate-400 bg-slate-100">
         <input
           type="text"
@@ -111,6 +113,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                   key={category._id}
                   onClick={() => handleSelectCategory(category.name)}
                   className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                  type="button"
                 >
                   {category.name}
                 </button>
@@ -120,6 +123,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                   key={index + 1}
                   onClick={() => handleSelectCategory(category.name)}
                   className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                  type="button"
                 >
                   {category.name}
                 </button>
@@ -129,6 +133,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
                 key={index + 1}
                 onClick={() => handleSelectCategory(category.name)}
                 className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                type="button"
               >
                 {category.name}
               </button>

@@ -73,7 +73,11 @@ const ImageGallerySection: React.FC<ImageGallerySectionProps> = ({
         >
           <div className="flex flex-col items-center justify-center gap-2 py-5 text-center">
             <p>Drag and drop your gallery images here or</p>
-            <button className="upload-button" onClick={onGalleryButtonClick}>
+            <button
+              className="upload-button"
+              onClick={onGalleryButtonClick}
+              type="button"
+            >
               Upload a file <FontAwesomeIcon icon={faArrowUpFromBracket} />
             </button>
           </div>

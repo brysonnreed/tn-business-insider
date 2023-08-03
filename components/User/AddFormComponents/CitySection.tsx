@@ -55,7 +55,9 @@ const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
   }, [selectedCity, setValue])
   return (
     <div className="relative w-full">
-      <label>City</label>
+      <label>
+        City <span className="text-lg font-semibold text-red-600">*</span>
+      </label>
       <div className="flex w-full flex-row justify-between gap-2 rounded-md border-b border-slate-400 bg-slate-100">
         <input
           type="text"
@@ -104,6 +106,7 @@ const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
                 key={city._id}
                 onClick={() => handleSelectCity(city.name)}
                 className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                type="button"
               >
                 {city.name}
               </button>
@@ -113,6 +116,7 @@ const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
                 key={index + 1}
                 onClick={() => handleSelectCity(city.name)}
                 className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                type="button"
               >
                 {city.name}
               </button>

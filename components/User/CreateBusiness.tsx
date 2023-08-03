@@ -1,7 +1,7 @@
 import { faCheckCircle, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { getClient } from 'lib/sanity.client'
-import { createClient } from 'next-sanity'
+import { uploadImageToSanity } from 'lib/uploadSanityImages'
+import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -16,9 +16,14 @@ import MapSection from './AddFormComponents/MapSection'
 import ServiceSection from './AddFormComponents/ServiceSection'
 import SocialMediaSection from './AddFormComponents/SocialMediaSection'
 
+type SocialMediaData = {
+  platform: string
+  url: string
+}
+
 type BusinessFormData = {
   name: string
-  logo: FileList
+  logo: File
   city: string
   description: string
   category: string
@@ -36,6 +41,7 @@ type BusinessFormData = {
     }
   }
   website: string
+  socialMedia: SocialMediaData[]
 }
 const daysOfWeek = [
   'Monday',
@@ -62,12 +68,7 @@ const generateTimes = (start, end) => {
   }
   return times
 }
-const sanityClient = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET,
-  token: process.env.SANITY_API_WEBHOOK_TOKEN,
-  useCdn: false, // `false` if you want to ensure fresh data
-})
+
 export default function CreateBusiness({ cities, categories, socials }) {
   const {
     register,
@@ -78,53 +79,65 @@ export default function CreateBusiness({ cities, categories, socials }) {
     formState: { errors },
   } = useForm<BusinessFormData>()
 
+  const { data: session } = useSession()
+
+  console.log(session)
+
   const [submitted, setSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const uploadImageToSanity = async (file) => {
-    const imageAsset = await sanityClient.assets.upload('image', file)
-    return imageAsset.url // Sanity should return a URL for the uploaded image
+
+  if (errors.name?.type === 'required') {
+    toast.error('Please enter a Business Name.')
+  } else if (errors.description?.type === 'required') {
+    toast.error('Please enter a Business Description.')
+  } else if (errors.address?.type === 'required') {
+    toast.error('Select a Business Address.')
   }
 
   const onSubmit: SubmitHandler<BusinessFormData> = async (data) => {
     console.log(data)
-    setIsLoading(true)
-
-    if (errors.name) {
-      toast.error('Business Name is required.')
-    } else if (errors.description) {
-      toast.error('Description is required.')
-    } else if (errors.address) {
-      toast.error('Address is required.')
+    if (!data.logo && !data.city && !data.category) {
+      toast.error('Make sure all required fields are filled.')
+    } else if (!data.logo) {
+      toast.error('Logo is required')
     } else if (!data.city) {
       toast.error('City is required.')
     } else if (!data.category) {
       toast.error('Category is required.')
     } else {
-      // Upload images to Sanity and get the URLs
-      const imagesUrls = await Promise.all(
-        Array.from(data.images).map(uploadImageToSanity)
-      )
-      const logoUrl = await uploadImageToSanity(data.logo[0])
+      try {
+        setIsLoading(true)
+        // Upload the logo and images to Sanity and get the URLs
+        const logoId = data.logo ? await uploadImageToSanity(data.logo) : null
+        const imageIds = data.images
+          ? await Promise.all(Array.from(data.images).map(uploadImageToSanity))
+          : []
 
-      // Send the data with image URLs to your Next.js API route
-      const newData = { ...data, images: imagesUrls, logo: logoUrl }
-      fetch('/api/handleBusinessCreation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newData),
-      })
-        .then(() => {
-          setSubmitted(true)
-          notifySuccess()
-          reset()
+        const formData = {
+          ...data,
+          logo: logoId,
+          images: imageIds,
+          user: session?.user.email,
+        }
+
+        const response = await fetch('/api/handleBusinessCreation', {
+          method: 'POST',
+          body: JSON.stringify(formData),
         })
-        .catch((err) => {
-          setSubmitted(false)
-          notifyError()
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
+
+        if (!response.ok) {
+          throw new Error('Failed to add Business')
+        }
+        setSubmitted(true)
+        notifySuccess()
+        reset()
+      } catch (error) {
+        setSubmitted(false)
+        notifyError()
+        console.log('Error uploading business: ', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
   useEffect(() => {
@@ -186,12 +199,16 @@ export default function CreateBusiness({ cities, categories, socials }) {
       {/* Business Name */}
       <label className="flex flex-col gap-5">
         <div className="flex flex-col">
-          <label>Business Name</label>
+          <label>
+            Business Name{' '}
+            <span className="text-lg font-semibold text-red-600">*</span>
+          </label>
           <input
             {...register('name', { required: true })}
             className="rounded-md border-b border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
             placeholder="Business Name"
             type="text"
+            aria-invalid={errors.name ? 'true' : 'false'}
           />
         </div>
       </label>
@@ -200,7 +217,10 @@ export default function CreateBusiness({ cities, categories, socials }) {
       {/* Description */}
       <label className="flex flex-col gap-5">
         <div className="flex flex-col">
-          <label>Business Description</label>
+          <label>
+            Business Description
+            <span className="text-lg font-semibold text-red-600"> *</span>
+          </label>
           <textarea
             {...register('description', { required: true })}
             aria-invalid={errors.description ? 'true' : 'false'}
@@ -208,8 +228,6 @@ export default function CreateBusiness({ cities, categories, socials }) {
             placeholder="Enter a description of your business"
             rows={8}
           />
-          {/* {errors.comment?.type === 'required' &&
-                  toast.error('Please enter a comment.')} */}
         </div>
       </label>
       <div className="flex w-full flex-col justify-between gap-5 sm:flex-row">
@@ -228,9 +246,13 @@ export default function CreateBusiness({ cities, categories, socials }) {
       <ImageGallerySection setValue={setValue} />
 
       {/* Social Media */}
-      <SocialMediaSection socials={socials} register={register} />
+      <SocialMediaSection
+        socials={socials}
+        register={register}
+        setValue={setValue}
+      />
       {/* Address */}
-      <MapSection register={register} setValue={setValue} />
+      <MapSection register={register} setValue={setValue} errors={errors} />
 
       {/* Business Hours */}
       <BusinessHoursSection

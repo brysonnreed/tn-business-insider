@@ -51,7 +51,10 @@ const LogoSection: React.FC<LogoSectionProps> = ({ setValue }) => {
   }
   return (
     <div>
-      <label>Business Logo</label>
+      <label>
+        Business Logo{' '}
+        <span className="text-lg font-semibold text-red-600">*</span>
+      </label>
       <div
         id="logo-section"
         onDragEnter={handleDrag}
@@ -84,7 +87,11 @@ const LogoSection: React.FC<LogoSectionProps> = ({ setValue }) => {
           >
             <div className="flex flex-col items-center justify-center gap-2 py-5 text-center">
               <p>Drag and drop your logo here or</p>
-              <button className="upload-button" onClick={onLogoButtonClick}>
+              <button
+                className="upload-button"
+                onClick={onLogoButtonClick}
+                type="button"
+              >
                 Upload a file <FontAwesomeIcon icon={faArrowUpFromBracket} />
               </button>
             </div>

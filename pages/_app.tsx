@@ -19,7 +19,7 @@ const PreviewProvider = lazy(
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps<SharedPageProps & { session: Session | null }>) {
+}: AppProps<SharedPageProps & { session: Session }>) {
   const { draftMode, token } = pageProps
 
   return (

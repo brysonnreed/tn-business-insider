@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-const MapSection = ({ register, setValue }) => {
+const MapSection = ({ register, setValue, errors }) => {
   const addressInputRef = useRef(null)
   const [placeName, setPlaceName] = useState('')
 
@@ -116,6 +116,7 @@ const MapSection = ({ register, setValue }) => {
         className="rounded-md border-b border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
         placeholder="Search for your business address"
         type="text"
+        aria-invalid={errors.address ? 'true' : 'false'}
       />
 
       {/* Map container */}

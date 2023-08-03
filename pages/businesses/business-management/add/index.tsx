@@ -7,6 +7,7 @@ import {
   getSocialMedias,
 } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
+import { useSession } from 'next-auth/react'
 
 const BusinessManagementAddForm = ({ cities, categories, socials }) => {
   return (

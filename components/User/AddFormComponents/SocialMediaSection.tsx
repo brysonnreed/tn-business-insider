@@ -6,19 +6,46 @@ import {
 } from '@fortawesome/free-brands-svg-icons'
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 type SocialMediaSectionProps = {
   socials: { _id: string; platform: string }[]
-  register: any // Change 'any' to the appropriate type for the register function
+  register: any
+  setValue: any
 }
 
 const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
   socials,
   register,
+  setValue,
 }) => {
   const [isAccordionOpen, setIsAccordionOpen] = useState(false)
   const contentRef = useRef(null)
+  const [socialMediaData, setSocialMediaData] = useState([])
+
+  // Function to handle updating socialMediaData
+  const handleSocialMediaChange = (platform: string, url: string) => {
+    // Find the index of the platform in the current socialMediaData array
+    const index = socialMediaData.findIndex(
+      (item) => item.platform === platform
+    )
+
+    if (index === -1) {
+      // If the platform is not found, add it to the socialMediaData array
+      setSocialMediaData((prevData) => [...prevData, { platform, url }])
+    } else {
+      // If the platform is found, update its URL
+      setSocialMediaData((prevData) => {
+        const newData = [...prevData]
+        newData[index].url = url
+        return newData
+      })
+    }
+  }
+
+  useEffect(() => {
+    setValue('socialMedia', socialMediaData)
+  }, [socialMediaData, setValue])
 
   const toggleAccordion = () => {
     setIsAccordionOpen((prevState) => !prevState)
@@ -99,6 +126,9 @@ const SocialMediaSection: React.FC<SocialMediaSectionProps> = ({
                     className="w-full rounded-md border-b border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
                     placeholder="Enter social media URL"
                     type="url"
+                    onChange={(e) => {
+                      handleSocialMediaChange(platform.platform, e.target.value) // Update socialMediaData
+                    }}
                   />
                 </div>
               )
