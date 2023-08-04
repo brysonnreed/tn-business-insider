@@ -45,7 +45,7 @@
   opacity: 80%;
 }
 .button_custom {
-  @apply flex w-full items-center justify-center gap-2 rounded border bg-white px-2 py-3 text-lg font-medium shadow-2xl hover:bg-gray-200;
+  @apply flex w-full items-center justify-center gap-2 rounded border bg-white px-2 py-3 text-sm font-medium shadow-2xl hover:bg-gray-200 xs:text-lg;
 }
 /* css keyframes */
 
@@ -63,5 +63,34 @@
   }
   100% {
     transform: translateX(-300%);
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .cloud1 {
+    width: 100px;
+    height: 40px;
+    transform: translateX(420%);
+  }
+  .cloud2 {
+    width: 90px;
+    height: 30px;
+    transform: translateX(420%);
+  }
+  @keyframes cloud1 {
+    0% {
+      transform: translateX(420%);
+    }
+    100% {
+      transform: translateX(-500%);
+    }
+  }
+  @keyframes cloud2 {
+    0% {
+      transform: translateX(420%);
+    }
+    100% {
+      transform: translateX(-500%);
+    }
   }
 }

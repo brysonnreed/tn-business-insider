@@ -9,11 +9,11 @@ export default async function addUser(
 ) {
   try {
     // Retrieve the user information from the request headers
-    const { name, email } = req.body
+    const { name, email, image } = req.body
 
     // Check if the user already exists in Sanity
     const existingUser = await client.fetch(
-      '*[_type == "users" && email == $email]',
+      '*[_type == "user" && email == $email]',
       {
         email: email,
       }
@@ -22,9 +22,10 @@ export default async function addUser(
     if (existingUser.length === 0) {
       // User does not exist, create a new user document in Sanity
       await client.create({
-        _type: 'users',
+        _type: 'user',
         name: name,
         email: email,
+        image: image,
         // Add any other relevant user information here
       })
     }

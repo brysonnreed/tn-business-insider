@@ -1,26 +1,26 @@
-import { faAt, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faAt,
+  faEye,
+  faEyeSlash,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Layout from 'layout/layout'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { getSession, signIn, signOut, useSession } from 'next-auth/react'
+import { signUp } from 'next-auth-sanity/client'
 import logo from 'public/images/logo.jpg'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
-import googleLogo from '../../public/images/Google__G__Logo.svg.png'
 import styles from '../../styles/Form.module.css'
 
-function Login() {
-  async function handleGoogleSignIn() {
-    signIn('google', { callbackUrl: '/' })
-  }
-  const [show, setShow] = useState(false)
+function Register() {
+  const [show, setShow] = useState({ password: false, cpassword: false })
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
-  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -29,45 +29,32 @@ function Login() {
     formState: { errors },
   } = useForm()
 
-  const submitHandler = (data) => {
-    console.log(data)
-    reset()
-  }
-
   const onSubmit = async (data) => {
     try {
-      console.log('Submitting form with data:', data)
-
-      // Call the NextAuth.js signIn method to handle authentication
-      const result = await signIn('sanity-login', {
-        email: data.email,
-        password: data.password,
-        redirect: false,
-        callbackUrl: '/',
+      // Call the API to create the user in Sanity
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
 
-      console.log('Result of signIn:', result)
-
-      // Check the result of the signIn method
-      if (result.ok) {
-        console.log('Successful sign-in!')
-        // Authentication succeeded, redirect to home page or any other page you want
-        router.push(result.url)
+      if (res.status === 200) {
+        reset()
+        window.location.href = '/login'
       } else {
-        console.error('Error during sign-in:', result.error)
-        toast.error('Invalid email or password')
+        toast.error('There was an error registering.')
       }
     } catch (error) {
-      // Handle any errors during form submission
-      console.error('Error during form submission:', error)
-      toast.error('An error occurred. Please try again.')
+      console.log(error)
     }
   }
 
   return (
     <Layout>
       <Head>
-        <title>Login | TNBusinessInsider</title>
+        <title>Register | TNBusinessInsider</title>
       </Head>
       <section className=" mx-auto flex w-3/4 flex-col">
         <div className="">
@@ -79,7 +66,7 @@ function Login() {
             className="mx-auto"
           />
           <h1 className="text-grey-700 pb-2 text-3xl font-semibold text-black xs:pb-4 xs:text-5xl">
-            Login
+            Register
           </h1>
           <p className="text-sm text-gray-700 xs:text-base">
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsum,
@@ -87,9 +74,27 @@ function Login() {
           </p>
         </div>
         <form
-          className="flex flex-col gap-5 py-5"
+          className="flex flex-col gap-3 py-5"
           onSubmit={handleSubmit(onSubmit)}
         >
+          <div>
+            <div
+              className={`${styles.input_group} ${
+                errors.name?.type === 'required' ? 'border-rose-600' : ''
+              }`}
+            >
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                className={styles.input_text}
+                {...register('name', { required: true })}
+              />
+              <span className="flex items-center px-3">
+                <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
+              </span>
+            </div>
+          </div>
           <div>
             <div
               className={`${styles.input_group} ${
@@ -107,6 +112,7 @@ function Login() {
                 <FontAwesomeIcon icon={faAt} className="h-4 w-4" />
               </span>
             </div>
+
             {errors.email?.type === 'pattern' && (
               <p className="text-red-500">
                 Please enter a valid email address.
@@ -120,7 +126,7 @@ function Login() {
               }`}
             >
               <input
-                type={show ? 'text' : 'password'}
+                type={show.password ? 'text' : 'password'}
                 name="password"
                 placeholder="Password"
                 className={styles.input_text}
@@ -128,40 +134,70 @@ function Login() {
               />
               <span
                 className="flex items-center px-3"
-                onClick={() => setShow(!show)}
+                onClick={() => setShow({ ...show, password: !show.password })}
               >
-                {show ? (
+                {show.password ? (
                   <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />
                 ) : (
                   <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
                 )}
               </span>
             </div>
+
+            {errors.password?.type === 'minLength' && (
+              <p className="text-red-500">
+                Password must be at least 10 characters long.
+              </p>
+            )}
           </div>
-          <div className=" border-gray-300 ">
-            <button type="submit" className={styles.button}>
-              Login
-            </button>
+          <div>
+            <div
+              className={`${styles.input_group} ${
+                errors.cpassword?.type === 'required' ? 'border-rose-600' : ''
+              }`}
+            >
+              <input
+                type={show.cpassword ? 'text' : 'password'}
+                name="cpassword"
+                placeholder="Confirm Password"
+                className={styles.input_text}
+                {...register('cpassword', {
+                  required: true,
+                  minLength: 10,
+                })}
+              />
+              <span
+                className="flex items-center px-3"
+                onClick={() => setShow({ ...show, cpassword: !show.cpassword })}
+              >
+                {show.cpassword ? (
+                  <FontAwesomeIcon icon={faEyeSlash} className="h-4 w-4" />
+                ) : (
+                  <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
+                )}
+              </span>
+            </div>
+
+            {errors.cpassword?.type === 'minLength' && (
+              <p className="text-red-500">
+                Password must be at least 10 characters long.
+              </p>
+            )}
           </div>
 
-          <div className="input-button">
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              className={`${styles.button_custom} text-sm`}
-            >
-              Sign In with Google
-              <Image src={googleLogo} alt="google logo" className="h-5 w-5" />
+          <div className=" border-gray-300 ">
+            <button type="submit" className={styles.button}>
+              Sign-up
             </button>
           </div>
         </form>
         <p className="text-gray-600">
-          Don&apos;t have an account yet?{' '}
+          Already have an account?{' '}
           <Link
-            href={`/register`}
+            href={`/login`}
             className="text-blue-700 transition-all duration-200 hover:underline"
           >
-            Sign up
+            Log in
           </Link>
         </p>
       </section>
@@ -169,7 +205,7 @@ function Login() {
   )
 }
 
-export default Login
+export default Register
 
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req })

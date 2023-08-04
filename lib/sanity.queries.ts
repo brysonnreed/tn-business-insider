@@ -199,9 +199,10 @@ export interface SocialMedia {
   url: string
 }
 
-export interface Users {
+export interface User {
   name: string
   email: string
+
   businesses: any[]
 }
 

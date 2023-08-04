@@ -1,5 +1,23 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
+import { SanityAdapter, SanityCredentials } from 'next-auth-sanity'
+import { createClient } from 'next-sanity'
+
+import { addUser } from '../addUser'
+
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION
+const token = process.env.SANITY_API_WEBHOOK_TOKEN
+
+const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: false,
+  token,
+})
+
 export const authOptions = {
   // Configure one or more authentication providers
   providers: [
@@ -7,34 +25,12 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+    SanityCredentials(client),
   ],
-  secret: process.env.SECRET,
   session: {
-    // Use JSON Web Tokens for session instead of database sessions.
-    // This option can be used with or without a database for users/accounts.
-    // Note: `jwt` is automatically set to `true` if no database is specified.
-    // jwt: true,
-    // Seconds - How long until an idle session expires and is no longer valid.
-    // maxAge: 30 * 24 * 60 * 60, // 30 days
-    // Seconds - Throttle how frequently to write to database to extend a session.
-    // Use it to limit write operations. Set to 0 to always update the database.
-    // Note: This option is ignored if using JSON Web Tokens
-    // updateAge: 24 * 60 * 60, // 24 hours
+    strategy: 'jwt',
   },
-
-  // JSON Web tokens are only used for sessions if the `jwt: true` session
-  // option is set - or by default if no database is specified.
-  // https://next-auth.js.org/configuration/options#jwt
-  // jwt: {
-  // A secret to use for key generation (you should set this explicitly)
-  // secret: 'INp8IvdIyeMcoGAgFGoA61DdBglwwSqnXJZkgz8PSnw',
-  // Set to true to use encryption (default: false)
-  // encryption: true,
-  // You can define your own encode/decode functions for signing and encryption
-  // if you want to override the default behaviour.
-  // encode: async ({ secret, token, maxAge }) => {},
-  // decode: async ({ secret, token, maxAge }) => {},
-  // },
+  secret: process.env.SECRET,
 
   // You can define custom pages to override the built-in pages.
   // The routes shown here are the default URLs that will be used when a custom
@@ -55,14 +51,57 @@ export const authOptions = {
     // signIn: async (user, account, profile) => {
     //   return Promise.resolve(true);
     // },
+    // async signIn(user, account, profile) {
+    //   console.log('user: ', user)
+
+    //   return true // Allow sign-in
+    // },
     async signIn(user, account, profile) {
+      console.log(user)
+      console.log(user.user.email)
+      console.log('user.user: ', user.user)
+
+      // Check if the user is signing in with Google
+      if (user.account.provider === 'google') {
+        // Check if the user's email exists in your Sanity database
+        const existingUser = await client.fetch(
+          '*[_type == "user" && email == $email]',
+          {
+            email: user.user.email,
+          }
+        )
+
+        // If the user doesn't exist, create a new user in your Sanity database
+        if (!existingUser || existingUser.length === 0) {
+          // Use process.env.NEXTAUTH_URL to construct the absolute URL for your API
+          const addUserEndpoint = `${process.env.NEXTAUTH_URL}/api/addUser`
+          try {
+            await fetch(addUserEndpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                // Include any other relevant user information
+                name: user.user.name,
+                email: user.user.email,
+                image: user.user.image,
+              }),
+            })
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+
       return true // Allow sign-in
     },
     // redirect: async (url, baseUrl) => {
     //   return Promise.resolve(baseUrl);
     // },
-    // session: async (session, user) => {
-    //   return Promise.resolve(session);
+    // async session(session, user) {
+    //   session.user = user // Set the user object in the session
+    //   return session
     // },
     // async session(session, user) {
     //   console.log('Session data:', session)
@@ -81,7 +120,7 @@ export const authOptions = {
     // },
     // async jwt(token, user) {
     //   if (user) {
-    //     token.id = user.id
+    //     token.id = user.id // Set the user's id in the token
     //   }
     //   return token
     // },

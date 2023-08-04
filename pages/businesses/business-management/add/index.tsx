@@ -58,7 +58,7 @@ export async function getServerSideProps({ req, res }) {
   try {
     const userEmail = session.user?.email
     // Fetch the user document based on the email
-    let user = await client.fetch('*[_type == "users" && email == $email][0]', {
+    let user = await client.fetch('*[_type == "user" && email == $email][0]', {
       email: userEmail,
     })
 
@@ -81,7 +81,7 @@ export async function getServerSideProps({ req, res }) {
       // After creating the user, fetch the updated user document
       // This ensures that the user is now present in the database
       const updatedUser = await client.fetch(
-        '*[_type == "users" && email == $email][0]',
+        '*[_type == "user" && email == $email][0]',
         {
           email: userEmail,
         }
