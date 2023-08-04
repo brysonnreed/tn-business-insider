@@ -43,6 +43,7 @@ export default BusinessManagementAddForm
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions)
+  // const session = await getSession({ req })
 
   if (!session) {
     // If the session is not active, redirect to the login page
@@ -76,6 +77,7 @@ export async function getServerSideProps({ req, res }) {
           // Include any other relevant user information
           name: session.user.name,
           email: session.user.email,
+          image: session.user.image,
         }),
       })
       // After creating the user, fetch the updated user document

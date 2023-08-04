@@ -3,6 +3,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import { SanityAdapter, SanityCredentials } from 'next-auth-sanity'
 import { createClient } from 'next-sanity'
 
+import { handleSignIn } from '../../../lib/authUtils'
 import { addUser } from '../addUser'
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -27,9 +28,9 @@ export const authOptions = {
     }),
     SanityCredentials(client),
   ],
-  session: {
-    strategy: 'jwt',
-  },
+  // session: {
+  //   strategy: 'jwt',
+  // },
   secret: process.env.SECRET,
 
   // You can define custom pages to override the built-in pages.
@@ -57,42 +58,7 @@ export const authOptions = {
     //   return true // Allow sign-in
     // },
     async signIn(user, account, profile) {
-      console.log(user)
-      console.log(user.user.email)
-      console.log('user.user: ', user.user)
-
-      // Check if the user is signing in with Google
-      if (user.account.provider === 'google') {
-        // Check if the user's email exists in your Sanity database
-        const existingUser = await client.fetch(
-          '*[_type == "user" && email == $email]',
-          {
-            email: user.user.email,
-          }
-        )
-
-        // If the user doesn't exist, create a new user in your Sanity database
-        if (!existingUser || existingUser.length === 0) {
-          // Use process.env.NEXTAUTH_URL to construct the absolute URL for your API
-          const addUserEndpoint = `${process.env.NEXTAUTH_URL}/api/addUser`
-          try {
-            await fetch(addUserEndpoint, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                // Include any other relevant user information
-                name: user.user.name,
-                email: user.user.email,
-                image: user.user.image,
-              }),
-            })
-          } catch (error) {
-            console.error(error)
-          }
-        }
-      }
+      handleSignIn(user)
 
       return true // Allow sign-in
     },
