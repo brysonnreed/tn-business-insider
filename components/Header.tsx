@@ -150,7 +150,7 @@ function Header() {
               className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
             >
               <UserAvatar
-                image={session?.user ? session.user.image : BlankUser}
+                image={session?.user.image ? session.user.image : BlankUser}
               />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
@@ -219,7 +219,7 @@ function Header() {
               className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
             >
               <UserAvatar
-                image={session?.user ? session.user.image : BlankUser}
+                image={session?.user.image ? session.user.image : BlankUser}
               />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
