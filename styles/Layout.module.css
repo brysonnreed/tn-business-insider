@@ -94,3 +94,33 @@
     }
   }
 }
+@media screen and (min-width: 1920px) {
+  .cloud1 {
+    width: 190px;
+    height: 90px;
+    transform: translateX(420%);
+    animation: cloud1 50.5s ease-in 0s infinite;
+  }
+  .cloud2 {
+    width: 180px;
+    height: 80px;
+    transform: translateX(420%);
+    animation: cloud1 55.5s ease-in 0s infinite;
+  }
+  @keyframes cloud1 {
+    0% {
+      transform: translateX(420%);
+    }
+    100% {
+      transform: translateX(-500%);
+    }
+  }
+  @keyframes cloud2 {
+    0% {
+      transform: translateX(420%);
+    }
+    100% {
+      transform: translateX(-500%);
+    }
+  }
+}

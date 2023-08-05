@@ -19,7 +19,7 @@ export default defineType({
     defineField({
       name: 'password',
       type: 'string',
-      // hidden: true,
+      hidden: true,
     }),
     defineField({
       name: 'businesses',
@@ -32,6 +32,18 @@ export default defineType({
       title: 'Admin',
       type: 'boolean',
       initialValue: false,
+    }),
+    defineField({
+      name: 'verificationToken',
+      title: 'Verification Token',
+      type: 'string',
+      // hidden: true, // Hide the field in the CMS
+    }),
+    defineField({
+      name: 'emailVerified',
+      title: 'Email Verified',
+      type: 'boolean',
+      initialValue: false, // Set the initial value to false
     }),
   ],
 })

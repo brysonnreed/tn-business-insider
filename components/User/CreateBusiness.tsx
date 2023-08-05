@@ -81,8 +81,6 @@ export default function CreateBusiness({ cities, categories, socials }) {
 
   const { data: session } = useSession()
 
-  console.log(session)
-
   const [submitted, setSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 

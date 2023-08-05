@@ -5,7 +5,9 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { getServerSession } from 'next-auth'
 import { getSession, signIn, signOut, useSession } from 'next-auth/react'
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 import logo from 'public/images/logo.jpg'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -29,15 +31,8 @@ function Login() {
     formState: { errors },
   } = useForm()
 
-  const submitHandler = (data) => {
-    console.log(data)
-    reset()
-  }
-
   const onSubmit = async (data) => {
     try {
-      console.log('Submitting form with data:', data)
-
       // Call the NextAuth.js signIn method to handle authentication
       const result = await signIn('sanity-login', {
         email: data.email,
@@ -46,11 +41,8 @@ function Login() {
         callbackUrl: '/',
       })
 
-      console.log('Result of signIn:', result)
-
       // Check the result of the signIn method
       if (result.ok) {
-        console.log('Successful sign-in!')
         // Authentication succeeded, redirect to home page or any other page you want
         router.push(result.url)
       } else {
@@ -71,19 +63,20 @@ function Login() {
       </Head>
       <section className=" mx-auto flex w-3/4 flex-col">
         <div className="">
-          <Image
-            src={logo}
-            width={250}
-            height={250}
-            alt="TNBusinessInsider Logo"
-            className="mx-auto"
-          />
-          <h1 className="text-grey-700 pb-2 text-3xl font-semibold text-black xs:pb-4 xs:text-5xl">
+          <Link href={'/'}>
+            <Image
+              src={logo}
+              width={250}
+              height={250}
+              alt="TNBusinessInsider Logo"
+              className="mx-auto "
+            />
+          </Link>
+          <h1 className="text-grey-700 pb-2 text-3xl font-semibold text-gray-700 xs:pb-4 xs:text-4xl">
             Login
           </h1>
           <p className="text-sm text-gray-700 xs:text-base">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsum,
-            porro odit.{' '}
+            Welcome back, please login to your account.
           </p>
         </div>
         <form
@@ -171,8 +164,8 @@ function Login() {
 
 export default Login
 
-export async function getServerSideProps({ req }) {
-  const session = await getSession({ req })
+export async function getServerSideProps({ req, res }) {
+  const session = await getServerSession(req, res, authOptions)
 
   if (session) {
     return {

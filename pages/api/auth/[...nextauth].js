@@ -1,10 +1,9 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { SanityAdapter, SanityCredentials } from 'next-auth-sanity'
+import { SanityCredentials } from 'next-auth-sanity'
 import { createClient } from 'next-sanity'
 
 import { handleSignIn } from '../../../lib/authUtils'
-import { addUser } from '../addUser'
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -49,47 +48,11 @@ export const authOptions = {
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    // signIn: async (user, account, profile) => {
-    //   return Promise.resolve(true);
-    // },
-    // async signIn(user, account, profile) {
-    //   console.log('user: ', user)
-
-    //   return true // Allow sign-in
-    // },
     async signIn(user, account, profile) {
       handleSignIn(user)
 
       return true // Allow sign-in
     },
-    // redirect: async (url, baseUrl) => {
-    //   return Promise.resolve(baseUrl);
-    // },
-    // async session(session, user) {
-    //   session.user = user // Set the user object in the session
-    //   return session
-    // },
-    // async session(session, user) {
-    //   console.log('Session data:', session)
-    //   console.log('User data:', user)
-
-    //   if (user && user.id) {
-    //     session.user.id = user.id // Set the user's id in the session
-    //   } else {
-    //     console.log('User id is missing or undefined')
-    //   }
-
-    //   return session
-    // },
-    // jwt: async (token, user, account, profile, isNewUser) => {
-    //   return Promise.resolve(token);
-    // },
-    // async jwt(token, user) {
-    //   if (user) {
-    //     token.id = user.id // Set the user's id in the token
-    //   }
-    //   return token
-    // },
   },
 }
 

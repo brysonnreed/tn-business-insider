@@ -1,5 +1,5 @@
 .input_group {
-  @apply flex rounded-xl border;
+  @apply flex rounded-xl border shadow-xl;
   position: relative;
 }
 
