@@ -3,10 +3,10 @@ import {
   faAt,
   faEye,
   faEyeSlash,
-  faKey,
   faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { format, isAfter } from 'date-fns'
 import Layout from 'layout/layout'
 import { getClient } from 'lib/sanity.client.cdn'
 import Head from 'next/head'
@@ -16,22 +16,34 @@ import { useRouter } from 'next/router'
 import { getSession } from 'next-auth/react'
 import logo from 'public/images/logo.jpg'
 import React, { useState } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
-import styles from '../../styles/Form.module.css'
+import styles from '../../../styles/Form.module.css'
 
-function Register() {
+export default function ResetPassword() {
+  const router = useRouter()
   const [show, setShow] = useState({ password: false, cpassword: false })
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
-  const [verificationCode, setVerificationCode] = useState('')
-  const [showForm, setShowForm] = useState(true)
-  const [codeSent, setCodeSent] = useState(false)
 
-  const siteKey = process.env.GOOGLE_CAPTCHA_SITE_KEY
+  const { query } = router
 
-  const router = useRouter()
+  // Function to extract the email and token from the query parameters
+  const getEmailAndTokenFromQuery = () => {
+    const { email, token } = query
+    return { email, token }
+  }
+
+  const { email, token } = getEmailAndTokenFromQuery()
+
+  // Function to check if the email and token exist in the query parameters
+  const hasEmailAndTokenInQuery = () => {
+    const { email, token } = query
+    return email !== undefined && token !== undefined
+  }
+
+  // Set the initial state of showForm based on the presence of email and token in the query
+  const [showForm, setShowForm] = useState(!hasEmailAndTokenInQuery())
 
   const {
     register,
@@ -43,13 +55,9 @@ function Register() {
 
   const onSubmit = async (data) => {
     try {
-      // Check if passwords match
-      if (data.password !== data.cpassword) {
-        toast.error('Passwords do not match.')
-        return
-      }
-
       // Check if email exists in Sanity
+      console.log(data.email)
+
       const client = getClient()
       const existingUser = await client.fetch(
         '*[_type == "user" && email == $email]',
@@ -58,22 +66,17 @@ function Register() {
         }
       )
 
-      if (existingUser.length > 0) {
-        toast.error('Email already in use.')
+      if (existingUser.length === 0) {
+        reset()
+        toast.error(`Email account doesn't exist.`)
         return
       }
-      // Generate the verification code
-      const generatedVerificationCode = Math.floor(
-        100000 + Math.random() * 900000
-      ).toString()
-      setVerificationCode(generatedVerificationCode)
 
       // Send the verification code to the user's email
-      const sendCodeRes = await fetch('/api/auth/sendVerificationCode', {
+      const sendCodeRes = await fetch('/api/auth/sendPasswordReset', {
         method: 'POST',
         body: JSON.stringify({
           email: data.email,
-          verificationCode: generatedVerificationCode,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -82,71 +85,69 @@ function Register() {
 
       if (sendCodeRes.status === 200) {
         // Show the verification code input and hide the registration form
-        setShowForm(false)
-        // Add the query parameter to the URL
-        router.push({
-          pathname: router.pathname,
-          query: { 'verify-email': true },
-        })
-        toast.success('Verification code sent.')
+        reset()
+        toast.success('Email sent!')
       } else {
-        toast.error('There was an error sending the verification code.')
+        toast.error('There was an error sending the email.')
       }
     } catch (error) {
       console.log(error)
     }
   }
 
-  const onSubmitVerification = async (data) => {
+  const onSubmitPasswordReset = async (data) => {
     try {
-      if (data.code == verificationCode) {
-        // If the verification code is valid, create the user
-        const createUserRes = await fetch('/api/auth/register', {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+      if (data.password !== data.cpassword) {
+        toast.error('Passwords do not match.')
+        return
+      }
 
-        if (createUserRes.status === 200) {
-          reset()
-          window.location.href = '/login'
-        } else {
-          toast.error('There was an error registering.')
+      // Check if the user exists in the database
+      const client = getClient()
+      const existingUser = await client.fetch(
+        '*[_type == "user" && email == $email]',
+        {
+          email: email,
         }
-      } else {
-        toast.error('Invalid verification code.')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-  const handleResendCode = async () => {
-    try {
-      // Generate the verification code
-      const generatedVerificationCode = Math.floor(
-        100000 + Math.random() * 900000
-      ).toString()
-      setVerificationCode(generatedVerificationCode)
+      )
 
-      // Send the new verification code to the user's email
-      const sendCodeRes = await fetch('/api/auth/sendVerificationCode', {
+      if (existingUser.length === 0) {
+        toast.error('User not found')
+        router.push('/register')
+        return
+      }
+
+      // Check if the provided token matches the user's resetToken
+      const user = existingUser[0]
+      if (!user.resetToken || user.resetToken !== token) {
+        toast.error('Invalid Token. Please retry')
+        return
+      }
+
+      // Check if the resetToken has expired
+      if (
+        !user.resetTokenExpiresAt ||
+        isAfter(new Date(), new Date(user.resetTokenExpiresAt))
+      ) {
+        toast.error('Token has expired. Use the reset link to try again.')
+        return
+      }
+
+      data.email = email
+
+      const res = await fetch('/api/auth/updatePassword', {
         method: 'POST',
-        body: JSON.stringify({
-          email: watch('email'), // Use the email entered by the user
-          verificationCode: generatedVerificationCode,
-        }),
+        body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
         },
       })
 
-      if (sendCodeRes.status === 200) {
-        toast.success('Verification code sent.')
-        setCodeSent(true)
+      if (res.status === 200) {
+        reset()
+        window.location.href = '/login'
       } else {
-        toast.error('There was an error sending the verification code.')
+        toast.error('There was an error your resetting password.')
       }
     } catch (error) {
       console.log(error)
@@ -156,7 +157,7 @@ function Register() {
   return (
     <Layout>
       <Head>
-        <title>Register | TNBusinessInsider</title>
+        <title>Reset Password | TNBusinessInsider</title>
       </Head>
       <section className=" mx-auto flex w-3/4 flex-col">
         <div className="">
@@ -170,32 +171,12 @@ function Register() {
             />
           </Link>
           <h1 className="text-grey-700 pb-2 text-3xl font-semibold text-gray-700 xs:pb-4 xs:text-4xl">
-            {showForm ? 'Register' : 'Verify your email'}
+            Reset your password
           </h1>
           <p className="text-sm text-gray-700 xs:text-base">
-            {showForm ? (
-              <>
-                By clicking sign-up, you agree to our{' '}
-                <Link
-                  href="/terms-of-service"
-                  className="text-ellipsis text-blue-500 underline"
-                  target="_blank"
-                >
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link
-                  href="/privacy-policy"
-                  className="text-ellipsis text-blue-500 underline"
-                  target="_blank"
-                >
-                  Privacy Policy
-                </Link>
-                .
-              </>
-            ) : (
-              'Before we can create your account, you must verify your email. Please check your email for a verification code.'
-            )}
+            {showForm
+              ? 'Enter the email address of the account you would like to reset the pssword for. We will send you an email with instructions to reset the password'
+              : `Create a new password for your account. Password must be longer than 10 charcters.`}
           </p>
         </div>
         <form
@@ -203,29 +184,11 @@ function Register() {
           onSubmit={
             showForm
               ? handleSubmit(onSubmit)
-              : handleSubmit(onSubmitVerification)
+              : handleSubmit(onSubmitPasswordReset)
           }
         >
           {showForm ? (
             <div className="flex flex-col gap-3">
-              <div className="">
-                <div
-                  className={`${styles.input_group} ${
-                    errors.name?.type === 'required' ? 'border-rose-600' : ''
-                  }`}
-                >
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    className={styles.input_text}
-                    {...register('name', { required: true })}
-                  />
-                  <span className="flex items-center px-3">
-                    <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
-                  </span>
-                </div>
-              </div>
               <div>
                 <div
                   className={`${styles.input_group} ${
@@ -252,6 +215,16 @@ function Register() {
                     Please enter a valid email address.
                   </p>
                 )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-2 overflow-hidden rounded border border-gray-300 bg-slate-200 px-4 text-left">
+                <p className="py-2 xs:text-lg ">{email}</p>
+                <FontAwesomeIcon
+                  icon={faUser}
+                  className="h-4 w-4 text-gray-400"
+                />
               </div>
               <div>
                 <div
@@ -326,57 +299,12 @@ function Register() {
                   </p>
                 )}
               </div>
-              {/* <ReCAPTCHA
-                sitekey="6LfRhYEnAAAAAD0zEny1JJ2KTn1GPDqYtfPRzWtg"
-                onChange={(value) => {
-                  console.log('Captcha value:', value)
-                }}
-              /> */}
-            </div>
-          ) : (
-            // Display the verification code input
-            <div>
-              <div
-                className={`${styles.input_group} ${
-                  errors.code?.type === 'required' ? 'border-rose-600' : ''
-                }`}
-              >
-                <input
-                  type="text"
-                  name="verificationCode"
-                  placeholder="Enter Verification Code"
-                  className={styles.input_text}
-                  {...register('code', {
-                    required: true,
-                    minLength: 6,
-                  })}
-                  maxLength={6}
-                />
-                <span className=" flex items-center px-3">
-                  <FontAwesomeIcon icon={faKey} className="h-4 w-4" />
-                </span>
-              </div>
-              {errors.code?.type === 'minLength' && (
-                <p className="text-red-500">
-                  Verification code must 6 characters long.
-                </p>
-              )}
-              <div className="mt-2 flex flex-wrap items-center justify-center gap-1">
-                <p className="text-gray-400">Don&apos;t see the email? </p>
-                <button
-                  type="button"
-                  onClick={handleResendCode}
-                  className=" text-blue-400 hover:underline"
-                >
-                  Resend the Verification Code
-                </button>
-              </div>
             </div>
           )}
 
           <div className=" border-gray-300 ">
             <button type="submit" className={styles.button}>
-              {showForm ? 'Sign-up' : 'Verify Email'}{' '}
+              {showForm ? 'Send' : 'Reset Password'}{' '}
               <FontAwesomeIcon icon={faArrowRight} />
             </button>
           </div>
@@ -394,8 +322,6 @@ function Register() {
     </Layout>
   )
 }
-
-export default Register
 
 export async function getServerSideProps({ req }) {
   const session = await getSession({ req })

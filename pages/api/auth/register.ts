@@ -1,4 +1,3 @@
-// pages/api/auth/register.ts
 import { hash } from 'argon2'
 import { getClient } from 'lib/sanity.client.cdn'
 import { NextApiHandler } from 'next'

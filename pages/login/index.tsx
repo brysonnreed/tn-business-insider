@@ -76,7 +76,13 @@ function Login() {
             Login
           </h1>
           <p className="text-sm text-gray-700 xs:text-base">
-            Welcome back, please login to your account.
+            Welcome back, please login to your account. Forgot your password?{' '}
+            <Link
+              href={'/login/reset-password'}
+              className="text-blue-700 transition-all duration-200 hover:underline"
+            >
+              Reset your password
+            </Link>
           </p>
         </div>
         <form

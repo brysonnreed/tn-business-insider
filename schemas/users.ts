@@ -34,16 +34,16 @@ export default defineType({
       initialValue: false,
     }),
     defineField({
-      name: 'verificationToken',
-      title: 'Verification Token',
+      name: 'resetToken',
       type: 'string',
-      // hidden: true, // Hide the field in the CMS
+      title: 'Password Reset Token',
+      description: 'Token sent to user for password reset',
     }),
     defineField({
-      name: 'emailVerified',
-      title: 'Email Verified',
-      type: 'boolean',
-      initialValue: false, // Set the initial value to false
+      name: 'resetTokenExpiresAt',
+      type: 'datetime',
+      title: 'Token Expiration Date',
+      description: 'Date and time when the reset token expires',
     }),
   ],
 })

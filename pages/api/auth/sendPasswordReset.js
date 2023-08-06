@@ -1,10 +1,12 @@
+import { addHours, format } from 'date-fns'
+import { getClient } from 'lib/sanity.client.cdn'
 import { createTransport } from 'nodemailer'
+import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
-  const { email, verificationCode } = req.body
 
   // Use your mailer settings here
   const transporter = createTransport({
@@ -18,12 +20,47 @@ export default async function handler(req, res) {
     },
   })
 
+  const { email } = req.body
+
   try {
-    // Send the verification email
+    const resetToken = uuidv4()
+
+    const client = getClient()
+    const existingUser = await client.fetch(
+      '*[_type == "user" && email == $email]',
+      {
+        email: email,
+      }
+    )
+
+    if (existingUser.length === 0) {
+      // If the user doesn't exist, return an error
+      return res.status(404).json({ error: 'User not found' })
+    }
+
+    const expirationDate = addHours(new Date(), 8)
+
+    await client
+      .patch(existingUser[0]._id)
+      .set({
+        resetToken: resetToken,
+        resetTokenExpiresAt: format(
+          expirationDate,
+          "yyyy-MM-dd'T'HH:mm:ss.SSSxxx"
+        ), // Format the date as an ISO string
+      })
+      .commit()
+
+    const currentDomain = req.headers.host
+
+    const resetLink = `https://${currentDomain}/login/reset-password?email=${encodeURIComponent(
+      email
+    )}&token=${encodeURIComponent(resetToken)}`
+
     const info = await transporter.sendMail({
       from: '"TNBusinessInsider" <verify@tnbusinessinsider.com>',
       to: email,
-      subject: 'Verify Your Email',
+      subject: 'Reset your password',
       html: `<html>
 <head>
 
@@ -126,7 +163,7 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
   <!-- start preheader -->
   <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
-    Before we can create an account for you, we need to verify your email address.
+    Follow these instructions to reset your account password.
   </div>
   <!-- end preheader -->
 
@@ -170,7 +207,7 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px;">
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;">
-              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Verify Your Email Address</h1>
+              <h1 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -1px; line-height: 48px;">Reset your password</h1>
             </td>
           </tr>
         </table>
@@ -196,7 +233,7 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
           <!-- start copy -->
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
-              <p style="margin: 0;">Before we can create your account, we need to verify this email address. Listed below is your verifcation code. If you didn't create an account with <a href="https://tnbusinessinsider.com">TNBusinessInsider</a>, you can safely delete this email.</p>
+              <p style="margin: 0;">Please click the button below or use the link below to update your account password. If you don't have a account with <a href="https://tnbusinessinsider.com">TNBusinessInsider</a>, you can safely delete this email.</p>
             </td>
           </tr>
           <!-- end copy -->
@@ -210,7 +247,7 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
                     <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
                         <td align="center" bgcolor="ED8936" style="border-radius: 6px;" class='shadow'>
-                          <p style="display: inline-block; padding: 0px 32px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 24px; color: #ffffff; text-decoration: none; border-radius: 6px;">${verificationCode}</p>
+                          <a href=${resetLink} style="display: inline-block; padding: 10px 32px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 24px; color: #ffffff; text-decoration: none; border-radius: 6px;">Reset Password</a>
                         </td>
                       </tr>
                     </table>
@@ -225,7 +262,7 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
           <tr>
             <td align="left" bgcolor="#ffffff" style="padding: 24px; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 24px;">
               <p style="margin: 0;">If that doesn't work, copy and paste the following link in your browser and try again:</p>
-              <p style="margin: 0;"><a href="https://tnbusinessinsider.com" target="_blank">https://tnbusinessinsider.com/register</a></p>
+              <p style="margin: 0;"><a href=${resetLink} target="_blank">${resetLink}</a></p>
             </td>
           </tr>
           <!-- end copy -->
@@ -256,14 +293,11 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 </html>`,
     })
 
-    // You can save the verification code in a database or session to check later
-    // For simplicity, we're not saving it here.
-
     return res
       .status(200)
-      .json({ message: 'Verification code sent successfully' })
+      .json({ message: 'Password reset email sent successfully' })
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ error: 'Error sending verification code' })
+    return res.status(500).json({ error: 'Error sending password reset email' })
   }
 }
