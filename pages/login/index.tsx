@@ -10,7 +10,7 @@ import { getServerSession } from 'next-auth'
 import { signIn } from 'next-auth/react'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import logo from 'public/images/logo.jpg'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
@@ -56,6 +56,13 @@ function Login() {
       toast.error('An error occurred. Please try again.')
     }
   }
+
+  useEffect(() => {
+    // Check if the 'success' query parameter is present in the URL
+    if (router.query.success === 'true') {
+      toast.success('Account added successfully')
+    }
+  }, [router.query.success])
 
   return (
     <Layout>

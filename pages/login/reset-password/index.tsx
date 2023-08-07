@@ -46,11 +46,7 @@ export default function ResetPassword() {
     const { email, token } = query
     return { email, token }
   }
-
   const { email, token } = getEmailAndTokenFromQuery()
-
-  console.log(email)
-  console.log(token)
 
   // Function to check if the email and token exist in the query parameters
   const hasEmailAndTokenInQuery = () => {

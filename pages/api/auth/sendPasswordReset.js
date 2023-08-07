@@ -312,7 +312,6 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
           console.log(error)
           reject(error)
         } else {
-          console.log('Server is ready to take our messages')
           resolve(success)
         }
       })
@@ -325,7 +324,6 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
           console.error(err)
           reject(err)
         } else {
-          console.log(info)
           resolve(info)
         }
       })

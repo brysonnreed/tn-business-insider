@@ -112,7 +112,10 @@ function Register() {
 
         if (createUserRes.status === 200) {
           reset()
-          window.location.href = '/login'
+          router.push({
+            pathname: '/login',
+            query: { 'verify-email': true, success: true },
+          })
         } else {
           toast.error('There was an error registering.')
         }
