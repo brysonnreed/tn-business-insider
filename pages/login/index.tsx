@@ -1,12 +1,13 @@
 import { faAt, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { motion } from 'framer-motion'
 import Layout from 'layout/layout'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
-import { getSession, signIn, signOut, useSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import logo from 'public/images/logo.jpg'
 import React, { useState } from 'react'
@@ -138,20 +139,27 @@ function Login() {
             </div>
           </div>
           <div className=" border-gray-300 ">
-            <button type="submit" className={styles.button}>
+            <motion.button
+              whileHover={{ scale: 1.025 }}
+              whileTap={{ scale: 0.975 }}
+              type="submit"
+              className={styles.button}
+            >
               Login
-            </button>
+            </motion.button>
           </div>
 
           <div className="input-button">
-            <button
+            <motion.button
+              whileHover={{ scale: 1.025 }}
+              whileTap={{ scale: 0.975 }}
               type="button"
               onClick={handleGoogleSignIn}
               className={`${styles.button_custom} text-sm`}
             >
               Sign In with Google
               <Image src={googleLogo} alt="google logo" className="h-5 w-5" />
-            </button>
+            </motion.button>
           </div>
         </form>
         <p className="text-gray-600">

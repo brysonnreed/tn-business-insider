@@ -79,6 +79,8 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
     urlForImage(image).url()
   )
 
+  console.log(businessProfile.hours)
+
   // const [latitude, setLatitude] = useState(null)
   // const [longitude, setLongitude] = useState(null)
 

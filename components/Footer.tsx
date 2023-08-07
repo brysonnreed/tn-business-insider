@@ -9,18 +9,26 @@ import logo from '../public/images/logo.jpg'
 
 function Footer() {
   return (
-    <footer className="mt-10 bg-slate-100 px-4 py-10 sm:text-lg">
-      <div className="mx-auto max-w-7xl rounded bg-white p-4  shadow-xl">
-        <div className="mb-4 flex  flex-row items-center justify-between border-b border-gray-300 pb-4">
-          <p className="">Get connected with us on social networks:</p>
+    <footer className="mt-10 bg-gradient-to-b from-slate-100 to-slate-200 px-4 py-10 sm:text-lg">
+      <div className="mx-auto max-w-7xl rounded border border-gray-200 bg-white p-4  shadow-xl">
+        <div className="mb-4 flex flex-row items-center justify-between border-b border-gray-300 pb-4">
+          <p className="">Get connected with us on social networks: </p>
           <div className="flex gap-4">
-            <motion.a whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <motion.a
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="cursor-pointer"
+            >
               <FontAwesomeIcon
                 icon={faFacebook}
                 className="h-6 w-6 text-gray-500"
               />
             </motion.a>
-            <motion.a whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+            <motion.a
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="cursor-pointer"
+            >
               <FontAwesomeIcon
                 icon={faLinkedinIn}
                 className="h-6 w-6 text-gray-500"

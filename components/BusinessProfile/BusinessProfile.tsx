@@ -10,6 +10,7 @@ import {
   faMapPin,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { motion } from 'framer-motion'
 import { urlForImage } from 'lib/sanity.image'
 import { BusinessProfile as BusinessProfileType } from 'lib/sanity.queries'
 import Image from 'next/image'
@@ -138,14 +139,18 @@ export default function BusinessProfile({
           href={`/businesses/business-profile/[slug]`}
           as={`/businesses/business-profile/${slug}`}
         >
-          <button className="mt-2 flex items-center justify-center gap-2 rounded-full bg-orange-500 px-3 py-1 text-base text-white transition-all hover:scale-105 sm:mt-0 ">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="mt-2 flex items-center justify-center gap-2 rounded bg-orange-500 px-3 py-1 text-base text-white  sm:mt-0 "
+          >
             Read More{' '}
             <FontAwesomeIcon
               icon={faArrowRight}
               style={{ color: 'white' }}
               className="h-3 w-3 sm:h-5 sm:w-5"
             />
-          </button>
+          </motion.button>
         </Link>
       </div>
     </div>

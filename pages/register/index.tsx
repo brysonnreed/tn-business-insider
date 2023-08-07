@@ -7,6 +7,7 @@ import {
   faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { motion } from 'framer-motion'
 import Layout from 'layout/layout'
 import { getClient } from 'lib/sanity.client.cdn'
 import Head from 'next/head'
@@ -363,22 +364,29 @@ function Register() {
               )}
               <div className="mt-2 flex flex-wrap items-center justify-center gap-1">
                 <p className="text-gray-400">Don&apos;t see the email? </p>
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.025 }}
+                  whileTap={{ scale: 0.975 }}
                   type="button"
                   onClick={handleResendCode}
                   className=" text-blue-400 hover:underline"
                 >
                   Resend the Verification Code
-                </button>
+                </motion.button>
               </div>
             </div>
           )}
 
           <div className=" border-gray-300 ">
-            <button type="submit" className={styles.button}>
+            <motion.button
+              whileHover={{ scale: 1.025 }}
+              whileTap={{ scale: 0.975 }}
+              type="submit"
+              className={styles.button}
+            >
               {showForm ? 'Sign-up' : 'Verify Email'}{' '}
               <FontAwesomeIcon icon={faArrowRight} />
-            </button>
+            </motion.button>
           </div>
         </form>
         <p className="text-gray-600">
