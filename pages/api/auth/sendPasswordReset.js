@@ -1,7 +1,20 @@
 import { addHours, format } from 'date-fns'
-import { getClient } from 'lib/sanity.client.cdn'
+import { createClient } from 'next-sanity'
 import { createTransport } from 'nodemailer'
 import { v4 as uuidv4 } from 'uuid'
+
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION
+export const token = process.env.NEXT_PUBLIC_SANITY_TOKEN
+
+const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  token: token,
+  useCdn: false,
+})
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -25,7 +38,6 @@ export default async function handler(req, res) {
   try {
     const resetToken = uuidv4()
 
-    const client = getClient()
     const existingUser = await client.fetch(
       '*[_type == "user" && email == $email]',
       {
