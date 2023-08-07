@@ -1,3 +1,4 @@
+import Footer from './Footer'
 import Header from './Header'
 
 export default function BlogLayout({
@@ -15,6 +16,7 @@ export default function BlogLayout({
       <div className="mx-auto min-h-screen max-w-5xl pt-10">
         <main>{children}</main>
       </div>
+      <Footer />
     </>
   )
 }

@@ -9,7 +9,6 @@ export default async function createBusinessProfile(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log('JSON.parse(req.body): ', JSON.parse(req.body))
   const {
     name,
     logo,
@@ -128,7 +127,7 @@ export default async function createBusinessProfile(
     })
 
     const matchedUser = await client.fetch(
-      '*[_type == "users" && email == $email][0]',
+      '*[_type == "user" && email == $email][0]',
       {
         email: user,
       }

@@ -63,7 +63,7 @@ const ShowcaseSlider: React.FC<ShowcaseSliderProps> = ({ posts }) => {
         infinite
         keyBoardControl
         minimumTouchDrag={80}
-        pauseOnHover
+        pauseOnHover={true}
         renderArrowsWhenDisabled={false}
         renderButtonGroupOutside={false}
         renderDotsOutside={false}
@@ -82,9 +82,9 @@ const ShowcaseSlider: React.FC<ShowcaseSliderProps> = ({ posts }) => {
         {showcasePosts.map((post, i) => (
           <div
             key={i + 1}
-            className="carousel-item flex h-[450px] flex-col justify-between rounded-lg border border-gray-200 p-2 shadow-2xl transition-all hover:scale-105 md:p-4"
+            className="carousel-item flex h-[450px] flex-col rounded-lg border border-gray-200 p-2 shadow-2xl transition-all sm:hover:scale-105 md:p-4"
           >
-            <div className="mb-5">
+            <div className="mb-3">
               <CoverImage
                 slug={post.slug}
                 title={post.title}
@@ -92,25 +92,28 @@ const ShowcaseSlider: React.FC<ShowcaseSliderProps> = ({ posts }) => {
                 priority={false}
               />
             </div>
-            <h3 className="mb-3 text-2xl font-semibold leading-snug">
-              <a className="hover:underline" href={`/posts/${post.slug}`}>
-                {post.title}
-              </a>
-            </h3>
-            <div className="mb-4 text-lg">
-              <Date dateString={post.date} />
+            <div className="flex h-full flex-col justify-between">
+              <div className="mb-3 text-2xl font-semibold leading-snug">
+                <a className="hover:underline" href={`/posts/${post.slug}`}>
+                  {post.title}
+                </a>
+                <div className="mb-3 text-lg font-normal text-gray-500">
+                  <Date dateString={post.date} />
+                </div>
+                {post.excerpt && (
+                  <p className="mb-4 line-clamp-2 overflow-hidden text-lg font-normal leading-relaxed md:line-clamp-3">
+                    {post.excerpt}
+                  </p>
+                )}
+              </div>
+
+              {post.author && (
+                <AuthorAvatar
+                  name={post.author.name}
+                  picture={post.author.picture}
+                />
+              )}
             </div>
-            {post.excerpt && (
-              <p className="mb-4 line-clamp-3 overflow-hidden text-lg leading-relaxed">
-                {post.excerpt}
-              </p>
-            )}
-            {post.author && (
-              <AuthorAvatar
-                name={post.author.name}
-                picture={post.author.picture}
-              />
-            )}
           </div>
         ))}
       </Carousel>

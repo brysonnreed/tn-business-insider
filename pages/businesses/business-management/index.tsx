@@ -1,6 +1,7 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import BlogContainer from 'components/Blog/BlogContainer'
+import Footer from 'components/Footer'
 import Header from 'components/Header'
 import BusinessAccordian from 'components/User/BusinessAccordian'
 import ManageBusinessProfile from 'components/User/ManageBusinessProfile'
@@ -70,6 +71,7 @@ function BusinessManagement({ businesses }) {
           </div>
         </BlogContainer>
       </section>
+      <Footer />
     </>
   )
 }

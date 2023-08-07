@@ -93,7 +93,6 @@ export default function CreateBusiness({ cities, categories, socials }) {
   }
 
   const onSubmit: SubmitHandler<BusinessFormData> = async (data) => {
-    console.log(data)
     if (!data.logo && !data.city && !data.category) {
       toast.error('Make sure all required fields are filled.')
     } else if (!data.logo) {

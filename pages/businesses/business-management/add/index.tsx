@@ -1,4 +1,5 @@
 import BlogContainer from 'components/Blog/BlogContainer'
+import Footer from 'components/Footer'
 import Header from 'components/Header'
 import CreateBusiness from 'components/User/CreateBusiness'
 import {
@@ -8,7 +9,6 @@ import {
 } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
 import { getServerSession } from 'next-auth'
-import { getSession, useSession } from 'next-auth/react'
 
 import { authOptions } from '../../../api/auth/[...nextauth]'
 
@@ -19,9 +19,9 @@ const BusinessManagementAddForm = ({ cities, categories, socials }) => {
       <section className="mx-auto min-h-screen max-w-5xl pt-10">
         <BlogContainer>
           <div className=" mb-5 flex flex-col gap-2 border-b border-black pb-10 leading-8">
-            <p className="text-2xl font-semibold text-orange-500 sm:text-3xl">
+            <h1 className="text-2xl font-semibold text-orange-500 sm:text-3xl">
               Interested in growing your business?
-            </p>
+            </h1>
             <p className="text-5xl font-bold capitalize text-black sm:text-6xl">
               Add your Business here
             </p>
@@ -35,6 +35,7 @@ const BusinessManagementAddForm = ({ cities, categories, socials }) => {
           </div>
         </BlogContainer>
       </section>
+      <Footer />
     </>
   )
 }

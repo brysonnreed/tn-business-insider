@@ -4,6 +4,7 @@ import { description } from './demo.data'
 
 export const postFields = groq`
   _id,
+  _createdAt,
   title,
   date,
   _updatedAt,

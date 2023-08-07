@@ -6,7 +6,7 @@ export default function AuthorAvatar(props: Author) {
   const { name, picture } = props
   return (
     <div className="flex items-center">
-      <div className="relative h-12 w-12 xs:mr-4">
+      <div className="relative mr-2 flex h-12 w-12 items-center justify-center xs:mr-4">
         <Image
           src={
             picture?.asset?._ref
@@ -19,7 +19,7 @@ export default function AuthorAvatar(props: Author) {
           alt={picture.alt ?? name}
         />
       </div>
-      <div className="text-xl font-bold">{name}</div>
+      <div className="font-semibold sm:text-xl">{name}</div>
     </div>
   )
 }

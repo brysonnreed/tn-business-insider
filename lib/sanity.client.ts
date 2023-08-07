@@ -54,8 +54,19 @@ export async function getSettings(client: SanityClient): Promise<Settings> {
   return (await client.fetch(settingsQuery)) || {}
 }
 // Posts
-export async function getAllPosts(client: SanityClient): Promise<Post[]> {
-  return (await client.fetch(indexQuery)) || []
+export async function getAllPosts(
+  client: SanityClient,
+  limit: number = 20,
+  sortOrder: 'asc' | 'desc' = 'desc'
+): Promise<Post[]> {
+  const query = groq`
+    *[_type == "post"] | order(date ${sortOrder}, _updatedAt ${sortOrder}) [0...${limit}] {
+      ${postFields}
+    }
+  `
+
+  const result = await client.fetch(query)
+  return result || []
 }
 
 export async function getAllPostsSlugs(): Promise<Pick<Post, 'slug'>[]> {
@@ -78,13 +89,17 @@ export async function getPostAndMoreStories(
 }
 export async function getPostsByCategory(
   client: SanityClient,
-  categorySlug: string
+  categorySlug: string,
+  limit: number = 20, // Default limit to 20 posts
+  sortOrder: 'asc' | 'desc' = 'desc' // Default sort order to 'desc'
 ): Promise<Post[]> {
   const query = groq`
     *[
       _type == "post" &&
       $categorySlug in categories[]->slug.current
     ]
+    | order(_createdAt ${sortOrder})
+    [0...${limit}] // Apply the limit here
     {
       ${postFields}
     }

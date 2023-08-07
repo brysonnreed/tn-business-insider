@@ -25,8 +25,7 @@ function Header() {
   const [searchResults, setSearchResults] = useState([])
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [active, setActive] = useState(false)
-  const [categories, setCategories] = useState([])
-  const [isBlogActive, setIsBlogActive] = useState(false)
+
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
 
   const toggleNav = () => {
@@ -75,15 +74,6 @@ function Header() {
     const results = await getClient().fetch(searchQuery, { query })
     return results
   }
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const allCategories = await getAllCategories(getClient()) // Replace this with your function to fetch categories
-      setCategories(allCategories)
-    }
-
-    fetchCategories()
-  }, [])
 
   const handleClickOutside = (e: MouseEvent) => {
     if (
@@ -371,53 +361,22 @@ function Header() {
                 <li className="mobileNavItem bg-white">Home</li>
               </Link>
             </button>
-            <div
-              onMouseEnter={() => setIsBlogActive(true)}
-              onMouseLeave={() => setIsBlogActive(false)}
+
+            <button
+              onClick={() => {
+                setActive(false)
+              }}
+              type="button"
+              className="w-full"
             >
-              <button
-                onMouseEnter={() => setIsBlogActive(true)}
-                onClick={() => {
-                  setIsBlogActive(!isBlogActive)
-                  setActive(false)
-                }}
-                type="button"
-                className="w-full"
-              >
-                <Link href="/blog">
-                  <li
-                    className={`mobileNavItem flex items-center justify-center gap-1 bg-white ${
-                      isBlogActive ? 'active' : ''
-                    }`}
-                  >
-                    Blog{' '}
-                    <FontAwesomeIcon
-                      icon={faCaretDown}
-                      className={`h-4 w-4 transition-all duration-300 ${
-                        isBlogActive ? `rotate-180` : ``
-                      }`}
-                    />
-                  </li>
-                </Link>
-              </button>
-              <ul>
-                {isBlogActive &&
-                  categories.map((category) => (
-                    <button
-                      onClick={() => [setActive(false), setIsBlogActive(false)]}
-                      className="w-full"
-                      key={category._id}
-                      type="button"
-                    >
-                      <Link href={`/blog/${category.slug}`}>
-                        <li className="mobileNavItem border-y border-gray-100 bg-white py-2 text-sm text-gray-500">
-                          {category.name}
-                        </li>
-                      </Link>
-                    </button>
-                  ))}
-              </ul>
-            </div>
+              <Link href="/blog">
+                <li
+                  className={`mobileNavItem flex items-center justify-center gap-1 bg-white `}
+                >
+                  Blog{' '}
+                </li>
+              </Link>
+            </button>
 
             <button
               onClick={() => setActive(false)}

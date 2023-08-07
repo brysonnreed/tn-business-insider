@@ -30,20 +30,24 @@ export default function PostPreview({
           priority={false}
         />
       </div>
-      <h3 className="mb-3 text-2xl font-semibold leading-snug">
-        <a className="hover:underline" href={`/posts/${slug}`}>
-          {title}
-        </a>
-      </h3>
-      <div className="mb-4 text-lg">
-        <Date dateString={date} />
+
+      <div className="flex h-full flex-col justify-between">
+        <div className="mb-3 text-2xl font-semibold leading-snug">
+          <a className="hover:underline" href={`/posts/${slug}`}>
+            {title}
+          </a>
+          <div className="mb-3 text-lg font-normal text-gray-500">
+            <Date dateString={date} />
+          </div>
+          {excerpt && (
+            <p className="mb-4 line-clamp-2 overflow-hidden text-lg font-normal leading-relaxed md:line-clamp-3">
+              {excerpt}
+            </p>
+          )}
+        </div>
+
+        {author && <Avatar name={author.name} picture={author.picture} />}
       </div>
-      {excerpt && (
-        <p className="mb-4 line-clamp-4 overflow-hidden text-lg leading-relaxed">
-          {excerpt}
-        </p>
-      )}
-      {author && <Avatar name={author.name} picture={author.picture} />}
     </article>
   )
 }
