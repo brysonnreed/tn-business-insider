@@ -8,18 +8,31 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { format, isAfter } from 'date-fns'
 import Layout from 'layout/layout'
-import { getClient } from 'lib/sanity.client.cdn'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getSession } from 'next-auth/react'
+import { createClient } from 'next-sanity'
 import logo from 'public/images/logo.jpg'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
 import styles from '../../../styles/Form.module.css'
+
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
+export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION
+export const token = process.env.NEXT_PUBLIC_SANITY_TOKEN
+
+const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  token: token,
+  useCdn: false,
+})
 
 export default function ResetPassword() {
   const router = useRouter()
@@ -58,7 +71,6 @@ export default function ResetPassword() {
 
   const onSubmit = async (data) => {
     try {
-      const client = getClient()
       const existingUser = await client.fetch(
         '*[_type == "user" && email == $email]',
         {
@@ -103,7 +115,7 @@ export default function ResetPassword() {
       }
 
       // Check if the user exists in the database
-      const client = getClient()
+
       const existingUser = await client.fetch(
         '*[_type == "user" && email == $email]',
         {
