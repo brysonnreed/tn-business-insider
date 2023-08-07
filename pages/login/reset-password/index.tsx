@@ -55,9 +55,6 @@ export default function ResetPassword() {
 
   const onSubmit = async (data) => {
     try {
-      // Check if email exists in Sanity
-      console.log(data.email)
-
       const client = getClient()
       const existingUser = await client.fetch(
         '*[_type == "user" && email == $email]',

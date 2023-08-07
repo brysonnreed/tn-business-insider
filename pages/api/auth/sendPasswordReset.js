@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       email
     )}&token=${encodeURIComponent(resetToken)}`
 
-    const info = await transporter.sendMail({
+    const mailData = {
       from: '"TNBusinessInsider" <verify@tnbusinessinsider.com>',
       to: email,
       subject: 'Reset your password',
@@ -291,6 +291,32 @@ box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
 </body>
 </html>`,
+    }
+
+    await new Promise((resolve, reject) => {
+      // verify connection configuration
+      transporter.verify(function (error, success) {
+        if (error) {
+          console.log(error)
+          reject(error)
+        } else {
+          console.log('Server is ready to take our messages')
+          resolve(success)
+        }
+      })
+    })
+
+    await new Promise((resolve, reject) => {
+      // send mail
+      transporter.sendMail(mailData, (err, info) => {
+        if (err) {
+          console.error(err)
+          reject(err)
+        } else {
+          console.log(info)
+          resolve(info)
+        }
+      })
     })
 
     return res
