@@ -6,19 +6,25 @@ import {
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
-import { getAllCategories } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { groq } from 'next-sanity'
+import { authOptions } from 'pages/api/auth/[...nextauth]'
 import BlankUser from 'public/images/blank-user-image.png'
 import { useEffect, useRef, useState } from 'react'
 
 import logo from '../public/images/logo.jpg'
 import AuthorAvatar from './AuthorAvatar'
 import UserAvatar from './User/UserAvatar'
+
+type user = {
+  name: string
+  image: any
+}
 
 function Header() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -117,6 +123,34 @@ function Header() {
     }
   }
   const { data: session } = useSession()
+  const [user, setUser] = useState<user>({
+    name: '',
+    image: null,
+  })
+
+  const getUser = async (userEmail) => {
+    const client = getClient()
+    let user = await client.fetch('*[_type == "user" && email == $email][0]', {
+      email: userEmail,
+    })
+    setUser(user)
+    return user
+  }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userEmail = session?.user?.email
+        const userData = await getUser(userEmail)
+        setUser(userData)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    if (session) {
+      fetchUserData()
+    }
+  }, [session])
 
   return (
     <header className="sticky top-0 z-50 ">
@@ -208,9 +242,7 @@ function Header() {
               aria-label="Open user dropdown menu"
               className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
             >
-              <UserAvatar
-                image={session?.user.image ? session.user.image : BlankUser}
-              />{' '}
+              <UserAvatar image={user.image ? user.image : BlankUser} />{' '}
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${

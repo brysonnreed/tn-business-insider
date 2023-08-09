@@ -65,7 +65,7 @@ export default async function handler(req, res) {
 
     const currentDomain = req.headers.host
 
-    const resetLink = `https://${currentDomain}/login/reset-password?email=${encodeURIComponent(
+    const resetLink = `https://${currentDomain}/account/login/reset-password?email=${encodeURIComponent(
       email
     )}&token=${encodeURIComponent(resetToken)}`
 

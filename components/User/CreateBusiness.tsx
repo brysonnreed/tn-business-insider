@@ -112,7 +112,7 @@ export default function CreateBusiness({ cities, categories, socials }) {
 
         const formData = {
           ...data,
-          logo: logoId,
+          logo: logoId._id,
           images: imageIds,
           user: session?.user.email,
         }
@@ -210,7 +210,12 @@ export default function CreateBusiness({ cities, categories, socials }) {
         </div>
       </label>
       {/* Logo Image */}
-      <LogoSection setValue={setValue} />
+      <LogoSection
+        setValue={setValue}
+        title={'Business Logo'}
+        user={null}
+        required={true}
+      />
       {/* Description */}
       <label className="flex flex-col gap-5">
         <div className="flex flex-col">

@@ -2,19 +2,36 @@ import { faArrowUpFromBracket, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 type LogoSectionProps = {
   setValue: any
+  title: string
+  user: any
+  required: boolean
 }
 
-const LogoSection: React.FC<LogoSectionProps> = ({ setValue }) => {
+const LogoSection: React.FC<LogoSectionProps> = ({
+  setValue,
+  title,
+  user,
+  required,
+}) => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
   const logoInputRef = useRef(null)
+  const [imageSrc, setImageSrc] = useState('')
 
   useEffect(() => {
     setValue('logo', selectedImage)
   }, [selectedImage, setValue])
+
+  useEffect(() => {
+    if (user && user.image) {
+      setSelectedImage(user.image)
+      setImageSrc(user.image)
+    }
+  }, [user])
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -35,15 +52,30 @@ const LogoSection: React.FC<LogoSectionProps> = ({ setValue }) => {
     }
   }
 
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   e.preventDefault()
+  //   if (e.target.files && e.target.files[0]) {
+  //     setSelectedImage(e.target.files[0])
+  //   }
+  // }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (e.target.files && e.target.files[0]) {
-      setSelectedImage(e.target.files[0])
+      const selectedFile = e.target.files[0]
+
+      // Check if the selected file is an image
+      if (selectedFile.type.startsWith('image/')) {
+        setSelectedImage(selectedFile)
+      } else {
+        // Display an error message or perform other actions for non-image files
+        toast.error('Please select an image file.')
+      }
     }
   }
 
   const handleRemoveImage = () => {
     setSelectedImage(null)
+    setImageSrc('')
   }
 
   const onLogoButtonClick = () => {
@@ -52,8 +84,10 @@ const LogoSection: React.FC<LogoSectionProps> = ({ setValue }) => {
   return (
     <div>
       <label>
-        Business Logo{' '}
-        <span className="text-lg font-semibold text-red-600">*</span>
+        {title}{' '}
+        {required == true && (
+          <span className="text-lg font-semibold text-red-600">*</span>
+        )}
       </label>
       <div
         id="logo-section"
@@ -65,10 +99,12 @@ const LogoSection: React.FC<LogoSectionProps> = ({ setValue }) => {
         {selectedImage ? (
           <div className="image-container">
             <Image
-              src={URL.createObjectURL(selectedImage)}
+              src={
+                imageSrc != '' ? imageSrc : URL.createObjectURL(selectedImage)
+              }
               alt="Selected Logo"
-              width={100}
-              height={100}
+              width={200}
+              height={200}
               className="h-32 w-32 object-contain"
             />
             <button

@@ -83,10 +83,15 @@ export async function getServerSideProps({ req, res }) {
   // const session = await getSession({ req })
 
   if (!session) {
-    // If the session is not active, redirect to the login page
+    // If the session is not active, redirect to the login page with a callback URL
+    const currentUrl = req.url
+    const loginUrl = `/account/login?callbackUrl=${encodeURIComponent(
+      currentUrl
+    )}&protectedPageCallback=true`
+
     return {
       redirect: {
-        destination: '/login',
+        destination: loginUrl,
         permanent: false,
       },
     }
@@ -101,36 +106,6 @@ export async function getServerSideProps({ req, res }) {
     let user = await client.fetch('*[_type == "user" && email == $email][0]', {
       email: userEmail,
     })
-
-    if (!user) {
-      // Make a POST request to your addUser API route
-      const baseUrl = req.headers.host
-      const url = `http://${baseUrl}/api/addUser`
-
-      await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          // Include any other relevant user information
-          name: session.user.name,
-          email: session.user.email,
-          image: session.user.image,
-        }),
-      })
-      // After creating the user, fetch the updated user document
-      // This ensures that the user is now present in the database
-      const updatedUser = await client.fetch(
-        '*[_type == "user" && email == $email][0]',
-        {
-          email: userEmail,
-        }
-      )
-      // Set the user variable to the updated user
-      // Now you can access the businesses property safely
-      user = updatedUser
-    }
 
     // Extract the business references from the user document
     const businessReferences = user.businesses.map((business) => business._ref)

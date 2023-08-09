@@ -1,5 +1,6 @@
 import AuthorAvatar from 'components/AuthorAvatar'
 import { formatDistanceToNow } from 'date-fns'
+import { motion } from 'framer-motion'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,7 +14,13 @@ function BlogListContainer({ coverImage, title, author, excerpt, slug, date }) {
     })
   }
   return (
-    <article className="flex h-28 flex-row bg-white md:h-48">
+    <motion.article
+      layout
+      animate={{ opacity: 1 }}
+      initial={{ opacity: 0 }}
+      exit={{ opacity: 0 }}
+      className="mb-5 flex h-28 flex-row border-b bg-white pb-5 md:h-40"
+    >
       <Link href={`/posts/${slug}`} className="mr-4 h-full w-2/6 sm:w-1/3">
         <div className="relative h-full w-full">
           <Image
@@ -53,7 +60,7 @@ function BlogListContainer({ coverImage, title, author, excerpt, slug, date }) {
               className="h-[28px] w-[28px] rounded-full"
               height={96}
               width={96}
-              alt={author.name}
+              alt={author.name ? author.image : 'Blog cover Image'}
             />
           </div>
           <div className="text-[12px] text-[#222222]">
@@ -62,7 +69,7 @@ function BlogListContainer({ coverImage, title, author, excerpt, slug, date }) {
           </div>
         </div>
       </div>
-    </article>
+    </motion.article>
   )
 }
 

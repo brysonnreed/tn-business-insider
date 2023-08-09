@@ -8,23 +8,127 @@ import { faCalendar, faThumbsUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Avatar from 'components/AuthorAvatar'
 import CoverImage from 'components/CoverImage'
+import { getClient } from 'lib/sanity.client.cdn'
 import type { Post } from 'lib/sanity.queries'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { v4 as uuidv4 } from 'uuid'
 
 // import { updatePostLikes } from '../../pages/api/likes'
 // import LikeElement from './LikeElement'
 import Date from './PostDate'
 import PostTitle from './PostTitle'
+type user = {
+  name: string
+  image: any
+  likedBlogPosts: any
+  _id: any
+}
 
 export default function PostHeader(
-  props: Pick<
-    Post,
-    'title' | 'coverImage' | 'date' | 'author' | 'slug' //| 'likes'
-  >
+  props: Pick<Post, 'title' | 'coverImage' | 'date' | 'author' | 'slug' | '_id'>
 ) {
   const { title, coverImage, date, author, slug /*likes*/ } = props
   const router = useRouter()
+  const [isLiked, setIsLiked] = useState(false)
+  const client = getClient()
+  const [user, setUser] = useState<user>({
+    name: '',
+    image: null,
+    likedBlogPosts: null,
+    _id: '',
+  })
+  const { data: session } = useSession()
+  const getUser = async (userEmail) => {
+    const client = getClient()
+    let user = await client.fetch('*[_type == "user" && email == $email][0]', {
+      email: userEmail,
+    })
+    setUser(user)
+    return user
+  }
+  const fetchUserData = async () => {
+    try {
+      const userEmail = session?.user?.email
+      const userData = await getUser(userEmail)
+      setUser(userData)
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+    }
+  }
+
+  if (session) {
+    fetchUserData()
+  }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userEmail = session?.user?.email
+        const userData = await getUser(userEmail)
+        setUser(userData)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    if (session) {
+      fetchUserData()
+    }
+  }, [session])
+  useEffect(() => {
+    const checkLikedStatus = async () => {
+      try {
+        const user = await getUser(session?.user?.email)
+
+        // Check if the post's ID is in the user's likedBlogPosts
+        setIsLiked(user.likedBlogPosts.some((post) => post._ref === props._id))
+      } catch (error) {
+        console.error('Error checking liked status:', error)
+      }
+    }
+
+    if (session) {
+      checkLikedStatus()
+    }
+  }, [props._id, session])
+
+  const handleLike = async () => {
+    if (!session) {
+      toast.error('You must be logged in to like a post!')
+      return
+    }
+
+    try {
+      if (isLiked) {
+        // Unlike logic: Remove the post from likedBlogPosts
+        const updatedLikedPosts = user.likedBlogPosts.filter(
+          (post) => post._ref !== props._id
+        )
+
+        await client
+          .patch(user._id)
+          .set({ likedBlogPosts: updatedLikedPosts })
+          .commit()
+      } else {
+        await client
+          .patch(user._id)
+          .append('likedBlogPosts', [
+            {
+              _type: 'reference',
+              _ref: props._id,
+              _key: uuidv4(),
+            },
+          ])
+          .commit()
+      }
+
+      setIsLiked(!isLiked)
+    } catch (error) {
+      console.error('Error updating liked status:', error)
+    }
+  }
 
   const shareToSocialMedia = (platform) => {
     let shareUrl = ''
@@ -74,8 +178,18 @@ export default function PostHeader(
             <Date dateString={date} />
           </div>
         </div>
-        {/* <LikeElement likes={likes} slug={slug} /> */}
+
         <div className="flex flex-row items-center justify-center space-x-4">
+          <FontAwesomeIcon
+            icon={faThumbsUp}
+            className={`h-8 w-8 cursor-pointer transition-all ${
+              isLiked
+                ? 'text-orange-500 hover:scale-105'
+                : 'text-gray-500 hover:text-orange-500'
+            }`}
+            onClick={() => handleLike()}
+          />
+
           <FontAwesomeIcon
             icon={faFacebook}
             className="h-8 w-8 cursor-pointer text-blue-500 transition-all hover:scale-105"

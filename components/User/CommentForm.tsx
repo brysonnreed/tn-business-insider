@@ -1,11 +1,13 @@
 import { faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { formatDistanceToNow } from 'date-fns'
-import { useSession } from 'next-auth/react'
+import { motion } from 'framer-motion'
+import Link from 'next/link'
+import { signIn, useSession } from 'next-auth/react'
 import BlankUser from 'public/images/blank-user-image.png'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 import UserAvatar from './UserAvatar'
 
@@ -175,12 +177,38 @@ function CommentForm({ post: initialPost }) {
           </form>
 
           {!session && (
-            <button
-              onClick={handleUserErr}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded bg-orange-500 px-5 py-2 text-xl text-white transition-all duration-300 hover:scale-[1.01] hover:bg-amber-600"
-            >
-              Submit <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4" />
-            </button>
+            <>
+              <button
+                onClick={handleUserErr}
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded bg-orange-500 px-5 py-2 text-xl text-white transition-all duration-300 hover:scale-[1.01] hover:bg-amber-600"
+              >
+                Submit{' '}
+                <FontAwesomeIcon icon={faArrowRight} className="h-4 w-4" />
+              </button>
+              {userErr !== '' && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center text-gray-400"
+                >
+                  {' '}
+                  Have a account or want to create one?{' '}
+                  <button
+                    onClick={() => signIn()}
+                    className="text-blue-400 transition-all duration-200 hover:underline"
+                  >
+                    Sign-in
+                  </button>{' '}
+                  /{' '}
+                  <Link
+                    href={`/account/register`}
+                    className="text-blue-400 transition-all duration-200 hover:underline"
+                  >
+                    Sign up
+                  </Link>
+                </motion.div>
+              )}
+            </>
           )}
         </div>
       )}

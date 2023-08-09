@@ -14,16 +14,21 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
-import googleLogo from '../../public/images/Google__G__Logo.svg.png'
-import styles from '../../styles/Form.module.css'
+import googleLogo from '../../../public/images/Google__G__Logo.svg.png'
+import styles from '../../../styles/Form.module.css'
 
 function Login() {
-  async function handleGoogleSignIn() {
-    signIn('google', { callbackUrl: '/' })
-  }
   const [show, setShow] = useState(false)
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
   const router = useRouter()
+  async function handleGoogleSignIn() {
+    signIn('google', {
+      callbackUrl: Array.isArray(router.query.callbackUrl)
+        ? router.query.callbackUrl[0] // Use the first value if it's an array
+        : router.query.callbackUrl || '/',
+    })
+  }
+
   const {
     register,
     handleSubmit,
@@ -39,7 +44,9 @@ function Login() {
         email: data.email,
         password: data.password,
         redirect: false,
-        callbackUrl: '/',
+        callbackUrl: Array.isArray(router.query.callbackUrl)
+          ? router.query.callbackUrl[0] // Use the first value if it's an array
+          : router.query.callbackUrl || '/',
       })
 
       // Check the result of the signIn method
@@ -58,11 +65,26 @@ function Login() {
   }
 
   useEffect(() => {
-    // Check if the 'success' query parameter is present in the URL
-    if (router.query.success === 'true') {
+    // Check if the 'password-updated' query parameter is present in the URL
+    if (router.query['password-updated'] === 'true') {
+      toast.success('Password updated successfully')
+    }
+
+    // Check if the 'verify-email' query parameter is present in the URL
+    if (router.query['verify-email'] === 'true') {
       toast.success('Account added successfully')
     }
-  }, [router.query.success])
+  }, [router.query.success, router.query])
+
+  useEffect(() => {
+    // Check if the 'protectedPageCallback' query parameter is present in the URL
+    const isProtectedPageCallback =
+      router.query.protectedPageCallback === 'true'
+    if (isProtectedPageCallback) {
+      // Display a toast message informing the user to log in to access the page
+      toast.error('You must be logged in to access this page.')
+    }
+  }, [router.query.protectedPageCallback])
 
   return (
     <Layout>
@@ -86,7 +108,7 @@ function Login() {
           <p className="text-sm text-gray-700 xs:text-base">
             Welcome back, please login to your account. Forgot your password?{' '}
             <Link
-              href={'/login/reset-password'}
+              href={'/account/login/reset-password'}
               className="text-blue-700 transition-all duration-200 hover:underline"
             >
               Reset your password
@@ -172,7 +194,7 @@ function Login() {
         <p className="text-gray-600">
           Don&apos;t have an account yet?{' '}
           <Link
-            href={`/register`}
+            href={`/account/register`}
             className="text-blue-700 transition-all duration-200 hover:underline"
           >
             Sign up

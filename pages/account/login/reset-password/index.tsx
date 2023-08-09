@@ -7,11 +7,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { format, isAfter } from 'date-fns'
+import { motion } from 'framer-motion'
 import Layout from 'layout/layout'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { getServerSession } from 'next-auth'
 import { getSession } from 'next-auth/react'
 import { createClient } from 'next-sanity'
 import logo from 'public/images/logo.jpg'
@@ -19,7 +21,8 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
-import styles from '../../../styles/Form.module.css'
+import styles from '../../../../styles/Form.module.css'
+import { authOptions } from '../../../api/auth/[...nextauth]'
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET
@@ -38,7 +41,7 @@ export default function ResetPassword() {
   const router = useRouter()
   const [show, setShow] = useState({ password: false, cpassword: false })
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
-
+  const [emailExists, setEmailExists] = useState(true)
   const { query } = router
 
   // Function to extract the email and token from the query parameters
@@ -77,6 +80,7 @@ export default function ResetPassword() {
       if (existingUser.length === 0) {
         reset()
         toast.error(`Email account doesn't exist.`)
+        setEmailExists(false)
         return
       }
 
@@ -120,8 +124,11 @@ export default function ResetPassword() {
       )
 
       if (existingUser.length === 0) {
-        toast.error('User not found')
-        router.push('/register')
+        reset()
+        router.push({
+          pathname: '/account/register',
+          query: { 'account-exists': false, success: false },
+        })
         return
       }
 
@@ -153,7 +160,10 @@ export default function ResetPassword() {
 
       if (res.status === 200) {
         reset()
-        window.location.href = '/login'
+        router.push({
+          pathname: '/account/login',
+          query: { 'password-updated': true, success: true },
+        })
       } else {
         toast.error('There was an error your resetting password.')
       }
@@ -309,7 +319,21 @@ export default function ResetPassword() {
               </div>
             </div>
           )}
-
+          {emailExists == false && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-gray-400"
+            >
+              Don&apos;t have an account?{' '}
+              <Link
+                href={`/account/register`}
+                className="text-blue-400 transition-all duration-200 hover:underline"
+              >
+                Register
+              </Link>
+            </motion.p>
+          )}
           <div className=" border-gray-300 ">
             <button type="submit" className={styles.button}>
               {showForm ? 'Send' : 'Reset Password'}{' '}
@@ -320,7 +344,7 @@ export default function ResetPassword() {
         <p className="text-gray-600">
           Already have an account?{' '}
           <Link
-            href={`/login`}
+            href={`/account/login`}
             className="text-blue-500 transition-all duration-200 hover:underline"
           >
             Log in
@@ -331,13 +355,17 @@ export default function ResetPassword() {
   )
 }
 
-export async function getServerSideProps({ req }) {
-  const session = await getSession({ req })
+export async function getServerSideProps({ req, res }) {
+  const session = await getServerSession(req, res, authOptions)
 
   if (session) {
+    // If the session is not active, redirect to the login page with a callback URL
+
+    const loginUrl = `/?loggedIn=true`
+
     return {
       redirect: {
-        destination: '/',
+        destination: loginUrl,
         permanent: false,
       },
     }

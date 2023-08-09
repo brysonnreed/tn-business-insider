@@ -16,7 +16,9 @@ const handler: NextApiHandler = async (req, res) => {
         name,
         email,
         password: hashedPassword, // Save the password to Sanity
-        // Add other fields as needed (e.g., isAdmin, etc.)
+        isAdmin: false,
+        image:
+          'https://cdn.sanity.io/images/yuy7c73l/production/08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151.png',
       })
 
       // Send a success response

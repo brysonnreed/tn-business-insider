@@ -14,14 +14,15 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { getSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
 import logo from 'public/images/logo.jpg'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReCAPTCHA from 'react-google-recaptcha'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
-import styles from '../../styles/Form.module.css'
+import styles from '../../../styles/Form.module.css'
+import { authOptions } from '../../api/auth/[...nextauth]'
 
 function Register() {
   const [show, setShow] = useState({ password: false, cpassword: false })
@@ -113,7 +114,7 @@ function Register() {
         if (createUserRes.status === 200) {
           reset()
           router.push({
-            pathname: '/login',
+            pathname: '/account/login',
             query: { 'verify-email': true, success: true },
           })
         } else {
@@ -156,6 +157,13 @@ function Register() {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    // Check if the 'success' query parameter is present in the URL
+    if (router.query.success === 'false') {
+      toast.error('Email account does not exist.')
+    }
+  }, [router.query.success])
 
   return (
     <Layout>
@@ -223,12 +231,18 @@ function Register() {
                     name="name"
                     placeholder="Full Name"
                     className={styles.input_text}
-                    {...register('name', { required: true })}
+                    {...register('name', { required: true, minLength: 4 })}
                   />
+
                   <span className="flex items-center px-3">
                     <FontAwesomeIcon icon={faUser} className="h-4 w-4" />
                   </span>
                 </div>
+                {errors.name?.type === 'minLength' && (
+                  <p className="text-red-500">
+                    Name must be atleast 4 characters.
+                  </p>
+                )}
               </div>
               <div>
                 <div
@@ -395,7 +409,7 @@ function Register() {
         <p className="text-gray-600">
           Already have an account?{' '}
           <Link
-            href={`/login`}
+            href={`/account/login`}
             className="text-blue-500 transition-all duration-200 hover:underline"
           >
             Log in
@@ -408,18 +422,21 @@ function Register() {
 
 export default Register
 
-export async function getServerSideProps({ req }) {
-  const session = await getSession({ req })
+export async function getServerSideProps({ req, res }) {
+  const session = await getServerSession(req, res, authOptions)
 
   if (session) {
+    // If the session is not active, redirect to the login page with a callback URL
+
+    const loginUrl = `/?loggedIn=true`
+
     return {
       redirect: {
-        destination: '/',
+        destination: loginUrl,
         permanent: false,
       },
     }
   }
-
   return {
     props: { session },
   }

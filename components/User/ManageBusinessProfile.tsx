@@ -11,7 +11,7 @@ function ManageBusinessProfile({ business }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex items-center justify-between border-y py-5"
+      className="flex items-center justify-between border-y py-5 "
     >
       <div className="flex flex-row items-center justify-center gap-4">
         <Image

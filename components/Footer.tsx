@@ -3,14 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { signIn } from 'next-auth/react'
 import React from 'react'
 
-import logo from '../public/images/logo.jpg'
+import logo from '../public/images/Primary-Logo-transparent.png'
 
 function Footer() {
   return (
-    <footer className="mt-10 bg-gradient-to-b from-slate-100 to-slate-200 px-4 py-10 sm:text-lg">
-      <div className="mx-auto max-w-7xl rounded border border-gray-200 bg-white p-4  shadow-xl">
+    <footer className="mt-10 bg-gradient-to-b from-slate-200 to-slate-300 px-4 py-10 sm:text-lg">
+      <div className="mx-auto max-w-7xl  p-4  ">
         <div className="mb-4 flex flex-row items-center justify-between border-b border-gray-300 pb-4">
           <p className="">Get connected with us on social networks: </p>
           <div className="flex gap-4">
@@ -76,18 +77,18 @@ function Footer() {
             <div>
               <ul className="flex flex-col gap-3">
                 <li>
-                  <Link href={'/login'} className=" hover:underline">
+                  <button onClick={() => signIn()} className=" hover:underline">
                     Login
-                  </Link>
+                  </button>
                 </li>
                 <li>
-                  <Link href={'/register'} className=" hover:underline">
+                  <Link href={'/account/register'} className=" hover:underline">
                     Register
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href={'/login/reset-password'}
+                    href={'/account/login/reset-password'}
                     className=" hover:underline"
                   >
                     Reset Password

@@ -11,6 +11,7 @@ export default defineType({
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string' }),
     defineField({ name: 'email', title: 'Email', type: 'string' }),
+    defineField({ name: 'mainImage', title: 'Main Image', type: 'image' }),
     defineField({
       name: 'image',
       title: 'Image',
@@ -44,6 +45,12 @@ export default defineType({
       type: 'datetime',
       title: 'Token Expiration Date',
       description: 'Date and time when the reset token expires',
+    }),
+    defineField({
+      name: 'likedBlogPosts',
+      title: 'Liked Blog Posts',
+      type: 'array',
+      of: [{ type: 'reference', to: [{ type: 'post' }] }],
     }),
   ],
 })

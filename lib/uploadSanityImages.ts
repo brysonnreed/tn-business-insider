@@ -23,7 +23,7 @@ export const uploadImageToSanity = async (file) => {
     })
 
     // Return the image asset ID or URL, or any other data you need
-    return imageAsset._id // or return imageAsset.url; if you want the URL
+    return imageAsset // or return imageAsset.url; if you want the URL
   } catch (error) {
     console.error('Error uploading image asset: ', error)
     throw error

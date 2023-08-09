@@ -4,7 +4,7 @@ import BlogContainer from 'components/Blog/BlogContainer'
 import BlogListContainer from 'components/Blog/BlogListContainer'
 import Footer from 'components/Footer'
 import Header from 'components/Header'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import {
   getAllCategories,
   getAllPosts,
@@ -154,18 +154,20 @@ export default function BlogPage({ categories, posts }) {
             </ul>
           </div>
           <div className="flex flex-col gap-5">
-            {filteredPosts.map((post) => (
-              <div key={post._id} className="border-b pb-5">
-                <BlogListContainer
-                  author={post.author}
-                  title={post.title}
-                  slug={post.slug}
-                  coverImage={post.coverImage}
-                  excerpt={post.excerpt}
-                  date={post._createdAt}
-                />
-              </div>
-            ))}
+            <motion.div layout>
+              {filteredPosts.map((post) => (
+                <AnimatePresence key={post._id}>
+                  <BlogListContainer
+                    author={post.author}
+                    title={post.title}
+                    slug={post.slug}
+                    coverImage={post.coverImage}
+                    excerpt={post.excerpt}
+                    date={post._createdAt}
+                  />
+                </AnimatePresence>
+              ))}
+            </motion.div>
             <div className="mt-5 flex justify-center">
               <motion.button
                 whileHover={{ scale: 1.1 }}

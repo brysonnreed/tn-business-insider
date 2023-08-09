@@ -15,7 +15,7 @@ export const postFields = groq`
   "slug": slug.current,
   "author": author->{name, picture},
   "categories": categories[]->{_id, name, slug},
-  
+  "LikedPosts": *[_type == 'user' && references(^._id)],
   "comments":*[_type == 'comment' && post._ref == ^._id]
   
 `

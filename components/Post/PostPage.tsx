@@ -48,8 +48,8 @@ export default function PostPage(props: PostPageProps) {
                   coverImage={post.coverImage}
                   date={post.date}
                   author={post.author}
-                  // likes={post.likes}
                   slug={post.slug}
+                  _id={post._id}
                 />
                 <PostBody content={post.content} />
               </article>

@@ -2,6 +2,7 @@ import { faArrowUpFromBracket, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
 
 type ImageGallerySectionProps = {
   setValue: any
@@ -37,10 +38,25 @@ const ImageGallerySection: React.FC<ImageGallerySectionProps> = ({
     }
   }
 
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   e.preventDefault()
+  //   if (e.target.files && e.target.files[0]) {
+  //     handleAddImage(e.target.files)
+  //   }
+  // }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
     if (e.target.files && e.target.files[0]) {
-      handleAddImage(e.target.files)
+      const selectedFile = e.target.files[0]
+
+      // Check if the selected file is an image
+      if (selectedFile.type.startsWith('image/')) {
+        handleAddImage(e.target.files)
+      } else {
+        // Display an error message or perform other actions for non-image files
+        toast.error('Please select an image file.')
+      }
     }
   }
 
