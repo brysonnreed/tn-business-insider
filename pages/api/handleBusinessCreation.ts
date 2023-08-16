@@ -62,7 +62,7 @@ export default async function createBusinessProfile(
     const imagesWithKeys = images.map((image) => ({
       _type: 'image',
       _key: uuidv4(), // Generate a unique key for each image object
-      asset: { _type: 'reference', _ref: image },
+      asset: { _type: 'reference', _ref: image._id },
     }))
 
     // Fetch the socialMediaPlatform documents based on platform names
@@ -82,6 +82,42 @@ export default async function createBusinessProfile(
       url: data.url,
       _key: uuidv4(),
     }))
+
+    const businessProfileHours = Object.keys(hours).reduce((prev, day) => {
+      return {
+        ...prev,
+        [day.toLowerCase()]: {
+          _type: 'object',
+          isOpen: hours[day].isOpen,
+          hours: hours[day].isOpen && {
+            _type: 'object',
+            open: hours[day].open,
+            close: hours[day].close,
+          },
+        },
+      }
+    }, {})
+
+    // Create a default object for days not provided in the 'hours' object
+    const daysOfTheWeek = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ]
+
+    daysOfTheWeek.forEach((day) => {
+      if (!businessProfileHours[day]) {
+        businessProfileHours[day] = {
+          _type: 'object',
+          isOpen: false,
+          hours: undefined,
+        }
+      }
+    })
 
     const businessProfile = await client.create({
       _type: 'businessProfile',
@@ -103,27 +139,9 @@ export default async function createBusinessProfile(
       },
       openAllDay,
       socialMedia: socialMediaRefs,
-      hours: {
-        _type: 'hours',
-        ...Object.keys(hours).reduce((prev, day) => {
-          return {
-            ...prev,
-            [day.toLowerCase()]: {
-              // Make sure day matches schema (lowercase)
-              _type: 'object',
-              isOpen: hours[day].isOpen,
-              hours: hours[day].isOpen
-                ? {
-                    _type: 'object',
-                    open: hours[day].open,
-                    close: hours[day].close,
-                  }
-                : undefined,
-            },
-          }
-        }, {}),
-      },
+      hours: businessProfileHours,
       website,
+      verified: false,
     })
 
     const matchedUser = await client.fetch(

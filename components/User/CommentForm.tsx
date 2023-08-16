@@ -241,7 +241,7 @@ function CommentForm({ post: initialPost }) {
                     <p className="text-lg font-semibold capitalize">
                       {comment.name}
                     </p>
-                    <p className="text-sm capitalize text-gray-400">
+                    <p className="text-sm capitalize italic text-gray-400">
                       {formatTimeAgo(comment._createdAt)}
                     </p>
                   </div>

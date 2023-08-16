@@ -6,19 +6,17 @@ import {
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
+import { getClient as getuserClient } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { groq } from 'next-sanity'
-import { authOptions } from 'pages/api/auth/[...nextauth]'
 import BlankUser from 'public/images/blank-user-image.png'
 import { useEffect, useRef, useState } from 'react'
 
 import logo from '../public/images/logo.jpg'
-import AuthorAvatar from './AuthorAvatar'
 import UserAvatar from './User/UserAvatar'
 
 type user = {
@@ -44,6 +42,7 @@ function Header() {
 
   const searchRef = useRef<HTMLInputElement>(null)
   const navRef = useRef<HTMLUListElement>(null)
+  const navPRef = useRef<HTMLUListElement>(null)
 
   const handleSearch = async (e) => {
     const query = e.target.value
@@ -99,6 +98,14 @@ function Header() {
     ) {
       setActive(false)
     }
+
+    if (
+      navPRef.current &&
+      e.target instanceof Node &&
+      !navPRef.current.contains(e.target)
+    ) {
+      setIsDropdownVisible(false)
+    }
   }
 
   useEffect(() => {
@@ -119,17 +126,18 @@ function Header() {
     if (searchQuery) {
       return setSearchQuery('') // Stop event propagation
     } else {
-      return toggleNav(), e.stopPropagation()
+      return toggleNav(), e.stopPropagation(), setIsDropdownVisible(false)
     }
   }
   const { data: session } = useSession()
   const [user, setUser] = useState<user>({
     name: '',
-    image: null,
+    image:
+      'https://cdn.sanity.io/images/yuy7c73l/production/08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151.png',
   })
 
   const getUser = async (userEmail) => {
-    const client = getClient()
+    const client = getuserClient()
     let user = await client.fetch('*[_type == "user" && email == $email][0]', {
       email: userEmail,
     })
@@ -140,8 +148,10 @@ function Header() {
     const fetchUserData = async () => {
       try {
         const userEmail = session?.user?.email
-        const userData = await getUser(userEmail)
-        setUser(userData)
+        if (userEmail) {
+          const userData = await getUser(userEmail)
+          setUser(userData)
+        }
       } catch (error) {
         console.error('Error fetching user data:', error)
       }
@@ -161,7 +171,9 @@ function Header() {
               src={logo}
               width={170}
               height={170}
+              className="h-12 w-auto"
               alt="TN Business Insider"
+              priority
             />
           </Link>
         </div>
@@ -173,9 +185,7 @@ function Header() {
               aria-label="Open user dropdown menu"
               className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
             >
-              <UserAvatar
-                image={session?.user.image ? session.user.image : BlankUser}
-              />{' '}
+              {/* <UserAvatar image={user ? user.image : BlankUser} /> */}
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-4 w-4 text-white xs:h-5 xs:w-5 ${
@@ -237,18 +247,18 @@ function Header() {
           </div>
           {session ? (
             <button
-              onClick={toggleDropdown}
+              onClick={() => toggleDropdown()}
               type="button"
               aria-label="Open user dropdown menu"
               className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
             >
-              <UserAvatar image={user.image ? user.image : BlankUser} />{' '}
+              <UserAvatar image={user ? user.image : BlankUser} />
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
                   isDropdownVisible
                     ? `rotate-180 transition-all duration-300`
-                    : ''
+                    : 'rotate-360 transition-all duration-300'
                 }`}
               />
             </button>
@@ -262,7 +272,11 @@ function Header() {
               <FontAwesomeIcon icon={faUser} className="h-7 w-7 text-white" />
               <FontAwesomeIcon
                 icon={faCaretDown}
-                className="h-5 w-5 text-white"
+                className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
+                  isDropdownVisible
+                    ? `rotate-180 transition-all duration-300`
+                    : 'rotate-360 transition-all duration-300'
+                }`}
               />
             </button>
           )}
@@ -357,6 +371,11 @@ function Header() {
                     <li className="mobileNavItem bg-white">My Businesses</li>
                   </button>
                 </Link>
+                <Link href={'/account/my-account'}>
+                  <button className="w-full border-y" type="button">
+                    <li className="mobileNavItem bg-white">My Profile</li>
+                  </button>
+                </Link>
                 <button
                   onClick={() => signOut()}
                   className="w-full border-y"
@@ -381,7 +400,7 @@ function Header() {
           <motion.ul
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            ref={navRef}
+            ref={navPRef}
             className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
           >
             <button

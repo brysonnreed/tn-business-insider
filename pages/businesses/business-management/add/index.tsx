@@ -44,7 +44,6 @@ export default BusinessManagementAddForm
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions)
-  // const session = await getSession({ req })
 
   if (!session) {
     // If the session is not active, redirect to the login page with a callback URL

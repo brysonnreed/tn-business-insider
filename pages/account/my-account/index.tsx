@@ -1,5 +1,3 @@
-import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import BlogContainer from 'components/Blog/BlogContainer'
 import Footer from 'components/Footer'
 import Header from 'components/Header'
@@ -7,7 +5,6 @@ import LikedPosts from 'components/User/MyAccount/LikedPosts'
 import OwnedBusinesses from 'components/User/MyAccount/OwnedBusinesses'
 import UpdateProfileInformation from 'components/User/MyAccount/UpdateProfileInformation'
 import UserDetails from 'components/User/MyAccount/UserDetails'
-import { AnimatePresence, motion } from 'framer-motion'
 import { getClient } from 'lib/sanity.client'
 import { getServerSession } from 'next-auth'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
@@ -29,14 +26,27 @@ function MyAccount({ businesses, user, posts }) {
         <BlogContainer>
           <div className="">
             {showPage == 'profile' && <UpdateProfileInformation user={user} />}
-            <div className="max-h-[79vh] overflow-y-scroll scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300">
-              {showPage == 'businesses' && (
+            {showPage == 'businesses' && (
+              <div
+                className={`${
+                  businesses.length > 4 &&
+                  'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
+                } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
+              >
                 <OwnedBusinesses businesses={businesses} />
-              )}
-            </div>
-            <div className="max-h-[79vh] overflow-y-scroll scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300">
-              {showPage == 'posts' && <LikedPosts posts={posts} />}
-            </div>
+              </div>
+            )}
+            {showPage == 'posts' && (
+              <div
+                className={`${
+                  posts &&
+                  posts.length > 4 &&
+                  'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
+                } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
+              >
+                <LikedPosts posts={posts} />
+              </div>
+            )}
           </div>
         </BlogContainer>
       </section>

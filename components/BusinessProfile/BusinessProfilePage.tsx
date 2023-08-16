@@ -25,23 +25,17 @@ import { notFound } from 'next/navigation'
 import Carousel from 'react-multi-carousel'
 
 import MapComponent from './MapComponent'
+import ReviewSection from './Review/ReviewSection'
 
 export interface BusinessProfilePageProps {
   preview?: boolean
   loading?: boolean
   businessProfile: BusinessProfile
-
   settings: Settings
 }
 
 export default function BusinessProfilePage(props: BusinessProfilePageProps) {
-  const {
-    preview,
-    loading,
-
-    businessProfile,
-    settings,
-  } = props
+  const { preview, loading, businessProfile, settings } = props
   const slug = businessProfile?.slug
 
   if (!slug && !preview) {
@@ -73,11 +67,19 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
       partialVisibilityGutter: 30,
     },
   }
-  const imageUrls = businessProfile.images.map((image) =>
-    urlForImage(image).url()
-  )
+  const imageUrls = businessProfile.images
+    ? businessProfile.images.map((image) => urlForImage(image).url())
+    : []
 
-  console.log(businessProfile.hours)
+  const daysOfTheWeek = [
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
+  ]
 
   // const [latitude, setLatitude] = useState(null)
   // const [longitude, setLongitude] = useState(null)
@@ -124,8 +126,8 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                         <Image
                           src={urlForImage(businessProfile.logo).url()}
                           alt={`${businessProfile.name} Logo`}
-                          width={1000}
-                          height={1000}
+                          width={500}
+                          height={500}
                           className="rounded-full"
                         />
                       )}
@@ -213,48 +215,52 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                   <p>{businessProfile.description}</p>
                 </div>
                 <div className="pb-10 ">
-                  <Carousel
-                    additionalTransfrom={0}
-                    arrows={false}
-                    autoPlay
-                    autoPlaySpeed={5000}
-                    centerMode={false}
-                    containerClass="container-with-dots"
-                    draggable={true}
-                    focusOnSelect={true}
-                    infinite
-                    keyBoardControl
-                    minimumTouchDrag={80}
-                    pauseOnHover
-                    renderArrowsWhenDisabled={false}
-                    renderButtonGroupOutside={false}
-                    renderDotsOutside={false}
-                    responsive={responsive}
-                    rewind={false}
-                    rewindWithAnimation={false}
-                    rtl={false}
-                    shouldResetAutoplay
-                    showDots={true}
-                    slidesToSlide={1}
-                    swipeable={true}
-                  >
-                    {imageUrls.map((imageUrl, index) => (
-                      <div key={index} className="relative h-[30vh]">
-                        <Image
-                          src={imageUrl}
-                          alt={`Slide ${index + 1} for ${businessProfile.name}`}
-                          //   width={2000}
-                          //   height={2000}
+                  {imageUrls && (
+                    <Carousel
+                      additionalTransfrom={0}
+                      arrows={false}
+                      autoPlay
+                      autoPlaySpeed={5000}
+                      centerMode={false}
+                      containerClass="container-with-dots"
+                      draggable={true}
+                      focusOnSelect={true}
+                      infinite
+                      keyBoardControl
+                      minimumTouchDrag={80}
+                      pauseOnHover
+                      renderArrowsWhenDisabled={false}
+                      renderButtonGroupOutside={false}
+                      renderDotsOutside={false}
+                      responsive={responsive}
+                      rewind={false}
+                      rewindWithAnimation={false}
+                      rtl={false}
+                      shouldResetAutoplay
+                      showDots={true}
+                      slidesToSlide={1}
+                      swipeable={true}
+                    >
+                      {imageUrls.map((imageUrl, index) => (
+                        <div key={index} className="relative h-[30vh]">
+                          <Image
+                            src={imageUrl}
+                            alt={`Slide ${index + 1} for ${
+                              businessProfile.name
+                            }`}
+                            //   width={2000}
+                            //   height={2000}
 
-                          fill
-                          draggable={false}
-                          className="object-cover pb-10"
-                          priority={true}
-                          sizes="(max-width: 768px)"
-                        />
-                      </div>
-                    ))}
-                  </Carousel>
+                            fill
+                            draggable={false}
+                            className="object-cover pb-10"
+                            priority={true}
+                            sizes="(max-width: 768px)"
+                          />
+                        </div>
+                      ))}
+                    </Carousel>
+                  )}
                 </div>
                 <section className="flex flex-col gap-10 border-t border-gray-300 py-10 sm:flex-row ">
                   <div className="rounded-md border border-gray-300 py-5 shadow-lg xs:mx-auto xs:w-[80%] sm:w-1/2">
@@ -268,11 +274,12 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                       />
                     </div>
                     <ul className="flex h-[80%] flex-col items-center justify-evenly">
-                      {businessProfile.services.map((service, i) => (
-                        <li key={i + 1} className="text-lg">
-                          {service}
-                        </li>
-                      ))}
+                      {businessProfile.services &&
+                        businessProfile.services.map((service, i) => (
+                          <li key={i + 1} className="text-lg">
+                            {service}
+                          </li>
+                        ))}
                     </ul>
                   </div>
                   <div className="rounded-md border border-gray-300 py-5 shadow-lg xs:mx-auto xs:w-[80%] sm:w-1/2">
@@ -280,7 +287,59 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                       <h2 className="mb-3 border-b border-gray-300 text-xl font-semibold">
                         Hours
                       </h2>
-                      {businessProfile.hours ? (
+                      {businessProfile.openAllDay ? (
+                        <>
+                          {daysOfTheWeek.map((day) => (
+                            <div
+                              key={day}
+                              className="mb-1 flex w-[50%] items-center justify-between"
+                            >
+                              <span className="font-semibold capitalize">
+                                {day}:
+                              </span>
+                              <span className="text-right">Open all day</span>
+                            </div>
+                          ))}
+                        </>
+                      ) : businessProfile.hours ? (
+                        <>
+                          {daysOfTheWeek.map((day) => {
+                            const { isOpen, hours } = businessProfile.hours[day]
+                            return (
+                              <div
+                                key={day}
+                                className="mb-1 flex w-[50%] items-center justify-between"
+                              >
+                                <span className="font-semibold capitalize">
+                                  {day}:
+                                </span>
+                                <span className="text-right">
+                                  {isOpen
+                                    ? hours.open + ' - ' + hours.close
+                                    : 'Closed'}
+                                </span>
+                              </div>
+                            )
+                          })}
+                        </>
+                      ) : (
+                        <>
+                          {daysOfTheWeek.map((day) => (
+                            <div
+                              key={day}
+                              className="mb-1 flex w-[50%] items-center justify-between"
+                            >
+                              <span className="font-semibold capitalize">
+                                {day}:
+                              </span>
+                              <span className="text-right">
+                                No hours available
+                              </span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      {/* {businessProfile.hours ? (
                         <>
                           {Object.entries(businessProfile.hours).map(
                             ([day, { isOpen, hours }]) => (
@@ -302,11 +361,12 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
                         </>
                       ) : (
                         <p>No hours available</p>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </section>
                 <MapComponent businessProfile={businessProfile} />
+                <ReviewSection business={businessProfile} />
               </article>
             </>
           )}

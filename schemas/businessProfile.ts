@@ -1,4 +1,10 @@
-import { EarthAmericasIcon, LinkIcon, PinIcon, StarIcon } from '@sanity/icons'
+import {
+  ChartUpwardIcon,
+  EarthAmericasIcon,
+  LinkIcon,
+  PinIcon,
+  StarIcon,
+} from '@sanity/icons'
 import { defineField, defineType } from 'sanity'
 
 export default defineType({
@@ -126,7 +132,6 @@ export default defineType({
           title: 'Formatted Address',
           type: 'string',
         },
-
         {
           name: 'name',
           title: 'Name',
@@ -142,8 +147,26 @@ export default defineType({
           title: 'URL',
           type: 'url',
         },
+        {
+          name: 'geometry', // New field for latitude and longitude
+          title: 'Geometry',
+          type: 'object',
+          fields: [
+            {
+              name: 'latitude',
+              title: 'Latitude',
+              type: 'number', // Change the type to 'number'
+            },
+            {
+              name: 'longitude',
+              title: 'Longitude',
+              type: 'number', // Change the type to 'number'
+            },
+          ],
+        },
       ],
     }),
+
     defineField({
       name: 'openAllDay',
       title: 'Open 24/7',
@@ -417,6 +440,76 @@ export default defineType({
           ],
         },
       ],
+    }),
+    defineField({
+      name: 'overallViews',
+      title: 'Total Views',
+      type: 'number',
+      description: 'Overall view count for the business.',
+    }),
+    defineField({
+      name: 'views',
+      title: 'Views',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'date',
+              title: 'Date',
+              type: 'date',
+            },
+            {
+              name: 'count',
+              title: 'Count',
+              type: 'number',
+            },
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: 'averageRating',
+      title: 'Average Rating',
+      type: 'number',
+      description: 'Calculated average of all review ratings.',
+    }),
+    defineField({
+      name: 'totalReviews',
+      title: 'Total Reviews',
+      type: 'number',
+      description: 'How mant total ratings this business has.',
+    }),
+    defineField({
+      name: 'ratingsDistribution',
+      title: 'Ratings Distribution',
+      type: 'array',
+
+      of: [
+        {
+          type: 'object',
+          icon: ChartUpwardIcon,
+          fields: [
+            {
+              name: 'rating',
+              title: 'Rating Value',
+              type: 'number',
+            },
+            {
+              name: 'count',
+              title: 'Count',
+              type: 'number',
+            },
+          ],
+        },
+      ],
+      description: 'Distribution of ratings. How many 5s, 4s, 3s, etc.',
+    }),
+    defineField({
+      name: 'email',
+      title: 'Business Email for leads',
+      type: 'string',
     }),
   ],
 })

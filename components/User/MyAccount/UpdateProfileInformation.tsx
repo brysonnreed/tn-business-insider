@@ -1,4 +1,10 @@
-import { faEye, faEyeSlash, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheckCircle,
+  faCircleXmark,
+  faEye,
+  faEyeSlash,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
 import { getClient } from 'lib/sanity.client.cdn'
@@ -8,7 +14,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
 import styles from '../../../styles/Form.module.css'
-import LogoSection from '../AddFormComponents/LogoSection'
+import LogoSection from '../../BusinessProfile/BusinessFormComponents/LogoSection'
 type UserFormData = {
   name: string
   logo: File
@@ -18,6 +24,7 @@ type UserFormData = {
 
 function UpdateProfileInformation({ user }) {
   const [show, setShow] = useState({ password: false, cpassword: false })
+  const [isLoading, setLoading] = useState(false)
   const client = getClient()
   const {
     register,
@@ -31,9 +38,10 @@ function UpdateProfileInformation({ user }) {
       name: user.name || '', // Provide a default value for the name field
     },
   })
-  const oldImage = user.mainImage
+
   const onSubmit = async (data) => {
     try {
+      setLoading(true)
       // Check if passwords match
       if (data.password !== data.cpassword) {
         toast.error('Passwords do not match.')
@@ -59,30 +67,40 @@ function UpdateProfileInformation({ user }) {
       if (res.status === 200) {
         // Show the verification code input and hide the registration form
         reset()
-        toast.success('User information updated!')
-        if (data.logo && oldImage && oldImage.asset && oldImage.asset._ref) {
-          const assetId = oldImage.asset._ref
-          console.log(assetId)
+        notifySuccess()
 
-          // Fetch the asset
-          const asset = await client.getDocument(assetId)
-          // Check if the asset has any references
-          const assetReferences = asset.refs || []
-
-          if (assetReferences.length === 0) {
-            // Delete the asset if it's not referenced by any document
-            await client.delete(assetId)
-          }
-        }
-
-        window.location.reload()
+        setTimeout(() => {
+          window.location.reload()
+        }, 3000) // 4000 milliseconds (i.e., 4 seconds)
       } else {
         toast.error('There was an error updating your info.')
       }
     } catch (error) {
       console.log(error)
+      notifyError()
+    } finally {
+      setLoading(false)
     }
   }
+
+  const notifySuccess = () =>
+    toast.success('Business was successfully updated!', {
+      icon: (
+        <FontAwesomeIcon
+          icon={faCheckCircle}
+          className="h-6 w-6 text-green-500"
+        />
+      ),
+    })
+  const notifyError = () =>
+    toast.error('Failed to update Business', {
+      icon: (
+        <FontAwesomeIcon
+          icon={faCircleXmark}
+          className="h-6 w-6 text-red-600"
+        />
+      ),
+    })
   return (
     <motion.div
       layout
@@ -127,6 +145,7 @@ function UpdateProfileInformation({ user }) {
             title={'User Image'}
             user={user}
             required={false}
+            business={null}
           />
           <div
             className={`${styles.input_group} ${
@@ -200,8 +219,9 @@ function UpdateProfileInformation({ user }) {
             whileTap={{ scale: 0.975 }}
             type="submit"
             className={styles.button}
+            disabled={isLoading} // Disable the button while loading
           >
-            Update Information
+            {isLoading ? `Loading...` : 'Update Information'}
           </motion.button>
         </div>
       </form>

@@ -1,5 +1,5 @@
 import { hash } from 'argon2'
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient, uploadImageUrlToSanity } from 'lib/sanity.client.cdn'
 import { NextApiHandler } from 'next'
 
 const client = getClient()
@@ -10,15 +10,21 @@ const handler: NextApiHandler = async (req, res) => {
     try {
       const hashedPassword = await hash(password)
 
+      const blankUser =
+        'image-08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151-png'
       // Call the Sanity client function to create the user with the password
       const newUser = await client.create({
         _type: 'user', // Use the name of your Sanity schema for users
         name,
         email,
         password: hashedPassword, // Save the password to Sanity
-        isAdmin: false,
+        admin: false,
         image:
           'https://cdn.sanity.io/images/yuy7c73l/production/08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151.png',
+        mainImage: {
+          _type: 'image',
+          asset: { _type: 'reference', _ref: blankUser },
+        },
       })
 
       // Send a success response

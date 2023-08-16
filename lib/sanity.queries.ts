@@ -26,7 +26,7 @@ export const businessProfileFields = groq`
   "slug": slug.current,
   logo,
   verified,
-  
+  openAllDay,
   description,
   services,
   images,
@@ -41,10 +41,23 @@ export const businessProfileFields = groq`
     'name': address.name,
     'place_id': address.place_id,
     'url': address.url,
+    'geometry': address.geometry,
   },
-  
   "category": category->name,
   "city": city->name,
+  website,
+  overallViews,       
+  views[] {           
+    date,
+    count
+  },
+  averageRating,      
+  "reviews": *[_type == 'review' && business._ref == ^._id],
+  totalReviews,
+  ratingsDistribution[] {
+    rating,
+    count
+  },
 `
 
 export const categoryQuery = groq`
@@ -217,6 +230,7 @@ export interface BusinessProfile {
   images?: any[]
   verified?: boolean
   city?: string
+  openAllDay: boolean
   hours?: {
     monday?: {
       isOpen: boolean
@@ -278,4 +292,10 @@ export interface BusinessProfile {
   }
 
   category?: string
+  overallViews: number
+  reviews: {
+    author: string
+    rating: number
+    text: string
+  }
 }

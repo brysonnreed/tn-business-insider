@@ -23,7 +23,7 @@ function ManageBusinessProfile({ business }) {
         />{' '}
         <h2 className="text:xl font-medium sm:text-2xl">{business.name}</h2>
       </div>
-      <Link href={'/businesses/business-management/edit'}>
+      <Link href={`/businesses/business-management/edit/${business._id}`}>
         <div className="group p-2">
           <FontAwesomeIcon
             icon={faPen}

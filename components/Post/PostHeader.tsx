@@ -111,6 +111,7 @@ export default function PostHeader(
           .patch(user._id)
           .set({ likedBlogPosts: updatedLikedPosts })
           .commit()
+        toast.success('Post unliked!')
       } else {
         await client
           .patch(user._id)
@@ -122,6 +123,7 @@ export default function PostHeader(
             },
           ])
           .commit()
+        toast.success('Post liked!')
       }
 
       setIsLiked(!isLiked)

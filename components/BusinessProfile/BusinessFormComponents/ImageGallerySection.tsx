@@ -1,76 +1,139 @@
 import { faArrowUpFromBracket, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
 type ImageGallerySectionProps = {
   setValue: any
+  business: any
+  setRemovedImages: any
+}
+
+type ImageSource = 'user' | 'sanity'
+
+type UploadedImage = {
+  source: ImageSource
+  image: any
 }
 
 const ImageGallerySection: React.FC<ImageGallerySectionProps> = ({
   setValue,
+  business,
+  setRemovedImages,
 }) => {
-  const [uploadedImages, setUploadedImages] = useState<File[]>([])
+  const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
   const [dragActive, setDragActive] = useState(false)
   const galleryInputRef = useRef(null)
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
 
   useEffect(() => {
     setValue('images', uploadedImages)
   }, [uploadedImages, setValue])
 
+  useEffect(() => {
+    // Set uploaded images from the business prop when it's available
+    if (business && business.images) {
+      const businessImageObjects = business.images.map((img) => ({
+        source: 'sanity',
+        image: img,
+      }))
+      setUploadedImages(businessImageObjects)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [business])
+
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true)
-    } else if (e.type === 'dragleave') {
-      setDragActive(false)
-    }
+    setDragActive(e.type === 'dragenter' || e.type === 'dragover')
   }
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleAddImage(e.dataTransfer.files)
+
+    const types = e.dataTransfer.types
+    const selectedFiles = Array.from(e.dataTransfer.files)
+    const imageFiles = selectedFiles.filter((file) =>
+      file.type.startsWith('image/')
+    )
+
+    if (types.includes('Files') && imageFiles.length) {
+      sanitizeImages(imageFiles, handleAddImage)
+    } else {
+      toast.error('No valid image files were selected.')
     }
   }
-
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   e.preventDefault()
-  //   if (e.target.files && e.target.files[0]) {
-  //     handleAddImage(e.target.files)
-  //   }
-  // }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0]
+    const selectedFiles = Array.from(e.target.files || [])
+    const imageFiles = selectedFiles.filter((file) =>
+      file.type.startsWith('image/')
+    )
 
-      // Check if the selected file is an image
-      if (selectedFile.type.startsWith('image/')) {
-        handleAddImage(e.target.files)
-      } else {
-        // Display an error message or perform other actions for non-image files
-        toast.error('Please select an image file.')
-      }
+    if (imageFiles.length) {
+      sanitizeImages(imageFiles, handleAddImage)
+    } else {
+      toast.error('No valid image files were selected.')
     }
   }
 
-  const handleAddImage = (files: FileList) => {
-    const newImages = Array.from(files)
+  const handleAddImage = (files: File[]) => {
+    const newImages: UploadedImage[] = files.map((file) => ({
+      source: 'user',
+      image: file,
+    }))
     setUploadedImages((prevImages) => [...prevImages, ...newImages])
   }
 
   const handleRemoveGalleryImage = (index: number) => {
+    if (setRemovedImages) {
+      const imageId = uploadedImages[index].image.asset._ref // Assuming your image object has an _id field
+      setRemovedImages((prev) => [...prev, imageId])
+    }
+
     setUploadedImages((prevImages) => prevImages.filter((_, i) => i !== index))
   }
 
   const onGalleryButtonClick = () => {
     galleryInputRef.current.click()
+  }
+
+  const sanitizeImages = (files: File[], callback: (files: File[]) => void) => {
+    let sanitizedFiles: File[] = []
+    let loadedCount = 0
+
+    files.forEach((file) => {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} exceeds the 10MB size limit.`)
+        loadedCount++
+        if (loadedCount === files.length) {
+          callback(sanitizedFiles)
+        }
+        return
+      }
+
+      const img = new window.Image()
+      img.onload = () => {
+        loadedCount++
+        sanitizedFiles.push(file)
+        if (loadedCount === files.length) {
+          callback(sanitizedFiles)
+        }
+      }
+      img.onerror = () => {
+        loadedCount++
+        toast.error(`${file.name} is not a valid image file.`)
+        if (loadedCount === files.length) {
+          callback(sanitizedFiles)
+        }
+      }
+      img.src = URL.createObjectURL(file)
+    })
   }
   return (
     <div>
@@ -118,7 +181,11 @@ const ImageGallerySection: React.FC<ImageGallerySectionProps> = ({
                 className="flex flex-col items-center justify-center gap-2"
               >
                 <Image
-                  src={URL.createObjectURL(image)}
+                  src={
+                    image.source === 'sanity'
+                      ? urlForImage(image.image).url()
+                      : URL.createObjectURL(image.image)
+                  }
                   alt={`Image ${index + 1}`}
                   width={100}
                   height={100}

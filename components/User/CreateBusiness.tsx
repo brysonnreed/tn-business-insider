@@ -6,15 +6,18 @@ import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
-import AmenitiesSection from './AddFormComponents/AmenitiesSection'
-import BusinessHoursSection from './AddFormComponents/BusinessHoursSection '
-import CategorySection from './AddFormComponents/CategorySection'
-import CitySection from './AddFormComponents/CitySection'
-import ImageGallerySection from './AddFormComponents/ImageGallerySection'
-import LogoSection from './AddFormComponents/LogoSection'
-import MapSection from './AddFormComponents/MapSection'
-import ServiceSection from './AddFormComponents/ServiceSection'
-import SocialMediaSection from './AddFormComponents/SocialMediaSection'
+import AmenitiesSection from '../BusinessProfile/BusinessFormComponents/AmenitiesSection'
+import BusinessHoursSection from '../BusinessProfile/BusinessFormComponents/BusinessHoursSection '
+import CategorySection from '../BusinessProfile/BusinessFormComponents/CategorySection'
+import CitySection from '../BusinessProfile/BusinessFormComponents/CitySection'
+import DescriptionSection from '../BusinessProfile/BusinessFormComponents/DescriptionSection'
+import ImageGallerySection from '../BusinessProfile/BusinessFormComponents/ImageGallerySection'
+import LogoSection from '../BusinessProfile/BusinessFormComponents/LogoSection'
+import MapSection from '../BusinessProfile/BusinessFormComponents/MapSection'
+import NameSection from '../BusinessProfile/BusinessFormComponents/NameSection'
+import ServiceSection from '../BusinessProfile/BusinessFormComponents/ServiceSection'
+import SocialMediaSection from '../BusinessProfile/BusinessFormComponents/SocialMediaSection'
+import WebsiteSection from '../BusinessProfile/BusinessFormComponents/WebsiteSection'
 
 type SocialMediaData = {
   platform: string
@@ -28,7 +31,8 @@ type BusinessFormData = {
   description: string
   category: string
   services: string[]
-  images: FileList
+  // images: FileList
+  images: { image: File; source: string }[]
   amenities: string[]
   address: string
   mapLocationUrl: string
@@ -42,31 +46,6 @@ type BusinessFormData = {
   }
   website: string
   socialMedia: SocialMediaData[]
-}
-const daysOfWeek = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-]
-// Function to generate times in 15 minute intervals
-const generateTimes = (start, end) => {
-  let times = []
-  let current = start
-  while (current < end) {
-    let hour = Math.floor(current)
-    let minutes = (current - hour) * 60
-    let displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour
-    let displayMinutes = minutes < 10 ? `0${minutes}` : minutes
-    let ampm = hour < 12 || hour === 24 ? 'AM' : 'PM'
-    let displayTime = `${displayHour}:${displayMinutes} ${ampm}`
-    times.push(displayTime)
-    current += 0.25 // Adding 15 mins
-  }
-  return times
 }
 
 export default function CreateBusiness({ cities, categories, socials }) {
@@ -103,11 +82,18 @@ export default function CreateBusiness({ cities, categories, socials }) {
       toast.error('Category is required.')
     } else {
       try {
+        console.log('data: ', data)
+
         setIsLoading(true)
         // Upload the logo and images to Sanity and get the URLs
         const logoId = data.logo ? await uploadImageToSanity(data.logo) : null
+        // const imageIds = data.images
+        //   ? await Promise.all(Array.from(data.images).map(uploadImageToSanity))
+        //   : []
         const imageIds = data.images
-          ? await Promise.all(Array.from(data.images).map(uploadImageToSanity))
+          ? await Promise.all(
+              data.images.map((img) => uploadImageToSanity(img.image))
+            )
           : []
 
         const formData = {
@@ -177,9 +163,6 @@ export default function CreateBusiness({ cities, categories, socials }) {
     setValue('hours', businessHours)
   }, [businessHours, setValue])
 
-  // Generate times in 15 minute intervals from 00:00 to 24:00
-  const times = generateTimes(0, 24)
-
   const notifySuccess = () =>
     toast.success('Business was successfully added!', {
       icon: (
@@ -194,91 +177,66 @@ export default function CreateBusiness({ cities, categories, socials }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       {/* Business Name */}
-      <label className="flex flex-col gap-5">
-        <div className="flex flex-col">
-          <label>
-            Business Name{' '}
-            <span className="text-lg font-semibold text-red-600">*</span>
-          </label>
-          <input
-            {...register('name', { required: true })}
-            className="rounded-md border-b border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
-            placeholder="Business Name"
-            type="text"
-            aria-invalid={errors.name ? 'true' : 'false'}
-          />
-        </div>
-      </label>
+
+      <NameSection register={register} errors={errors} />
       {/* Logo Image */}
       <LogoSection
         setValue={setValue}
         title={'Business Logo'}
         user={null}
         required={true}
+        business={null}
       />
       {/* Description */}
-      <label className="flex flex-col gap-5">
-        <div className="flex flex-col">
-          <label>
-            Business Description
-            <span className="text-lg font-semibold text-red-600"> *</span>
-          </label>
-          <textarea
-            {...register('description', { required: true })}
-            aria-invalid={errors.description ? 'true' : 'false'}
-            className="rounded-md border-b border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
-            placeholder="Enter a description of your business"
-            rows={8}
-          />
-        </div>
-      </label>
+
+      <DescriptionSection register={register} errors={errors} />
       <div className="flex w-full flex-col justify-between gap-5 sm:flex-row">
         {/* City */}
-        <CitySection cities={cities} setValue={setValue} />
+        <CitySection cities={cities} setValue={setValue} business={null} />
 
         {/* Category */}
-        <CategorySection setValue={setValue} categories={categories} />
+        <CategorySection
+          setValue={setValue}
+          categories={categories}
+          business={null}
+        />
       </div>
       {/* Services & Amenities */}
       <div className="flex w-full flex-col justify-between gap-5 sm:flex-row">
-        <ServiceSection setValue={setValue} />
-        <AmenitiesSection setValue={setValue} />
+        <ServiceSection setValue={setValue} business={null} />
+        <AmenitiesSection setValue={setValue} business={null} />
       </div>
       {/* Image Gallery */}
-      <ImageGallerySection setValue={setValue} />
-
+      <ImageGallerySection
+        setValue={setValue}
+        business={null}
+        setRemovedImages={null}
+      />
       {/* Social Media */}
       <SocialMediaSection
         socials={socials}
         register={register}
         setValue={setValue}
+        business={null}
+        errors={errors}
       />
       {/* Address */}
-      <MapSection register={register} setValue={setValue} errors={errors} />
-
+      <MapSection
+        register={register}
+        setValue={setValue}
+        errors={errors}
+        business={null}
+      />
       {/* Business Hours */}
       <BusinessHoursSection
         open247={open247}
         setOpen247={setOpen247}
         businessHours={businessHours}
-        setBusinessHours={setBusinessHours}
         handleHoursChange={handleHoursChange}
         handleIsOpenChange={handleIsOpenChange}
-        times={times}
-        daysOfWeek={daysOfWeek}
       />
-      <label className="flex flex-col gap-5">
-        <div className="flex flex-col">
-          <label>Website</label>
-          <input
-            {...register('website', { required: false })}
-            className="rounded-md border-b border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
-            placeholder="Website Link"
-            type="url"
-          />
-        </div>
-      </label>
 
+      <WebsiteSection register={register} errors={errors} />
       <button
         type="submit"
         disabled={isLoading}

@@ -7,8 +7,10 @@ import {
   faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useToastDisplay } from 'context/toastContext'
 import { motion } from 'framer-motion'
 import Layout from 'layout/layout'
+import { emailRegex, validateAndSanitizeInput } from 'lib/sanitizeUserInput'
 import { getClient } from 'lib/sanity.client.cdn'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -26,12 +28,10 @@ import { authOptions } from '../../api/auth/[...nextauth]'
 
 function Register() {
   const [show, setShow] = useState({ password: false, cpassword: false })
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
   const [verificationCode, setVerificationCode] = useState('')
   const [showForm, setShowForm] = useState(true)
   const [codeSent, setCodeSent] = useState(false)
-
-  const siteKey = process.env.GOOGLE_CAPTCHA_SITE_KEY
+  const { addToastDisplayed, isToastDisplayed } = useToastDisplay()
 
   const router = useRouter()
 
@@ -159,11 +159,11 @@ function Register() {
   }
 
   useEffect(() => {
-    // Check if the 'success' query parameter is present in the URL
-    if (router.query.success === 'false') {
+    if (router.query.success === 'false' && !isToastDisplayed('register')) {
       toast.error('Email account does not exist.')
+      addToastDisplayed('register')
     }
-  }, [router.query.success])
+  }, [router.query.success, isToastDisplayed, addToastDisplayed])
 
   return (
     <Layout>
@@ -231,7 +231,11 @@ function Register() {
                     name="name"
                     placeholder="Full Name"
                     className={styles.input_text}
-                    {...register('name', { required: true, minLength: 4 })}
+                    {...register('name', {
+                      required: true,
+                      minLength: 4,
+                      validate: validateAndSanitizeInput,
+                    })}
                   />
 
                   <span className="flex items-center px-3">
@@ -241,6 +245,11 @@ function Register() {
                 {errors.name?.type === 'minLength' && (
                   <p className="text-red-500">
                     Name must be atleast 4 characters.
+                  </p>
+                )}
+                {errors.name?.type == 'validate' && (
+                  <p className="text-red-500">
+                    Invalid characters are not allowed
                   </p>
                 )}
               </div>
@@ -344,12 +353,6 @@ function Register() {
                   </p>
                 )}
               </div>
-              {/* <ReCAPTCHA
-                sitekey="6LfRhYEnAAAAAD0zEny1JJ2KTn1GPDqYtfPRzWtg"
-                onChange={(value) => {
-                  console.log('Captcha value:', value)
-                }}
-              /> */}
             </div>
           ) : (
             // Display the verification code input
@@ -367,6 +370,7 @@ function Register() {
                   {...register('code', {
                     required: true,
                     minLength: 6,
+                    validate: validateAndSanitizeInput,
                   })}
                   maxLength={6}
                 />
@@ -377,6 +381,11 @@ function Register() {
               {errors.code?.type === 'minLength' && (
                 <p className="text-red-500">
                   Verification code must 6 characters long.
+                </p>
+              )}
+              {errors.code?.type == 'validate' && (
+                <p className="text-red-500">
+                  Invalid characters are not allowed
                 </p>
               )}
               <div className="mt-2 flex flex-wrap items-center justify-center gap-1">

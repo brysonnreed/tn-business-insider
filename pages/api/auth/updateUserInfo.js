@@ -24,6 +24,9 @@ export default async function handler(req, res) {
     let password = ''
     let image = ''
     let oldImage = ''
+    if (user.mainImage) {
+      oldImage = user.mainImage
+    }
     // Check if any changes were made before updating
     const updateFields = {}
     // Update user information if provided
@@ -33,9 +36,7 @@ export default async function handler(req, res) {
 
     if (data.logo) {
       image = data.logo
-      if (user.mainImage) {
-        oldImage = user.mainImage
-      }
+
       updateFields.mainImage = image._id
     }
 
@@ -49,25 +50,64 @@ export default async function handler(req, res) {
     }
     if (user.image !== image.url) {
       updateFields.image = image.url
+      console.log(updateFields.image)
     }
     if (data.password) {
       updateFields.password = user.password
     }
 
+    // if (Object.keys(updateFields).length > 0) {
+    //   // Update specific fields of user in Sanity
+    //   await client
+    //     .patch(user._id)
+    //     .set({
+    //       name: updateFields.name,
+    //       mainImage: {
+    //         _type: 'image',
+    //         asset: { _type: 'reference', _ref: updateFields.mainImage },
+    //       },
+    //       image: updateFields.image,
+    //       password: updateFields.password,
+    //     })
+    //     .commit()
+    // }
     if (Object.keys(updateFields).length > 0) {
       // Update specific fields of user in Sanity
-      await client
-        .patch(user._id)
-        .set({
-          name: updateFields.name,
+      const patch = client.patch(user._id).set({
+        name: updateFields.name,
+        image: updateFields.image,
+        password: updateFields.password,
+      })
+
+      if (updateFields.mainImage) {
+        patch.set({
           mainImage: {
             _type: 'image',
             asset: { _type: 'reference', _ref: updateFields.mainImage },
           },
-          image: updateFields.image,
-          password: updateFields.password,
         })
-        .commit()
+      }
+
+      await patch.commit()
+    }
+    if (data.logo && oldImage && oldImage.asset && oldImage.asset._ref) {
+      const assetId = oldImage.asset._ref
+
+      // Check if the asset has any references
+      // const assetReferences = asset.refs || []
+      const assetReferences = await client.fetch(`*[references($assetId)]`, {
+        assetId,
+      })
+
+      if (assetReferences.length === 0) {
+        // Delete the asset if it's not referenced by any document
+        if (
+          assetId !==
+          'image-08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151-png'
+        ) {
+          await client.delete(assetId)
+        }
+      }
     }
 
     return res

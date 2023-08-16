@@ -1,10 +1,11 @@
 import 'tailwindcss/tailwind.css'
 import '../globals.css'
 
+import { ToastDisplayProvider } from 'context/toastContext'
 import { AppProps } from 'next/app'
 import { Session } from 'next-auth'
-import { SessionProvider, useSession } from 'next-auth/react'
-import { lazy, useEffect } from 'react'
+import { SessionProvider } from 'next-auth/react'
+import { lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 export interface SharedPageProps {
@@ -30,8 +31,10 @@ export default function App({
         </PreviewProvider>
       ) : (
         <SessionProvider session={session}>
-          <Toaster />
-          <Component {...pageProps} />
+          <ToastDisplayProvider>
+            <Toaster />
+            <Component {...pageProps} />
+          </ToastDisplayProvider>
         </SessionProvider>
       )}
     </>

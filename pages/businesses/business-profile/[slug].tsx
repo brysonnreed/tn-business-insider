@@ -10,6 +10,11 @@ import {
 import { BusinessProfile, Settings } from 'lib/sanity.queries'
 import { GetStaticProps } from 'next'
 import type { SharedPageProps } from 'pages/_app'
+import { useEffect } from 'react'
+import {
+  hasBusinessBeenViewed,
+  markBusinessAsViewed,
+} from 'utils/sessionStorage.js'
 
 interface PageProps extends SharedPageProps {
   businessProfile: BusinessProfile
@@ -22,6 +27,40 @@ interface Query {
 
 export default function BusinessProfileSlugRoute(props: PageProps) {
   const { settings, businessProfile, draftMode } = props
+
+  console.log(businessProfile)
+
+  useEffect(() => {
+    if (!hasBusinessBeenViewed(businessProfile._id)) {
+      // Increment view count for this business profile
+      // You'd probably want to do this with an API call that updates your database
+      incrementViewCount(businessProfile._id)
+
+      // Mark this business profile as viewed in this session
+      markBusinessAsViewed(businessProfile._id)
+    }
+  }, [businessProfile])
+
+  const incrementViewCount = async (businessId) => {
+    try {
+      const response = await fetch('/api/handleBusinessView', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ businessId }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to record view.')
+      }
+
+      const data = await response.json()
+      console.log(data.message) // Business view recorded successfully.
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
 
   if (draftMode) {
     return (
@@ -56,7 +95,6 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async ({
       notFound: true,
     }
   }
-  console.log(businessProfile)
 
   return {
     props: {

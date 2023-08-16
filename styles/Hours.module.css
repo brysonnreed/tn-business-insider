@@ -1,0 +1,36 @@
+/* Style for the select input */
+.selectInput {
+  outline: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-size: 0.875rem;
+}
+
+/* Style for the select input when focused */
+.selectInput:focus {
+  border-color: #3490dc;
+  box-shadow: 0 0 0 3px rgba(52, 144, 220, 0.2);
+}
+
+/* Style for the select options */
+.selectInput option {
+  padding: 0.5rem 1rem;
+}
+/* Style for the dropdown scrollbar */
+.selectInput::-webkit-scrollbar {
+  width: 8px;
+}
+
+.selectInput::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+/* Style for the dropdown scrollbar when hovered */
+.selectInput::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa;
+}

@@ -1,22 +1,35 @@
-// CitySection.tsx
 import { faChevronDown, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getClient } from 'lib/sanity.client.cdn'
 import { groq } from 'next-sanity'
-import React, { useEffect, useState } from 'react'
-import { useFormContext } from 'react-hook-form'
+import React, { useEffect, useRef, useState } from 'react'
+import styles from 'styles/Form.module.css'
 
 type CitySectionProps = {
   cities: any
   setValue: any
-  // remove setValue prop, useFormContext hook will be used instead
+  business: any
 }
 
-const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
+const CitySection: React.FC<CitySectionProps> = ({
+  cities,
+  setValue,
+  business,
+}) => {
   const [showCityDropdown, setShowCityDropdown] = useState(false) // State to manage the visibility of the dropdowns
   const [selectedCity, setSelectedCity] = useState('') // State to manage the selected city and category
   const [cityResults, setCityResults] = useState([]) // State to store the matching city and category results
   const [cityInput, setCityInput] = useState('') // State to manage the user input for city and category
+
+  const [inputError, setInputError] = useState(false)
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    // Set uploaded images from the business prop when it's available
+    if (business && business.city) {
+      setSelectedCity(business.city)
+    }
+  }, [business])
 
   // Function to toggle the visibility of the city dropdown
   const toggleCityDropdown = () => {
@@ -58,46 +71,46 @@ const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
       <label>
         City <span className="text-lg font-semibold text-red-600">*</span>
       </label>
-      <div className="flex w-full flex-row justify-between gap-2 rounded-md border-b border-slate-400 bg-slate-100">
+      <div className={styles.input_group}>
         <input
           type="text"
           placeholder="Select a City"
           value={selectedCity ? selectedCity : cityInput}
           onChange={handleCityChange}
-          className="w-full rounded bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
+          className={`${styles.input_text}  ${
+            inputError ? 'border-rose-600' : ''
+          }`}
+          ref={inputRef}
         />
-        <div className="flex flex-row">
-          {selectedCity && (
-            <button
-              type="button"
-              className="border-l border-gray-200 px-1"
-              onClick={() => {
-                handleSelectCity('')
-                setCityInput('')
-              }}
-            >
-              <FontAwesomeIcon icon={faX} className="h-3 w-3 px-1" />
-            </button>
-          )}
+        {selectedCity && (
           <button
             type="button"
-            className="border-l border-gray-200 px-1"
-            onClick={toggleCityDropdown}
+            className="border-l border-gray-200 px-1 transition-all duration-200 hover:text-red-500"
+            onClick={() => {
+              handleSelectCity('')
+              setCityInput('')
+            }}
           >
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              className={`h-4 w-4 transition-all duration-200 ${
-                showCityDropdown && 'rotate-180'
-              }`}
-            />
+            <FontAwesomeIcon icon={faX} className="h-3 w-3 px-1 " />
           </button>
-        </div>
+        )}
+        <button
+          type="button"
+          className="border-l border-gray-200 px-1 transition-all duration-200 hover:text-orange-500"
+          onClick={toggleCityDropdown}
+        >
+          <FontAwesomeIcon
+            icon={faChevronDown}
+            className={`h-4 w-4  ${showCityDropdown && 'rotate-180'}`}
+          />
+        </button>
       </div>
+
       {/* Dropdown for cities */}
       <div
-        className={`absolute z-10 max-h-40 w-full overflow-y-scroll rounded-b shadow-md ${
-          showCityDropdown == true ? 'block' : 'hidden'
-        }`}
+        className={`absolute z-10 max-h-40 w-full overflow-y-scroll bg-white px-1  ${
+          styles.selectInput
+        } rounded-b shadow-md ${showCityDropdown == true ? 'block' : 'hidden'}`}
       >
         {/* Your dropdown content */}
         {cityResults.length > 0
@@ -105,7 +118,7 @@ const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
               <button
                 key={city._id}
                 onClick={() => handleSelectCity(city.name)}
-                className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                className="mobileNavItem flex w-full border-b  px-2 py-1 text-left"
                 type="button"
               >
                 {city.name}
@@ -115,7 +128,7 @@ const CitySection: React.FC<CitySectionProps> = ({ cities, setValue }) => {
               <button
                 key={index + 1}
                 onClick={() => handleSelectCity(city.name)}
-                className="mobileNavItem flex w-full border-b bg-white px-2 py-1 text-left"
+                className="mobileNavItem flex w-full border-b px-2 py-1 text-left"
                 type="button"
               >
                 {city.name}

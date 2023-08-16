@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import Link from 'next/link'
+import blankUser from 'public/images/blank-user-image.png'
 import React from 'react'
 
 function BlogListContainer({ coverImage, title, author, excerpt, slug, date }) {
@@ -55,7 +56,7 @@ function BlogListContainer({ coverImage, title, author, excerpt, slug, date }) {
                       .width(96)
                       .fit('crop')
                       .url()
-                  : 'https://source.unsplash.com/96x96/?face'
+                  : blankUser
               }
               className="h-[28px] w-[28px] rounded-full"
               height={96}

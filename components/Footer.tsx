@@ -12,7 +12,7 @@ function Footer() {
   return (
     <footer className="mt-10 bg-gradient-to-b from-slate-200 to-slate-300 px-4 py-10 sm:text-lg">
       <div className="mx-auto max-w-7xl  p-4  ">
-        <div className="mb-4 flex flex-row items-center justify-between border-b border-gray-300 pb-4">
+        <div className="mb-4 flex flex-row items-center justify-between border-b border-gray-400 pb-4">
           <p className="">Get connected with us on social networks: </p>
           <div className="flex gap-4">
             <motion.a
@@ -44,6 +44,8 @@ function Footer() {
               width={170}
               height={170}
               alt="TN Business Insider"
+              className="h-20 w-auto"
+              loading="lazy"
             />
           </div>
           <div>

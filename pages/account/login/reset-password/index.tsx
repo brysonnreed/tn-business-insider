@@ -6,15 +6,15 @@ import {
   faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { format, isAfter } from 'date-fns'
+import { isAfter } from 'date-fns'
 import { motion } from 'framer-motion'
 import Layout from 'layout/layout'
+import { emailRegex } from 'lib/sanitizeUserInput'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
-import { getSession } from 'next-auth/react'
 import { createClient } from 'next-sanity'
 import logo from 'public/images/logo.jpg'
 import React, { useState } from 'react'
@@ -40,7 +40,6 @@ const client = createClient({
 export default function ResetPassword() {
   const router = useRouter()
   const [show, setShow] = useState({ password: false, cpassword: false })
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
   const [emailExists, setEmailExists] = useState(true)
   const { query } = router
 

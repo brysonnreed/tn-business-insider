@@ -1,20 +1,42 @@
 import { faPlus, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { validateAndSanitizeInput } from 'lib/sanitizeUserInput'
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import styles from 'styles/Form.module.css'
 
 interface ServiceSectionProps {
   setValue: any
+  business: any
 }
 
-const ServiceSection: React.FC<ServiceSectionProps> = ({ setValue }) => {
+const ServiceSection: React.FC<ServiceSectionProps> = ({
+  setValue,
+  business,
+}) => {
   const [services, setServices] = useState<string[]>([])
   const [serviceInput, setServiceInput] = useState('')
 
+  useEffect(() => {
+    // Set uploaded images from the business prop when it's available
+    if (business && business.images) {
+      setServices(business.services)
+      setValue('services', business.services)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [business, setValue])
+
   const handleAddService = () => {
-    if (serviceInput.trim() !== '') {
+    if (
+      serviceInput.trim() !== '' &&
+      validateAndSanitizeInput(serviceInput.trim())
+    ) {
       setServices((prevServices) => [...prevServices, serviceInput.trim()])
       setServiceInput('')
       setValue('services', [...services, serviceInput.trim()])
+    }
+    if (!validateAndSanitizeInput(serviceInput.trim())) {
+      toast.error('Invalid character in service name.')
     }
   }
 
@@ -24,29 +46,25 @@ const ServiceSection: React.FC<ServiceSectionProps> = ({ setValue }) => {
     setValue('services', updatedServices)
   }
 
-  useEffect(() => {
-    setValue('services', [])
-  }, [setValue])
   return (
     <div className="flex w-full flex-col">
       <label>What Services does your business offer?</label>
-      <div className="flex justify-between rounded-md border-b border-slate-400 bg-slate-100 ">
+      <div className={styles.input_group}>
         <input
           value={serviceInput}
           onChange={(e) => setServiceInput(e.target.value)}
           type="text"
-          className="w-full border-slate-400 bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
+          className={styles.input_text}
         />
-
         <button
           type="button"
           onClick={handleAddService}
-          className="ml-1 border-l px-2"
+          className="ml-1 border-l px-2 transition-all duration-200 hover:text-black"
         >
-          <FontAwesomeIcon icon={faPlus} className="h-4 w-4" />
+          <FontAwesomeIcon icon={faPlus} className="h-4 w-4 " />
         </button>
       </div>
-      {services.length > 0 && (
+      {services && services.length > 0 && (
         <div className="mt-4">
           <label>Services you offer:</label>
           <ul className="flex gap-2">

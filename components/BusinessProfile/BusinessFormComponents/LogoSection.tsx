@@ -1,5 +1,6 @@
 import { faArrowUpFromBracket, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -9,6 +10,7 @@ type LogoSectionProps = {
   title: string
   user: any
   required: boolean
+  business: any
 }
 
 const LogoSection: React.FC<LogoSectionProps> = ({
@@ -16,11 +18,14 @@ const LogoSection: React.FC<LogoSectionProps> = ({
   title,
   user,
   required,
+  business,
 }) => {
+  const MAX_IMAGE_SIZE = 10 * 1024 * 1024
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
   const logoInputRef = useRef(null)
   const [imageSrc, setImageSrc] = useState('')
+  const [businessImage, setBusinessImage] = useState()
 
   useEffect(() => {
     setValue('logo', selectedImage)
@@ -33,6 +38,14 @@ const LogoSection: React.FC<LogoSectionProps> = ({
     }
   }, [user])
 
+  useEffect(() => {
+    // Set uploaded images from the business prop when it's available
+    if (business && business.logo) {
+      setBusinessImage(business.logo)
+      setSelectedImage(business.logo)
+    }
+  }, [business])
+
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
@@ -43,43 +56,115 @@ const LogoSection: React.FC<LogoSectionProps> = ({
     }
   }
 
+  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   setDragActive(false)
+
+  //   const types = e.dataTransfer.types
+
+  //   // Check if "Files" is in the list of types
+  //   if (types.includes('Files') && e.dataTransfer.files[0]) {
+  //     const selectedFile = e.dataTransfer.files[0]
+
+  //     // Check if the selected file is an image
+  //     if (selectedFile.type.startsWith('image/')) {
+  //       setSelectedImage(selectedFile)
+  //     } else {
+  //       // Display an error message or perform other actions for non-image files
+  //       toast.error('Only image files are supported.')
+  //     }
+  //   }
+  // }
+  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  //   e.preventDefault()
+  //   e.stopPropagation()
+  //   setDragActive(false)
+
+  //   const files = e.dataTransfer.files
+
+  //   if (files.length > 0) {
+  //     handleFileSelection(files[0])
+  //   }
+  // }
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
     setDragActive(false)
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setSelectedImage(e.dataTransfer.files[0])
+
+    const files = e.dataTransfer.files
+
+    if (files.length > 0) {
+      handleFileSelection(files[0])
     }
   }
 
   // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   e.preventDefault()
   //   if (e.target.files && e.target.files[0]) {
-  //     setSelectedImage(e.target.files[0])
+  //     const selectedFile = e.target.files[0]
+
+  //     // Check if the selected file is an image
+  //     if (selectedFile.type.startsWith('image/')) {
+  //       setSelectedImage(selectedFile)
+  //     } else {
+  //       // Display an error message or perform other actions for non-image files
+  //       toast.error('Only image files are supported.')
+  //     }
   //   }
   // }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0]
 
-      // Check if the selected file is an image
-      if (selectedFile.type.startsWith('image/')) {
-        setSelectedImage(selectedFile)
-      } else {
-        // Display an error message or perform other actions for non-image files
-        toast.error('Please select an image file.')
-      }
+    const files = e.target.files
+
+    if (files && files.length > 0) {
+      handleFileSelection(files[0])
     }
   }
 
   const handleRemoveImage = () => {
     setSelectedImage(null)
     setImageSrc('')
+    setBusinessImage(null)
   }
 
   const onLogoButtonClick = () => {
     logoInputRef.current.click()
+  }
+
+  const handleFileSelection = (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Only image files are supported.')
+      return
+    }
+
+    sanitizeImage(file)
+  }
+
+  const sanitizeImage = (file: File) => {
+    if (file.size > MAX_IMAGE_SIZE) {
+      toast.error('Image file size should be less than 10MB.')
+      return
+    }
+
+    const img = new window.Image()
+    img.src = URL.createObjectURL(file)
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width
+      canvas.height = img.height
+
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+
+      canvas.toBlob((blob) => {
+        setSelectedImage(new File([blob], file.name, { type: 'image/png' }))
+      })
+
+      URL.revokeObjectURL(img.src)
+    }
   }
   return (
     <div>
@@ -100,7 +185,11 @@ const LogoSection: React.FC<LogoSectionProps> = ({
           <div className="image-container">
             <Image
               src={
-                imageSrc != '' ? imageSrc : URL.createObjectURL(selectedImage)
+                imageSrc != ''
+                  ? imageSrc
+                  : businessImage
+                  ? urlForImage(businessImage).url()
+                  : URL.createObjectURL(selectedImage)
               }
               alt="Selected Logo"
               width={200}

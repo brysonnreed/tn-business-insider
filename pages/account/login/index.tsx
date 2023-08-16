@@ -1,7 +1,9 @@
 import { faAt, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { useToastDisplay } from 'context/toastContext'
 import { motion } from 'framer-motion'
 import Layout from 'layout/layout'
+import { emailRegex } from 'lib/sanitizeUserInput'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -19,8 +21,9 @@ import styles from '../../../styles/Form.module.css'
 
 function Login() {
   const [show, setShow] = useState(false)
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i
   const router = useRouter()
+  const { addToastDisplayed, isToastDisplayed } = useToastDisplay()
+
   async function handleGoogleSignIn() {
     signIn('google', {
       callbackUrl: Array.isArray(router.query.callbackUrl)
@@ -65,26 +68,31 @@ function Login() {
   }
 
   useEffect(() => {
-    // Check if the 'password-updated' query parameter is present in the URL
-    if (router.query['password-updated'] === 'true') {
+    if (
+      router.query['password-updated'] === 'true' &&
+      !isToastDisplayed('password-updated')
+    ) {
       toast.success('Password updated successfully')
+      addToastDisplayed('password-updated')
     }
 
-    // Check if the 'verify-email' query parameter is present in the URL
-    if (router.query['verify-email'] === 'true') {
+    if (
+      router.query['verify-email'] === 'true' &&
+      !isToastDisplayed('verify-email')
+    ) {
       toast.success('Account added successfully')
+      addToastDisplayed('verify-email')
     }
-  }, [router.query.success, router.query])
+  }, [router.query, isToastDisplayed, addToastDisplayed])
 
   useEffect(() => {
-    // Check if the 'protectedPageCallback' query parameter is present in the URL
     const isProtectedPageCallback =
       router.query.protectedPageCallback === 'true'
-    if (isProtectedPageCallback) {
-      // Display a toast message informing the user to log in to access the page
+    if (isProtectedPageCallback && !isToastDisplayed('protected-page')) {
       toast.error('You must be logged in to access this page.')
+      addToastDisplayed('protected-page')
     }
-  }, [router.query.protectedPageCallback])
+  }, [router.query.protectedPageCallback, isToastDisplayed, addToastDisplayed])
 
   return (
     <Layout>

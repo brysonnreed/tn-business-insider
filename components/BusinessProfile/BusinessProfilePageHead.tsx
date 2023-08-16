@@ -18,7 +18,7 @@ export default function BusinessProfilePageHead({
     <Head>
       <BlogMeta />
       <title>
-        {businessProfile.name} - {businessProfile.city}, Tennessee{' '}
+        {`${businessProfile?.name} - ${businessProfile?.city}, Tennessee`}
       </title>
       <meta name="description" content={`${businessProfile.description}`} />
       <meta

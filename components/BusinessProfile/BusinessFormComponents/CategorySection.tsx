@@ -3,21 +3,33 @@ import { faChevronDown, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { getClient } from 'lib/sanity.client.cdn'
 import { groq } from 'next-sanity'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import styles from 'styles/Form.module.css'
 
 type CategorySectionProps = {
   setValue: any
   categories: any[]
+  business: any
 }
 
 const CategorySection: React.FC<CategorySectionProps> = ({
   setValue,
   categories,
+  business,
 }) => {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false) // State to manage the visibility of the dropdowns
   const [selectedCategory, setSelectedCategory] = useState('') // State to manage the selected city and category
   const [categoryResults, setCategoryResults] = useState([]) // State to store the matching city and category results
   const [categoryInput, setCategoryInput] = useState('') // State to manage the user input for city and category
+  const [inputError, setInputError] = useState(false)
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    // Set uploaded images from the business prop when it's available
+    if (business && business.category) {
+      setSelectedCategory(business.category)
+    }
+  }, [business])
 
   // Function to toggle the visibility of the category dropdown
   const toggleCategoryDropdown = () => {
@@ -64,44 +76,46 @@ const CategorySection: React.FC<CategorySectionProps> = ({
       <label>
         Category <span className="text-lg font-semibold text-red-600">*</span>
       </label>
-      <div className="flex w-full flex-row justify-between gap-2 rounded-md border-b border-slate-400 bg-slate-100">
+      <div className={styles.input_group}>
         <input
           type="text"
           placeholder="Select a Category"
           value={selectedCategory ? selectedCategory : categoryInput}
           onChange={handleCategoryChange}
-          className="w-full rounded bg-slate-100 px-4 py-1 text-base outline-none transition-all duration-300 placeholder:text-sm focus-within:border-slate-600 focus-within:shadow-xl hover:border-slate-600"
+          className={`${styles.input_text}  ${
+            inputError ? 'border-rose-600' : ''
+          }`}
+          ref={inputRef}
         />
-        <div className="flex flex-row">
-          {selectedCategory && (
-            <button
-              type="button"
-              className="border-l border-gray-200 px-1"
-              onClick={() => {
-                handleSelectCategory('')
-                setCategoryInput('')
-              }}
-            >
-              <FontAwesomeIcon icon={faX} className="h-3 w-3 px-1" />
-            </button>
-          )}
+
+        {selectedCategory && (
           <button
             type="button"
-            className="border-l border-gray-200 px-1"
-            onClick={toggleCategoryDropdown}
+            className="border-l border-gray-200 px-1 transition-all duration-200 hover:text-red-500"
+            onClick={() => {
+              handleSelectCategory('')
+              setCategoryInput('')
+            }}
           >
-            <FontAwesomeIcon
-              icon={faChevronDown}
-              className={`h-4 w-4 transition-all duration-200 ${
-                showCategoryDropdown && 'rotate-180'
-              }`}
-            />
+            <FontAwesomeIcon icon={faX} className="h-3 w-3 px-1 " />
           </button>
-        </div>
+        )}
+        <button
+          type="button"
+          className="border-l border-gray-200 px-1 text-black transition-all duration-200 hover:text-orange-500"
+          onClick={toggleCategoryDropdown}
+        >
+          <FontAwesomeIcon
+            icon={faChevronDown}
+            className={`h-4 w-4  ${showCategoryDropdown && 'rotate-180'}`}
+          />
+        </button>
       </div>
       {/* Dropdown for categories */}
       <div
-        className={`absolute z-10 max-h-40 w-full overflow-y-scroll rounded-b shadow-md  ${
+        className={`absolute z-10 max-h-40 bg-white px-1  ${
+          styles.selectInput
+        } w-full overflow-y-scroll rounded-b shadow-md  ${
           showCategoryDropdown ? 'block' : 'hidden'
         }`}
       >

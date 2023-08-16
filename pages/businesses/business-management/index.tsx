@@ -5,14 +5,30 @@ import Footer from 'components/Footer'
 import Header from 'components/Header'
 import BusinessAccordian from 'components/User/BusinessAccordian'
 import ManageBusinessProfile from 'components/User/ManageBusinessProfile'
+import { useToastDisplay } from 'context/toastContext'
 import { getClient } from 'lib/sanity.client.cdn'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { getSession, useSession } from 'next-auth/react'
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 import { authOptions } from '../../api/auth/[...nextauth]'
 
 function BusinessManagement({ businesses }) {
+  const { addToastDisplayed, isToastDisplayed } = useToastDisplay()
+  const router = useRouter()
+
+  useEffect(() => {
+    const queryOwnership = router.query.ownership
+
+    if (queryOwnership === 'false' && !isToastDisplayed('ownership')) {
+      toast.error(`You don't own this business!`)
+      addToastDisplayed('ownership')
+    }
+  }, [router.query.ownership, isToastDisplayed, addToastDisplayed])
+
   return (
     <>
       <Header />

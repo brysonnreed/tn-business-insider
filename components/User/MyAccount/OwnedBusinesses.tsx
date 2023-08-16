@@ -10,8 +10,8 @@ const OwnedBusinesses = ({ businesses }) => {
   return (
     <motion.div
       layout
-      animate={{ opacity: 1 }}
-      initial={{ opacity: 0 }}
+      initial={{ y: 150, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <div className="flex items-center justify-between">
