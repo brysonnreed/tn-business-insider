@@ -81,30 +81,6 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
     'sunday',
   ]
 
-  // const [latitude, setLatitude] = useState(null)
-  // const [longitude, setLongitude] = useState(null)
-
-  // useEffect(() => {
-  //   const geocoder = new window.google.maps.Geocoder()
-  //   geocoder.geocode(
-  //     { address: businessProfile.address.formatted_address },
-  //     (results, status) => {
-  //       if (status === 'OK') {
-  //         const { lat, lng } = results[0].geometry.location
-  //         setLatitude(lat())
-  //         setLongitude(lng())
-  //       } else {
-  //         console.error(
-  //           'Geocode was not successful for the following reason:',
-  //           status
-  //         )
-  //       }
-  //     }
-  //   )
-  // }, [businessProfile.address.formatted_address])
-
-  // const center = { lat: latitude, lng: longitude }
-
   return (
     <>
       <BusinessProfilePageHead

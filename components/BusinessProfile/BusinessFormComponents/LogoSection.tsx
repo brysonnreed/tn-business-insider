@@ -56,37 +56,6 @@ const LogoSection: React.FC<LogoSectionProps> = ({
     }
   }
 
-  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-  //   e.preventDefault()
-  //   e.stopPropagation()
-  //   setDragActive(false)
-
-  //   const types = e.dataTransfer.types
-
-  //   // Check if "Files" is in the list of types
-  //   if (types.includes('Files') && e.dataTransfer.files[0]) {
-  //     const selectedFile = e.dataTransfer.files[0]
-
-  //     // Check if the selected file is an image
-  //     if (selectedFile.type.startsWith('image/')) {
-  //       setSelectedImage(selectedFile)
-  //     } else {
-  //       // Display an error message or perform other actions for non-image files
-  //       toast.error('Only image files are supported.')
-  //     }
-  //   }
-  // }
-  // const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-  //   e.preventDefault()
-  //   e.stopPropagation()
-  //   setDragActive(false)
-
-  //   const files = e.dataTransfer.files
-
-  //   if (files.length > 0) {
-  //     handleFileSelection(files[0])
-  //   }
-  // }
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     e.stopPropagation()
@@ -99,20 +68,6 @@ const LogoSection: React.FC<LogoSectionProps> = ({
     }
   }
 
-  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   e.preventDefault()
-  //   if (e.target.files && e.target.files[0]) {
-  //     const selectedFile = e.target.files[0]
-
-  //     // Check if the selected file is an image
-  //     if (selectedFile.type.startsWith('image/')) {
-  //       setSelectedImage(selectedFile)
-  //     } else {
-  //       // Display an error message or perform other actions for non-image files
-  //       toast.error('Only image files are supported.')
-  //     }
-  //   }
-  // }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault()
 
@@ -217,7 +172,11 @@ const LogoSection: React.FC<LogoSectionProps> = ({
                 onClick={onLogoButtonClick}
                 type="button"
               >
-                Upload a file <FontAwesomeIcon icon={faArrowUpFromBracket} />
+                Upload a file{' '}
+                <FontAwesomeIcon
+                  icon={faArrowUpFromBracket}
+                  className="h-4 w-4"
+                />
               </button>
             </div>
             <input

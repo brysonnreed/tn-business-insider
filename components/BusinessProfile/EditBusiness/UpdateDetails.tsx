@@ -86,7 +86,7 @@ function UpdateDetails({ business, categories }) {
       } catch (error) {
         setSubmitted(false)
         notifyError()
-        console.log('Error uploading business: ', error)
+        console.log('Error updating business: ', error)
       } finally {
         setIsLoading(false)
       }

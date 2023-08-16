@@ -28,8 +28,6 @@ interface Query {
 export default function BusinessProfileSlugRoute(props: PageProps) {
   const { settings, businessProfile, draftMode } = props
 
-  console.log(businessProfile)
-
   useEffect(() => {
     if (!hasBusinessBeenViewed(businessProfile._id)) {
       // Increment view count for this business profile
@@ -54,9 +52,6 @@ export default function BusinessProfileSlugRoute(props: PageProps) {
       if (!response.ok) {
         throw new Error('Failed to record view.')
       }
-
-      const data = await response.json()
-      console.log(data.message) // Business view recorded successfully.
     } catch (error) {
       console.error('Error:', error)
     }

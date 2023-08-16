@@ -1,10 +1,9 @@
-import { faAt } from '@fortawesome/free-solid-svg-icons'
+import { faAt, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
 import { emailRegex } from 'lib/sanitizeUserInput'
-import { getClient } from 'lib/sanity.client.cdn'
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useEffect, useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
 import styles from '../../../styles/Form.module.css'
@@ -23,18 +22,53 @@ function BusinessEmail({ business }) {
     formState: { errors },
   } = useForm<EmailFormData>()
 
-  const [isLoading, setLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const businessId = business._id
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<EmailFormData> = async (data) => {
     try {
-      setLoading(true)
-      console.log(data)
+      setIsLoading(true)
+      console.log(data.email)
+
+      const response = await fetch('/api/handleBusinessUpdate', {
+        method: 'POST',
+        body: JSON.stringify({ email: data.email, businessId }),
+      })
+      if (!response.ok) {
+        throw new Error('Failed to add Business')
+      } else {
+        notifySuccess()
+        reset()
+        setTimeout(() => {
+          window.location.reload()
+        }, 3000) // 3000 milliseconds (i.e., 3 seconds)
+      }
     } catch (error) {
-      console.log(error)
+      setSubmitted(false)
+      notifyError()
+      console.log('Error updating business: ', error)
     } finally {
-      setLoading(false)
+      setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (business && business.email) {
+      setValue('email', business.email)
+    }
+  }, [business, setValue])
+
+  const notifySuccess = () =>
+    toast.success('Business was successfully updated!', {
+      icon: (
+        <FontAwesomeIcon
+          icon={faCheckCircle}
+          className="h-6 w-6 text-green-500"
+        />
+      ),
+    })
+  const notifyError = () => toast.error('Failed to update Business')
   return (
     <motion.div
       layout

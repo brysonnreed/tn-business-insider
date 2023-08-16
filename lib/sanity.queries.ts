@@ -58,6 +58,7 @@ export const businessProfileFields = groq`
     rating,
     count
   },
+  email
 `
 
 export const categoryQuery = groq`

@@ -9,16 +9,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log(JSON.parse(req.body))
-    const { businessId, changes, logo, images, removedImages, oldImage } =
-      JSON.parse(req.body)
+    const {
+      businessId,
+      changes,
+      logo,
+      images,
+      removedImages,
+      oldImage,
+      email,
+    } = JSON.parse(req.body)
     // Fetch user based on email from Sanity
 
     const client = getClient()
 
     const updateFields = {}
 
-    if (changes.name) {
+    if (changes && changes.name) {
       let slug = slugify(changes.name, { lower: true })
       const existingSlug = await client.fetch(
         `*[_type == "businessProfile" && slug.current == $slug][0]`,
@@ -35,36 +41,36 @@ export default async function handler(req, res) {
     if (logo) {
       updateFields.logo = logo
     }
-    if (changes.description) {
+    if (changes && changes.description) {
       updateFields.description = changes.description
     }
-    if (changes.address) {
+    if (changes && changes.address) {
       updateFields.address = changes.address
     }
-    if (changes.city) {
+    if (changes && changes.city) {
       const cityDoc = await client.fetch(
         `*[_type == "city" && name == $city][0]._id`,
         { city: changes.city }
       )
       updateFields.city = cityDoc
     }
-    if (changes.category) {
+    if (changes && changes.category) {
       const categoryDoc = await client.fetch(
         `*[_type == "businessProfileCategory" && name == $category][0]._id`,
         { category: changes.category }
       )
       updateFields.category = categoryDoc
     }
-    if (changes.services) {
+    if (changes && changes.services) {
       updateFields.services = changes.services
     }
-    if (changes.amenities) {
+    if (changes && changes.amenities) {
       updateFields.amenities = changes.amenities
     }
-    if (changes.website) {
+    if (changes && changes.website) {
       updateFields.website = changes.website
     }
-    if (changes.hours) {
+    if (changes && changes.hours) {
       updateFields.hours = Object.keys(changes.hours).reduce((prev, day) => {
         return {
           ...prev,
@@ -96,7 +102,7 @@ export default async function handler(req, res) {
       }))
       updateFields.images = imagesWithKeys
     }
-    if (changes.socialMedia) {
+    if (changes && changes.socialMedia) {
       const platformDocs = await Promise.all(
         changes.socialMedia.map(async (changes) => {
           const platformDoc = await client.fetch(
@@ -115,7 +121,10 @@ export default async function handler(req, res) {
       }))
 
       updateFields.socialMedia = socialMediaRefs
-      console.log(socialMediaRefs)
+    }
+
+    if (email) {
+      updateFields.email = email
     }
 
     if (Object.keys(updateFields).length > 0) {
@@ -130,6 +139,7 @@ export default async function handler(req, res) {
         website: updateFields.website,
         hours: updateFields.hours,
         socialMedia: updateFields.socialMedia,
+        email: updateFields.email,
       })
 
       if (updateFields.logo) {
@@ -160,13 +170,10 @@ export default async function handler(req, res) {
 
     if (removedImages && removedImages.length) {
       for (const assetId of removedImages) {
-        console.log('assetId: ', assetId)
         // Check if the asset has any references
         const assetReferences = await client.fetch(`*[references($assetId)]`, {
           assetId,
         })
-
-        console.log('assetReferences: ', assetReferences)
 
         if (assetReferences.length === 0) {
           // Delete the asset if it's not referenced by any document

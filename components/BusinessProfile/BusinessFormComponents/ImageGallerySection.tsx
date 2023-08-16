@@ -157,7 +157,11 @@ const ImageGallerySection: React.FC<ImageGallerySectionProps> = ({
               onClick={onGalleryButtonClick}
               type="button"
             >
-              Upload a file <FontAwesomeIcon icon={faArrowUpFromBracket} />
+              Upload a file{' '}
+              <FontAwesomeIcon
+                icon={faArrowUpFromBracket}
+                className="h-4 w-4"
+              />
             </button>
           </div>
           <input

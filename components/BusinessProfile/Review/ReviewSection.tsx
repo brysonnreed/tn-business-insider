@@ -68,7 +68,7 @@ function ReviewSection({ business }) {
     <div className="mt-10">
       <section className="flex min-h-[20vh] flex-col rounded-md border p-5 shadow-xl sm:flex-row">
         <div className="flex items-center justify-center gap-4 pb-4 sm:w-2/3 sm:justify-start sm:pb-0">
-          <div className=" flex flex-col gap-2 ">
+          <div className=" flex flex-col items-center justify-center gap-2">
             <div className="h-24 w-24 sm:h-32 sm:w-32">
               {business.logo && (
                 <Image
@@ -76,7 +76,7 @@ function ReviewSection({ business }) {
                   alt={`${business.name} Logo`}
                   width={500}
                   height={500}
-                  className="rounded-full"
+                  className=""
                 />
               )}
             </div>
@@ -85,7 +85,8 @@ function ReviewSection({ business }) {
           <div className="h-[5rem] w-[1px] bg-gray-300 sm:h-[10rem]"></div>
           <div className="flex flex-col items-center justify-center gap-1 ">
             <p className="text-center text-lg font-bold sm:text-2xl">
-              {parseFloat(business.averageRating).toFixed(2)}
+              {business.averageRating &&
+                parseFloat(business.averageRating).toFixed(2)}
             </p>
             <Rating
               name="half-rating-read"
@@ -94,7 +95,7 @@ function ReviewSection({ business }) {
               readOnly
             />
             <p className="text-center text-lg text-gray-500  sm:text-xl">
-              {business.totalReviews}{' '}
+              {business.totalReviews ? business.totalReviews : 0}{' '}
               {business.totalReviews == 1 ? 'rating' : 'ratings'}
             </p>
           </div>
@@ -103,7 +104,8 @@ function ReviewSection({ business }) {
           <div className="flex w-full flex-col items-center justify-center gap-1 ">
             <div className="flex w-full flex-col gap-2">
               {[5, 4, 3, 2, 1].map((starCount) => {
-                const ratingData = business.ratingsDistribution.find(
+                const ratingsDistribution = business.ratingsDistribution || []
+                const ratingData = ratingsDistribution.find(
                   (r) => r.rating === starCount
                 ) || { count: 0 }
                 const widthPercentage =

@@ -47,7 +47,9 @@ function BusinessId({ businessProfile, cities, categories, socials }) {
           showPage={showPage}
         />
         <BlogContainer>
-          {showPage == 'dashboard' && <BusinessDashboard />}
+          {showPage == 'dashboard' && (
+            <BusinessDashboard business={businessProfile} />
+          )}
 
           {showPage == 'update' && (
             <EditBusiness
