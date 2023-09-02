@@ -94,63 +94,6 @@ function UpdateHours({ business }) {
     }
   }, [submitted])
 
-  const [businessHours, setBusinessHours] = useState({})
-  const [open247, setOpen247] = useState(false)
-
-  const handleHoursChange = (day, field, value) => {
-    setBusinessHours({
-      ...businessHours,
-      [day]: {
-        ...businessHours[day],
-        [field]: value,
-      },
-    })
-  }
-
-  const handleIsOpenChange = (day, value) => {
-    setBusinessHours({
-      ...businessHours,
-      [day]: {
-        ...businessHours[day],
-        isOpen: value,
-        open: value ? '9:00 AM' : '',
-        close: value ? '5:00 PM' : '',
-      },
-    })
-  }
-
-  useEffect(() => {
-    if (business && business.hours) {
-      const updatedBusinessHours = {}
-
-      for (const day in business.hours) {
-        const dayInfo = business.hours[day]
-
-        if (dayInfo.isOpen) {
-          updatedBusinessHours[day] = {
-            isOpen: true,
-            open: dayInfo.hours?.open,
-            close: dayInfo.hours?.close,
-          }
-        } else {
-          updatedBusinessHours[day] = {
-            isOpen: false,
-          }
-        }
-      }
-
-      setBusinessHours(updatedBusinessHours)
-    }
-  }, [business])
-
-  useEffect(() => {
-    setValue('openAllDay', open247)
-  }, [open247, setValue])
-
-  useEffect(() => {
-    setValue('hours', businessHours)
-  }, [businessHours, setValue])
-
   const notifySuccess = () =>
     toast.success('Business was successfully updated!', {
       icon: (
@@ -170,13 +113,7 @@ function UpdateHours({ business }) {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col gap-4"
     >
-      <BusinessHoursSection
-        open247={open247}
-        setOpen247={setOpen247}
-        businessHours={businessHours}
-        handleHoursChange={handleHoursChange}
-        handleIsOpenChange={handleIsOpenChange}
-      />
+      <BusinessHoursSection setValue={setValue} business={business} />
 
       <button
         type="submit"

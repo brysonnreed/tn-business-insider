@@ -1,8 +1,8 @@
 import {
   faChartColumn,
-  faCheck,
   faCreditCard,
   faEnvelope,
+  faEye,
   faPen,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,8 +10,6 @@ import { motion } from 'framer-motion'
 import { urlForImage } from 'lib/sanity.image'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import React from 'react'
-
 const BusinessDetails = ({ business, showPage, setShowPage }) => {
   const router = useRouter()
 
@@ -29,14 +27,14 @@ const BusinessDetails = ({ business, showPage, setShowPage }) => {
   }
 
   return (
-    <div className="mx-auto flex flex-col justify-between rounded-t-lg border bg-slate-200 px-1 py-5 shadow-xl sm:rounded-l-lg  sm:rounded-r-none  md:px-5">
-      <div className="flex flex-col gap-2">
+    <div className="mx-auto flex flex-col justify-between rounded-t-lg border bg-slate-200 px-1 py-2 shadow-xl sm:rounded-l-lg sm:rounded-r-none  sm:py-5  md:px-5">
+      <div className="flex flex-col gap-1 sm:gap-2">
         <div className="flex gap-2 sm:flex-col sm:text-center">
-          <div className="mb-4 flex flex-row gap-4 sm:flex-col">
+          <div className="flex flex-row gap-4 sm:mb-4 sm:flex-col">
             <div className="relative items-center justify-center sm:flex ">
               <Image
                 src={urlForImage(business.logo).url()}
-                className="h-[60px] w-[60px] rounded-full object-cover md:h-[80px] md:w-[80px]"
+                className="h-[60px] w-[60px]  object-cover md:h-[80px] md:w-[80px]"
                 height={96}
                 width={96}
                 alt={business.name}
@@ -51,14 +49,18 @@ const BusinessDetails = ({ business, showPage, setShowPage }) => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col justify-center gap-2 xs:flex-row sm:flex-col">
+        <div className="grid grid-cols-2 flex-row justify-center gap-2 xs:flex sm:flex-col">
           <motion.button
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.01 }}
             className={
               showPage == 'dashboard' ? 'userNavBtnActive' : 'userNavBtn'
             }
-            onClick={() => handlePageChange('dashboard')}
+            onClick={() => {
+              handlePageChange('dashboard')
+              setShowPage('dashboard')
+            }}
+            type="button"
           >
             <FontAwesomeIcon icon={faChartColumn} className="h-4 w-4" />
             Dashboard
@@ -67,19 +69,27 @@ const BusinessDetails = ({ business, showPage, setShowPage }) => {
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.01 }}
             className={showPage == 'update' ? 'userNavBtnActive' : 'userNavBtn'}
-            onClick={() => handlePageChange('update')}
+            onClick={() => {
+              handlePageChange('update')
+              setShowPage('update')
+            }}
+            type="button"
           >
             <FontAwesomeIcon icon={faPen} className="h-4 w-4" />
-            Update Info
+            Update
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.01 }}
             className={showPage == 'email' ? 'userNavBtnActive' : 'userNavBtn'}
-            onClick={() => handlePageChange('email')}
+            onClick={() => {
+              handlePageChange('email')
+              setShowPage('email')
+            }}
+            type="button"
           >
             <FontAwesomeIcon icon={faEnvelope} className="h-4 w-4" />
-            Email
+            Leads
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -87,13 +97,28 @@ const BusinessDetails = ({ business, showPage, setShowPage }) => {
             className={
               showPage == 'subscription' ? 'userNavBtnActive' : 'userNavBtn'
             }
-            onClick={() => handlePageChange('subscription')}
+            onClick={() => {
+              handlePageChange('subscription')
+              setShowPage('subscription')
+            }}
+            type="button"
           >
             <FontAwesomeIcon icon={faCreditCard} className="h-4 w-4" />
             Subscription
           </motion.button>
         </div>
       </div>
+      <span className="hidden sm:block">
+        <motion.a
+          href={`/business/business-profile/${business.slug}`}
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.01 }}
+          className={`userNavBtn`}
+        >
+          <FontAwesomeIcon icon={faEye} className="h-4 w-4" />
+          View Profile
+        </motion.a>
+      </span>
     </div>
   )
 }

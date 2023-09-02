@@ -1,8 +1,11 @@
 import 'tailwindcss/tailwind.css'
 import '../globals.css'
 
+import Footer from 'components/Footer'
+import Header from 'components/Header/Header'
 import { ToastDisplayProvider } from 'context/toastContext'
 import { AppProps } from 'next/app'
+import { useRouter } from 'next/router'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { lazy } from 'react'
@@ -23,6 +26,19 @@ export default function App({
 }: AppProps<SharedPageProps & { session: Session }>) {
   const { draftMode, token } = pageProps
 
+  const router = useRouter()
+
+  const isStudioRoute = router.pathname.startsWith('/studio')
+  const pathsToExclude = [
+    '/studio',
+    '/account/register',
+    '/account/login',
+    '/account/reset-password',
+  ]
+  const isExcludedRoute = pathsToExclude.some((path) =>
+    router.pathname.startsWith(path)
+  )
+
   return (
     <>
       {draftMode ? (
@@ -33,7 +49,9 @@ export default function App({
         <SessionProvider session={session}>
           <ToastDisplayProvider>
             <Toaster />
+            {!isExcludedRoute && <Header />}
             <Component {...pageProps} />
+            {!isExcludedRoute && <Footer />}
           </ToastDisplayProvider>
         </SessionProvider>
       )}

@@ -1,3 +1,5 @@
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useRef, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import styles from 'styles/Form.module.css'
@@ -198,17 +200,10 @@ const MapSection = ({ register, setValue, errors, business }) => {
 
   return (
     <div>
-      <p>
-        Business Address{' '}
-        <span className="text-lg font-semibold text-red-600">*</span>
-      </p>
-      <div
-        className={`${styles.input_group} mb-4 ${
-          errors.address?.type === 'required' ? 'border-rose-600' : ''
-        }`}
-      >
+      <p>Business Address</p>
+      <div className={`${styles.input_group} mb-4 `}>
         <input
-          {...register('address', { required: true })}
+          {...register('address', { required: false })}
           ref={addressInputRef}
           className={styles.input_text}
           placeholder="Search for your business address"

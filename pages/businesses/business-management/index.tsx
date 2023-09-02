@@ -2,7 +2,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import BlogContainer from 'components/Blog/BlogContainer'
 import Footer from 'components/Footer'
-import Header from 'components/Header'
+import Header from 'components/Header/Header'
 import BusinessAccordian from 'components/User/BusinessAccordian'
 import ManageBusinessProfile from 'components/User/ManageBusinessProfile'
 import { useToastDisplay } from 'context/toastContext'
@@ -31,7 +31,7 @@ function BusinessManagement({ businesses }) {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
 
       <section className="mx-auto min-h-screen max-w-5xl pt-10">
         <BlogContainer>
@@ -87,7 +87,7 @@ function BusinessManagement({ businesses }) {
           </div>
         </BlogContainer>
       </section>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

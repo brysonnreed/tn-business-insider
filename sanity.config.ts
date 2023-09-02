@@ -3,6 +3,7 @@
  */
 
 import { visionTool } from '@sanity/vision'
+import { theme } from 'https://themer.sanity.build/api/hues?default=9e744c&primary=f1721e;400&transparent=927458&positive=43d675;300&caution=fbd024;200&lightest=fdfcfc&darkest=15110d'
 import { apiVersion, dataset, previewSecretId, projectId } from 'lib/sanity.api'
 import { previewDocumentNode } from 'plugins/previewPane'
 import { productionUrl } from 'plugins/productionUrl'
@@ -22,6 +23,7 @@ import reviewType from 'schemas/review'
 import settingsType from 'schemas/settings'
 import SocialType from 'schemas/socials'
 import UserType from 'schemas/users'
+import Logo from 'utils/Logo'
 
 const title =
   process.env.NEXT_PUBLIC_SANITY_PROJECT_TITLE || 'Next.js Blog with Sanity.io'
@@ -31,6 +33,7 @@ export default defineConfig({
   projectId,
   dataset,
   title,
+  theme,
   schema: {
     // If you want more content types, you can add them to this array
     types: [
@@ -68,4 +71,9 @@ export default defineConfig({
     visionTool({ defaultApiVersion: apiVersion }),
     media(),
   ],
+  studio: {
+    components: {
+      logo: Logo,
+    },
+  },
 })

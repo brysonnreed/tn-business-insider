@@ -1,5 +1,5 @@
 import Footer from './Footer'
-import Header from './Header'
+import Header from './Header/Header'
 
 export default function BlogLayout({
   preview,
@@ -12,11 +12,11 @@ export default function BlogLayout({
 }) {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="mx-auto min-h-screen max-w-5xl pt-10">
         <main>{children}</main>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

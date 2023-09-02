@@ -1,12 +1,7 @@
+import { useEffect, useState } from 'react'
 import styles from 'styles/Hours.module.css'
 
-const BusinessHoursSection = ({
-  open247,
-  setOpen247,
-  businessHours,
-  handleHoursChange,
-  handleIsOpenChange,
-}) => {
+const BusinessHoursSection = ({ setValue, business }) => {
   const daysOfWeek = [
     'monday',
     'tuesday',
@@ -35,6 +30,64 @@ const BusinessHoursSection = ({
 
   // Generate times in 15 minute intervals from 00:00 to 24:00
   const times = generateTimes(0, 24)
+
+  const [businessHours, setBusinessHours] = useState({})
+  const [open247, setOpen247] = useState(false)
+
+  const handleHoursChange = (day, field, value) => {
+    setBusinessHours({
+      ...businessHours,
+      [day]: {
+        ...businessHours[day],
+        [field]: value,
+      },
+    })
+  }
+
+  const handleIsOpenChange = (day, value) => {
+    setBusinessHours({
+      ...businessHours,
+      [day]: {
+        ...businessHours[day],
+        isOpen: value,
+        open: value ? '09:00 AM' : '',
+        close: value ? '05:00 PM' : '',
+      },
+    })
+  }
+
+  useEffect(() => {
+    if (business && business.hours) {
+      const updatedBusinessHours = {}
+
+      for (const day in business.hours) {
+        const dayInfo = business.hours[day]
+
+        if (dayInfo.isOpen) {
+          updatedBusinessHours[day] = {
+            isOpen: true,
+            open: dayInfo.hours?.open,
+            close: dayInfo.hours?.close,
+          }
+        } else {
+          updatedBusinessHours[day] = {
+            isOpen: false,
+          }
+        }
+      }
+
+      setBusinessHours(updatedBusinessHours)
+    }
+  }, [business])
+
+  useEffect(() => {
+    setValue('openAllDay', open247)
+  }, [open247, setValue])
+
+  useEffect(() => {
+    setValue('hours', businessHours)
+  }, [businessHours, setValue])
+
   return (
     <div>
       <div className="flex flex-col justify-between sm:flex-row">

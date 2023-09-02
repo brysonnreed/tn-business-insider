@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import BlogContainer from 'components/Blog/BlogContainer'
 import BlogListContainer from 'components/Blog/BlogListContainer'
 import Footer from 'components/Footer'
-import Header from 'components/Header'
+import Header from 'components/Header/Header'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   getAllCategories,
@@ -108,7 +108,7 @@ export default function BlogPage({ categories, posts }) {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <section className="mx-auto min-h-screen max-w-5xl pt-10">
         <BlogContainer>
           <div className="mb-4 border-b border-black pb-4">
@@ -119,7 +119,7 @@ export default function BlogPage({ categories, posts }) {
             </p>
           </div>
           <div className="mb-10 pt-2">
-            <ul className="flex flex-row flex-wrap justify-center gap-4 font-semibold text-gray-600">
+            <ul className="flex flex-row flex-wrap justify-center  gap-2 font-semibold text-gray-600 sm:gap-4">
               <li className="capitalize">
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -129,7 +129,7 @@ export default function BlogPage({ categories, posts }) {
                   className={` ${
                     selectedCategory === 'All'
                       ? 'blogCategory'
-                      : 'px-[10px] py-[5px]'
+                      : 'px-[5px] py-[5px] text-sm text-gray-500  sm:px-[10px] sm:text-base'
                   }`}
                   type="button"
                 >
@@ -141,8 +141,10 @@ export default function BlogPage({ categories, posts }) {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`px-[10px] py-[5px] ${
-                      selectedCategory === category.slug ? 'blogCategory' : ''
+                    className={`px-[5px] py-[5px] text-sm sm:px-[10px]  sm:text-base ${
+                      selectedCategory === category.slug
+                        ? 'blogCategory'
+                        : 'text-gray-500'
                     }`}
                     onClick={() => setSelectedCategory(category.slug)}
                     type="button"
@@ -183,7 +185,7 @@ export default function BlogPage({ categories, posts }) {
           </div>
         </BlogContainer>
       </section>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

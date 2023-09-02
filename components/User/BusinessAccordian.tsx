@@ -83,7 +83,7 @@ function BusinessAccordian() {
 
               <FontAwesomeIcon
                 icon={faCaretDown}
-                className={` cursor-pointer text-white transition-all duration-200 ${
+                className={`h-4 w-4 cursor-pointer text-white transition-all duration-200 ${
                   openIndex === index ? 'rotate-180' : ''
                 }`}
               />

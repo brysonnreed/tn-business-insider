@@ -35,9 +35,11 @@ export default async function handler(req, res) {
     }
 
     if (data.logo) {
-      image = data.logo
+      const results = await client.fetch(`*[_id == "${data.logo}"]{url}`)
+      const assetURL = results[0]?.url
+      image = assetURL
 
-      updateFields.mainImage = image._id
+      updateFields.mainImage = data.logo
     }
 
     if (data.password) {
@@ -48,35 +50,17 @@ export default async function handler(req, res) {
     if (user.name !== data.name) {
       updateFields.name = name
     }
-    if (user.image !== image.url) {
-      updateFields.image = image.url
-      console.log(updateFields.image)
+    if (user.image !== image) {
+      updateFields.image = image
     }
     if (data.password) {
       updateFields.password = user.password
     }
 
-    // if (Object.keys(updateFields).length > 0) {
-    //   // Update specific fields of user in Sanity
-    //   await client
-    //     .patch(user._id)
-    //     .set({
-    //       name: updateFields.name,
-    //       mainImage: {
-    //         _type: 'image',
-    //         asset: { _type: 'reference', _ref: updateFields.mainImage },
-    //       },
-    //       image: updateFields.image,
-    //       password: updateFields.password,
-    //     })
-    //     .commit()
-    // }
     if (Object.keys(updateFields).length > 0) {
       // Update specific fields of user in Sanity
       const patch = client.patch(user._id).set({
         name: updateFields.name,
-        image: updateFields.image,
-        password: updateFields.password,
       })
 
       if (updateFields.mainImage) {
@@ -87,9 +71,20 @@ export default async function handler(req, res) {
           },
         })
       }
+      if (updateFields.image) {
+        patch.set({
+          image: updateFields.image,
+        })
+      }
+      if (updateFields.password) {
+        patch.set({
+          password: updateFields.password,
+        })
+      }
 
       await patch.commit()
     }
+    // TODO: make sure it deletes image
     if (data.logo && oldImage && oldImage.asset && oldImage.asset._ref) {
       const assetId = oldImage.asset._ref
 

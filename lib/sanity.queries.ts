@@ -19,7 +19,7 @@ export const postFields = groq`
   "comments":*[_type == 'comment' && post._ref == ^._id]
   
 `
-
+// TODO: add queries for specific cases that way were not grabbing all information that isn't needed
 export const businessProfileFields = groq`
   _id,
   name,
@@ -52,13 +52,64 @@ export const businessProfileFields = groq`
     count
   },
   averageRating,      
-  "reviews": *[_type == 'review' && business._ref == ^._id],
+  "reviews": *[_type == 'review' && business._ref == ^._id]{rating, image, business, author, text, _id, _createdAt, _rev},
   totalReviews,
   ratingsDistribution[] {
     rating,
     count
   },
   email
+`
+export const slugBusinessProfileFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  logo,
+  verified,
+  openAllDay,
+  description,
+  services,
+  images,
+  hours,
+  amenities,
+  socialMedia[] {
+    'platform': platform->platform,
+    url
+  },
+  'address': {
+    'formatted_address': address.formatted_address,
+    'name': address.name,
+    'place_id': address.place_id,
+    'url': address.url,
+    'geometry': address.geometry,
+  },
+  "category": category->name,
+  "city": city->name,
+  website,
+  
+  averageRating,      
+  "reviews": *[_type == 'review' && business._ref == ^._id]{rating, image, business, author, text, _id, _createdAt, _rev},
+  totalReviews,
+  ratingsDistribution[] {
+    rating,
+    count
+  },
+  
+`
+export const basicBusinessProfileFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  logo,
+  verified,
+  description,
+  socialMedia[] {
+    'platform': platform->platform,
+    url
+  },
+  "category": category->name,
+  "city": city->name,
+  averageRating,      
 `
 
 export const categoryQuery = groq`
@@ -78,17 +129,6 @@ export const businessProfileCategoryFields = groq`
   *[_type == "businessProfileCategory"] {
     name,
     "slug": slug.current,
-  }
-`
-
-export const eventsFields = groq`
-*[_type == "events"] {
-    _id,
-    name,
-    description,
-    date,
-    dateEstimate,
-    link
   }
 `
 
@@ -138,7 +178,7 @@ export const postsByCategoryQuery = groq`
 }`
 export const businessProfilesQuery = groq`
 *[_type == "businessProfile"] {
-  ${businessProfileFields}
+  ${basicBusinessProfileFields}
 }[]
 `
 
@@ -149,11 +189,11 @@ export const businessProfileCategoriesQuery = groq`
 
 export const businessProfileBySlugQuery = groq`
 *[_type == "businessProfile" && slug.current == $slug][0] {
-  ${businessProfileFields}
+  ${slugBusinessProfileFields}
 }
 `
 export const businessProfileSlugsQuery = groq`
-*[_type == "businessProfile" && defined(slug.current)][].slug.current
+*[_type == "businessProfile" && defined(slug.current)][].slug.current 
 `
 
 export interface Author {

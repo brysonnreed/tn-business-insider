@@ -1,4 +1,4 @@
-import Header from 'components/Header'
+import Header from 'components/Header/Header'
 
 import styles from '../styles/Layout.module.css'
 function layout({ children }) {

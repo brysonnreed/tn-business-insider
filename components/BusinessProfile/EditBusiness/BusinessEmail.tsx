@@ -135,6 +135,26 @@ function BusinessEmail({ business }) {
           </motion.button>
         </div>
       </form>
+      <div className="flex flex-col gap-5">
+        <div className="flex items-center justify-between rounded-md border p-2 shadow-xl sm:p-5">
+          <div>
+            <p className="text-xl font-bold">17</p>
+            <p className="text-gray-400">Emails Sent</p>
+          </div>
+          <div className="rounded-sm bg-green-600/70 p-2 text-white sm:p-4">
+            +8%
+          </div>
+        </div>
+        <div className="flex items-center justify-between rounded-md border p-2 shadow-xl sm:p-5">
+          <div>
+            <p className="text-xl font-bold">52</p>
+            <p className="text-gray-400">Website Clicks</p>
+          </div>
+          <div className="rounded-sm bg-green-600/70 p-2 text-white sm:p-4">
+            +12%
+          </div>
+        </div>
+      </div>
     </motion.div>
   )
 }

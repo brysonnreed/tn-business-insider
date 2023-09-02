@@ -3,7 +3,7 @@ import BlogContainer from 'components/Blog/BlogContainer'
 import BusinessListingMeta from 'components/Businesses/BusinessListingMeta'
 import BusinessProfile from 'components/BusinessProfile/BusinessProfile'
 import CoverImage from 'components/CoverImage'
-import Header from 'components/Header'
+import Header from 'components/Header/Header'
 import Date from 'components/Post/PostDate'
 import SectionSeparator from 'components/SectionSeparator'
 import ShowcaseSlider from 'components/ShowcaseSlider'
@@ -54,7 +54,7 @@ export default function BusinessPage({
   return (
     <>
       <BusinessListingMeta category={category} city={city} />
-      <Header />
+      {/* <Header /> */}
       <section className="mx-auto min-h-screen max-w-5xl pt-10">
         <BlogContainer>
           <div className="border-b border-gray-300 pb-10">

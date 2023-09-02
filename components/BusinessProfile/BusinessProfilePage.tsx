@@ -96,7 +96,7 @@ export default function BusinessProfilePage(props: BusinessProfilePageProps) {
             <>
               <article>
                 <section className="mb-1 flex flex-col items-center justify-center gap-2 border-b  border-gray-300 sm:flex-row sm:justify-between ">
-                  <div className="flex  justify-start space-x-2 sm:justify-center">
+                  <div className="mb-5 flex justify-start space-x-2 sm:justify-center">
                     <div className="h-24 w-24 sm:h-32 sm:w-32">
                       {businessProfile.logo && (
                         <Image

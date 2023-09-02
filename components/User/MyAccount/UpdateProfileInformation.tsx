@@ -7,8 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { motion } from 'framer-motion'
-import { getClient } from 'lib/sanity.client.cdn'
-import { uploadImageToSanity } from 'lib/uploadSanityImages'
+import { uploadImageToSanity } from 'lib/sanity.client.cdn'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
@@ -25,7 +24,7 @@ type UserFormData = {
 function UpdateProfileInformation({ user }) {
   const [show, setShow] = useState({ password: false, cpassword: false })
   const [isLoading, setLoading] = useState(false)
-  const client = getClient()
+
   const {
     register,
     handleSubmit,

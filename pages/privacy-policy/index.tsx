@@ -1,6 +1,6 @@
 import BlogContainer from 'components/Blog/BlogContainer'
 import Footer from 'components/Footer'
-import Header from 'components/Header'
+import Header from 'components/Header/Header'
 import SectionSeparator from 'components/SectionSeparator'
 import Link from 'next/link'
 import React from 'react'
@@ -8,7 +8,7 @@ import React from 'react'
 export default function PrivacyPolicy() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <article className="mx-auto min-h-screen max-w-5xl pt-10">
         <BlogContainer>
           <div className="mb-10 flex flex-col gap-3 rounded-md bg-orange-500 px-4 py-6 text-white shadow-xl">
@@ -119,7 +119,7 @@ export default function PrivacyPolicy() {
           </main>
         </BlogContainer>
       </article>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

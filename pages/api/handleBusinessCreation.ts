@@ -62,7 +62,7 @@ export default async function createBusinessProfile(
     const imagesWithKeys = images.map((image) => ({
       _type: 'image',
       _key: uuidv4(), // Generate a unique key for each image object
-      asset: { _type: 'reference', _ref: image._id },
+      asset: { _type: 'reference', _ref: image },
     }))
 
     // Fetch the socialMediaPlatform documents based on platform names
@@ -145,7 +145,7 @@ export default async function createBusinessProfile(
     })
 
     const matchedUser = await client.fetch(
-      '*[_type == "user" && email == $email][0]',
+      '*[_type == "user" && email == $email][0]{email, businesses, _id}',
       {
         email: user,
       }

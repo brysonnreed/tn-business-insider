@@ -42,7 +42,11 @@ function EditBusiness({ business, categories, cities, socials }) {
           className={`p-2 text-sm ${
             showPage == 'general' ? 'bg-orange-500 text-white' : ''
           }`}
-          onClick={() => handleShowPage('general')}
+          onClick={() => {
+            handleShowPage('general')
+            setShowPage('general')
+          }}
+          type="button"
         >
           General
         </motion.button>
@@ -52,7 +56,11 @@ function EditBusiness({ business, categories, cities, socials }) {
           className={`p-2 text-sm ${
             showPage == 'details' ? 'bg-orange-500 text-white' : ''
           }`}
-          onClick={() => handleShowPage('details')}
+          onClick={() => {
+            handleShowPage('details')
+            setShowPage('details')
+          }}
+          type="button"
         >
           Details
         </motion.button>
@@ -62,7 +70,11 @@ function EditBusiness({ business, categories, cities, socials }) {
           className={`p-2 text-sm ${
             showPage == 'media' ? 'bg-orange-500 text-white' : ''
           }`}
-          onClick={() => handleShowPage('media')}
+          onClick={() => {
+            handleShowPage('media')
+            setShowPage('media')
+          }}
+          type="button"
         >
           Media
         </motion.button>
@@ -72,7 +84,11 @@ function EditBusiness({ business, categories, cities, socials }) {
           className={`p-2 text-sm ${
             showPage == 'hours' ? 'bg-orange-500 text-white' : ''
           }`}
-          onClick={() => handleShowPage('hours')}
+          onClick={() => {
+            handleShowPage('hours')
+            setShowPage('hours')
+          }}
+          type="button"
         >
           Hours
         </motion.button>
@@ -82,7 +98,11 @@ function EditBusiness({ business, categories, cities, socials }) {
           className={`p-2 text-sm ${
             showPage == 'address' ? 'bg-orange-500 text-white' : ''
           }`}
-          onClick={() => handleShowPage('address')}
+          onClick={() => {
+            handleShowPage('address')
+            setShowPage('address')
+          }}
+          type="button"
         >
           Address
         </motion.button>

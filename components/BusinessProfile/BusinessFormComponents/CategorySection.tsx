@@ -97,7 +97,7 @@ const CategorySection: React.FC<CategorySectionProps> = ({
               setCategoryInput('')
             }}
           >
-            <FontAwesomeIcon icon={faX} className="h-3 w-3 px-1 " />
+            <FontAwesomeIcon icon={faX} className="h-4 w-4 px-1 " />
           </button>
         )}
         <button

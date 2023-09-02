@@ -1,5 +1,6 @@
 import { apiVersion, dataset, projectId, useCdn } from 'lib/sanity.api'
 import {
+  basicBusinessProfileFields,
   BusinessCategoriesSlugsQuery,
   type BusinessProfile,
   businessProfileBySlugQuery,
@@ -14,7 +15,6 @@ import {
   Cities,
   CitiesSlugsQuery,
   cityFields,
-  eventsFields,
   indexQuery,
   type Post,
   postAndMoreStoriesQuery,
@@ -53,6 +53,7 @@ export const getSanityImageConfig = () => getClient()
 export async function getSettings(client: SanityClient): Promise<Settings> {
   return (await client.fetch(settingsQuery)) || {}
 }
+
 // Posts
 export async function getAllPosts(
   client: SanityClient,
@@ -112,10 +113,12 @@ export async function getPostsByCategory(
   return result
 }
 
-// Events
-export async function getAllEvents(client: SanityClient): Promise<Event[]> {
-  return (await client.fetch(eventsFields)) || []
-}
+{/* prettier-ignore 
+
+
+
+
+*/}
 
 // Businesses
 export async function getAllBusinessProfiles(
@@ -169,7 +172,12 @@ export async function getBusinessCategoryBySlug(
   const result = await client.fetch(query, params)
   return result
 }
+{/* prettier-ignore 
 
+
+
+
+*/}
 // Categories
 export async function getAllCategories(
   client: SanityClient
@@ -198,7 +206,12 @@ export async function getCategoryBySlug(
   const result = await client.fetch(query, params)
   return result
 }
+{/* prettier-ignore 
 
+
+
+
+*/}
 // Cities
 export async function getAllCities(client: SanityClient): Promise<Cities[]> {
   return (await client.fetch(cityFields)) || []
@@ -223,8 +236,13 @@ export async function getCityBySlug(
   const result = await client.fetch(query, params)
   return result
 }
+{/* prettier-ignore 
 
-// New method for Dynamic routing
+
+
+
+*/}
+// New method for Dynamic routing Businesses
 export async function getBusinessProfilesByCityAndCategory(
   client: SanityClient,
   citySlug: string,
@@ -237,7 +255,7 @@ export async function getBusinessProfilesByCityAndCategory(
       category->slug.current == $categorySlug
     ]
     {
-      ${businessProfileFields}
+      ${basicBusinessProfileFields}
     }
   `
   const params = {
@@ -258,7 +276,7 @@ export async function getBusinessProfilesByCity(
       city->slug.current == $citySlug
     ]
     {
-      ${businessProfileFields}
+      ${basicBusinessProfileFields}
     }
   `
   const params = {
@@ -278,7 +296,7 @@ export async function getBusinessProfilesByCategory(
       category->slug.current == $categorySlug
     ]
     {
-      ${businessProfileFields}
+      ${basicBusinessProfileFields}
     }
   `
   const params = {
@@ -288,7 +306,12 @@ export async function getBusinessProfilesByCategory(
   const result = await client.fetch(query, params)
   return result
 }
+{/* prettier-ignore 
 
+
+
+
+*/}
 // User
 export async function getBusinessProfilesByUser(
   client: SanityClient,

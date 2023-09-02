@@ -122,6 +122,51 @@ export default defineType({
       ],
     }),
 
+    // defineField({
+    //   name: 'address',
+    //   title: 'Address',
+    //   type: 'object',
+    //   fields: [
+    //     {
+    //       name: 'formatted_address',
+    //       title: 'Formatted Address',
+    //       type: 'string',
+    //     },
+    //     {
+    //       name: 'name',
+    //       title: 'Name',
+    //       type: 'string',
+    //     },
+    //     {
+    //       name: 'place_id',
+    //       title: 'Place ID',
+    //       type: 'string',
+    //     },
+    //     {
+    //       name: 'url',
+    //       title: 'URL',
+    //       type: 'url',
+    //     },
+    //     {
+    //       name: 'geometry', // New field for latitude and longitude
+    //       title: 'Geometry',
+    //       type: 'object',
+    //       fields: [
+    //         {
+    //           name: 'latitude',
+    //           title: 'Latitude',
+    //           type: 'number', // Change the type to 'number'
+    //         },
+    //         {
+    //           name: 'longitude',
+    //           title: 'Longitude',
+    //           type: 'number', // Change the type to 'number'
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // }),
+
     defineField({
       name: 'address',
       title: 'Address',
@@ -146,6 +191,32 @@ export default defineType({
           name: 'url',
           title: 'URL',
           type: 'url',
+        },
+        {
+          name: 'streetAddress',
+          title: 'Street Address',
+          type: 'string',
+          description: 'Optional street address.',
+        },
+        {
+          name: 'aptSuiteOther',
+          title: 'Apt/Suite/Other',
+          type: 'string',
+          description: 'Optional information like apartment or suite number.',
+        },
+        {
+          name: 'city',
+          title: 'City',
+          type: 'string',
+          description: 'City of the address.',
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: 'zipCode',
+          title: 'Zip Code',
+          type: 'string',
+          description: 'Zip code of the address.',
+          validation: (Rule) => Rule.required(),
         },
         {
           name: 'geometry', // New field for latitude and longitude

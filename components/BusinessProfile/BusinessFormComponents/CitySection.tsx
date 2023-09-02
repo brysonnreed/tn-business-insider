@@ -91,7 +91,7 @@ const CitySection: React.FC<CitySectionProps> = ({
               setCityInput('')
             }}
           >
-            <FontAwesomeIcon icon={faX} className="h-3 w-3 px-1 " />
+            <FontAwesomeIcon icon={faX} className="h-4 w-4 px-1 " />
           </button>
         )}
         <button

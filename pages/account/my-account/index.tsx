@@ -1,57 +1,52 @@
 import BlogContainer from 'components/Blog/BlogContainer'
-import Footer from 'components/Footer'
-import Header from 'components/Header'
 import LikedPosts from 'components/User/MyAccount/LikedPosts'
+import MyReviews from 'components/User/MyAccount/MyReviews'
 import OwnedBusinesses from 'components/User/MyAccount/OwnedBusinesses'
 import UpdateProfileInformation from 'components/User/MyAccount/UpdateProfileInformation'
 import UserDetails from 'components/User/MyAccount/UserDetails'
 import { getClient } from 'lib/sanity.client'
+import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
 import { useState } from 'react'
 
 function MyAccount({ businesses, user, posts }) {
-  const [showPage, setShowPage] = useState('profile')
+  const router = useRouter()
+
+  // Use the page query as the initial state or default to 'dashboard'
+  const [showPage, setShowPage] = useState(router.query.showPage || 'profile')
   return (
-    <>
-      <Header />
+    <section className="mx-auto min-h-[80vh] max-w-5xl  pt-10 sm:flex">
+      <UserDetails user={user} setShowPage={setShowPage} showPage={showPage} />
 
-      <section className="mx-auto min-h-[80vh] max-w-5xl  pt-10 sm:flex">
-        <UserDetails
-          user={user}
-          setShowPage={setShowPage}
-          showPage={showPage}
-        />
-
-        <BlogContainer>
-          <div className="">
-            {showPage == 'profile' && <UpdateProfileInformation user={user} />}
-            {showPage == 'businesses' && (
-              <div
-                className={`${
-                  businesses.length > 4 &&
-                  'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
-                } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
-              >
-                <OwnedBusinesses businesses={businesses} />
-              </div>
-            )}
-            {showPage == 'posts' && (
-              <div
-                className={`${
-                  posts &&
-                  posts.length > 4 &&
-                  'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
-                } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
-              >
-                <LikedPosts posts={posts} />
-              </div>
-            )}
-          </div>
-        </BlogContainer>
-      </section>
-      <Footer />
-    </>
+      <BlogContainer>
+        <div className="">
+          {showPage == 'profile' && <UpdateProfileInformation user={user} />}
+          {showPage == 'businesses' && (
+            <div
+              className={`${
+                businesses.length > 4 &&
+                'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
+              } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
+            >
+              <OwnedBusinesses businesses={businesses} />
+            </div>
+          )}
+          {showPage == 'posts' && (
+            <div
+              className={`${
+                posts &&
+                posts.length > 4 &&
+                'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
+              } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
+            >
+              <LikedPosts posts={posts} />
+            </div>
+          )}
+          {showPage == 'reviews' && <MyReviews />}
+        </div>
+      </BlogContainer>
+    </section>
   )
 }
 
@@ -78,9 +73,13 @@ export async function getServerSideProps({ req, res }) {
   const client = getClient()
 
   const userEmail = session.user?.email
-  let user = await client.fetch('*[_type == "user" && email == $email][0]', {
-    email: userEmail,
-  })
+  let user = await client.fetch(
+    '*[_type == "user" && email == $email][0]{image, _createdAt, _type, name, _id, mainImage, _rev, email, businesses, likedBlogPosts}',
+    {
+      email: userEmail,
+    }
+  )
+
   try {
     // Fetch the user document based on the email
 

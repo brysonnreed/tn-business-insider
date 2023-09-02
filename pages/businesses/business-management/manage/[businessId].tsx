@@ -3,8 +3,6 @@ import BusinessDashboard from 'components/BusinessProfile/EditBusiness/BusinessD
 import BusinessDetails from 'components/BusinessProfile/EditBusiness/BusinessDetails'
 import BusinessEmail from 'components/BusinessProfile/EditBusiness/BusinessEmail'
 import BusinessSubscription from 'components/BusinessProfile/EditBusiness/BusinessSubscription'
-import Footer from 'components/Footer'
-import Header from 'components/Header'
 import EditBusiness from 'components/User/EditBusiness'
 import {
   getAllBusinessProfileCategories,
@@ -16,55 +14,38 @@ import { businessProfileFields } from 'lib/sanity.queries'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 function BusinessId({ businessProfile, cities, categories, socials }) {
   const router = useRouter()
 
   // Use the page query as the initial state or default to 'dashboard'
   const [showPage, setShowPage] = useState(router.query.showPage || 'dashboard')
-  // const [showPage, setShowPage] = useState('dashboard')
-
-  useEffect(() => {
-    const handleRouteChange = () => {
-      // If the route changes (e.g. back button is pressed), update the state
-      setShowPage(router.query.showPage || 'dashboard')
-    }
-
-    router.events.on('routeChangeComplete', handleRouteChange)
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.events, router.query.showPage])
 
   return (
-    <>
-      <Header />
-      <section className="mx-auto min-h-[80vh] max-w-5xl pt-10 sm:flex">
-        <BusinessDetails
-          business={businessProfile}
-          setShowPage={setShowPage}
-          showPage={showPage}
-        />
-        <BlogContainer>
-          {showPage == 'dashboard' && (
-            <BusinessDashboard business={businessProfile} />
-          )}
+    <section className="mx-auto min-h-[80vh] max-w-5xl pt-10 sm:flex">
+      <BusinessDetails
+        business={businessProfile}
+        setShowPage={setShowPage}
+        showPage={showPage}
+      />
+      <BlogContainer>
+        {showPage == 'dashboard' && (
+          <BusinessDashboard business={businessProfile} />
+        )}
 
-          {showPage == 'update' && (
-            <EditBusiness
-              business={businessProfile}
-              socials={socials}
-              categories={categories}
-              cities={cities}
-            />
-          )}
-          {showPage == 'subscription' && <BusinessSubscription />}
-          {showPage == 'email' && <BusinessEmail business={businessProfile} />}
-        </BlogContainer>
-      </section>
-      <Footer />
-    </>
+        {showPage == 'update' && (
+          <EditBusiness
+            business={businessProfile}
+            socials={socials}
+            categories={categories}
+            cities={cities}
+          />
+        )}
+        {showPage == 'subscription' && <BusinessSubscription />}
+        {showPage == 'email' && <BusinessEmail business={businessProfile} />}
+      </BlogContainer>
+    </section>
   )
 }
 

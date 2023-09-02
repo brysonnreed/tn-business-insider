@@ -1,5 +1,5 @@
 import { hash } from 'argon2'
-import { getClient, uploadImageUrlToSanity } from 'lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity.client.cdn'
 import { NextApiHandler } from 'next'
 
 const client = getClient()
@@ -25,6 +25,8 @@ const handler: NextApiHandler = async (req, res) => {
           _type: 'image',
           asset: { _type: 'reference', _ref: blankUser },
         },
+        businesses: [],
+        likedBlogPosts: [],
       })
 
       // Send a success response

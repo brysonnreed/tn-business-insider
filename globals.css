@@ -10,13 +10,13 @@
 
 .userNavBtn {
   @apply rounded p-2 text-sm transition-all duration-200 hover:bg-orange-500 hover:text-white sm:text-base  lg:text-xl;
-  @apply relative flex items-center justify-evenly gap-2 sm:gap-4 md:justify-start;
+  @apply relative flex items-center justify-start gap-2 sm:gap-4;
 }
 
 .userNavBtnActive {
   @apply rounded bg-orange-500 p-2 text-sm text-white transition-all duration-200 sm:text-base  lg:text-xl;
 
-  @apply relative flex items-center justify-evenly gap-2 sm:gap-4 md:justify-start;
+  @apply relative flex items-center justify-start gap-2 sm:gap-4;
 }
 
 .bar {

@@ -23,12 +23,12 @@ function ManageBusinessProfile({ business }) {
         />{' '}
         <h2 className="text:xl font-medium sm:text-2xl">{business.name}</h2>
       </div>
-      <Link href={`/businesses/business-management/edit/${business._id}`}>
+      <Link href={`/businesses/business-management/manage/${business._id}`}>
         <div className="group p-2">
-          <FontAwesomeIcon
-            icon={faPen}
-            className="transition-all duration-200 group-hover:cursor-pointer group-hover:text-orange-500"
-          />
+          <div className="flex items-center justify-center gap-2 text-slate-400 transition-all duration-300 group-hover:cursor-pointer group-hover:text-orange-500">
+            <p className="hidden text-slate-600 xs:block">Manage</p>
+            <FontAwesomeIcon icon={faPen} className="h-4 w-4 " />
+          </div>
         </div>
       </Link>
     </motion.div>

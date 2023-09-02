@@ -5,6 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import UserAvatar from 'components/User/UserAvatar'
 import { motion } from 'framer-motion'
 import { getClient as getuserClient } from 'lib/sanity.client'
 import { getClient } from 'lib/sanity.client.cdn'
@@ -14,14 +15,17 @@ import Link from 'next/link'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { groq } from 'next-sanity'
 import BlankUser from 'public/images/blank-user-image.png'
+import logo from 'public/images/logo.jpg'
 import { useEffect, useRef, useState } from 'react'
 
-import logo from '../public/images/logo.jpg'
-import UserAvatar from './User/UserAvatar'
+import MainNavigation from './MainNavigation'
+import SearchResults from './SearchResults'
+import UserNavigation from './UserNavigation'
 
 type user = {
   name: string
   image: any
+  admin: boolean
 }
 
 function Header() {
@@ -134,6 +138,7 @@ function Header() {
     name: '',
     image:
       'https://cdn.sanity.io/images/yuy7c73l/production/08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151.png',
+    admin: false,
   })
 
   const getUser = async (userEmail) => {
@@ -185,7 +190,7 @@ function Header() {
               aria-label="Open user dropdown menu"
               className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
             >
-              {/* <UserAvatar image={user ? user.image : BlankUser} /> */}
+              <UserAvatar image={user && user.image ? user.image : BlankUser} />
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-4 w-4 text-white xs:h-5 xs:w-5 ${
@@ -252,7 +257,7 @@ function Header() {
               aria-label="Open user dropdown menu"
               className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
             >
-              <UserAvatar image={user ? user.image : BlankUser} />
+              <UserAvatar image={user && user.image ? user.image : BlankUser} />
               <FontAwesomeIcon
                 icon={faCaretDown}
                 className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
@@ -294,163 +299,19 @@ function Header() {
         </div>
       </nav>
 
-      {searchResults.length > 0 && (
-        <div className="absolute flex w-full justify-end">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="z-50 w-full bg-white shadow-2xl lg:w-1/2 xl:w-1/3"
-          >
-            {searchResults.map((result) => (
-              <Link
-                key={result.slug.current}
-                href={
-                  result._type === 'post'
-                    ? `/posts/${result.slug.current}`
-                    : `/businesses/business-profile/${result.slug.current}`
-                }
-              >
-                <div className="block overflow-hidden border-b border-gray-300 px-4 py-2 pb-3 text-gray-800 hover:bg-gray-200 ">
-                  <div className="flex w-full space-x-2">
-                    {result._type === 'post' && result.coverImage && (
-                      <Image
-                        src={urlForImage(result.coverImage).url()}
-                        alt={`Cover image for ${result.title}`}
-                        className="h-12 w-12 object-cover object-center md:h-20 md:w-20"
-                        width={500}
-                        height={500}
-                      />
-                    )}
-                    {result._type === 'businessProfile' && result.logo && (
-                      <Image
-                        src={urlForImage(result.logo).url()}
-                        alt={`Icon for ${result.name}`}
-                        className="h-12 w-12 object-cover object-center md:h-20 md:w-20"
-                        width={500}
-                        height={500}
-                      />
-                    )}
-                    <div className="w-full">
-                      <div className="flex w-full justify-between">
-                        <h3 className="font-bold capitalize">
-                          {result._type === 'businessProfile'
-                            ? result.name
-                            : result.title}
-                        </h3>
-                        <p className="text-gray-400">
-                          {result._type === 'businessProfile'
-                            ? 'Business'
-                            : result.categories[0].name}
-                        </p>
-                      </div>
-                      <p className="line-clamp-3 overflow-hidden text-sm">
-                        {result._type === 'businessProfile'
-                          ? result.description
-                          : result.excerpt}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </motion.div>
-        </div>
-      )}
-      <nav className="z-[21] drop-shadow-2xl">
-        {isDropdownVisible && (
-          <motion.ul
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            ref={navRef}
-            className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
-          >
-            {session ? (
-              <div>
-                <Link href={'/businesses/business-management'}>
-                  <button className="w-full border-y" type="button">
-                    <li className="mobileNavItem bg-white">My Businesses</li>
-                  </button>
-                </Link>
-                <Link href={'/account/my-account'}>
-                  <button className="w-full border-y" type="button">
-                    <li className="mobileNavItem bg-white">My Profile</li>
-                  </button>
-                </Link>
-                <button
-                  onClick={() => signOut()}
-                  className="w-full border-y"
-                  type="button"
-                >
-                  <li className="mobileNavItem bg-white">Sign Out</li>
-                </button>
-              </div>
-            ) : (
-              <button
-                className="w-full border-y"
-                onClick={() => signIn()}
-                type="button"
-              >
-                <li className="mobileNavItem bg-white">Sign In</li>
-              </button>
-            )}
-          </motion.ul>
-        )}
+      <SearchResults searchResults={searchResults} />
 
-        {active === true && (
-          <motion.ul
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            ref={navPRef}
-            className="absolute right-0 top-0 z-[21] w-full text-center text-lg font-medium uppercase tracking-wider text-black sm:w-1/2 xl:right-[4%] xl:w-[15%]"
-          >
-            <button
-              onClick={() => setActive(false)}
-              className="w-full border-y"
-              type="button"
-            >
-              <Link href="/">
-                <li className="mobileNavItem bg-white">Home</li>
-              </Link>
-            </button>
+      <UserNavigation
+        isDropdownVisible={isDropdownVisible}
+        session={session}
+        signIn={signIn}
+        signOut={signOut}
+        navRef={navRef}
+        setIsDropdownVisible={setIsDropdownVisible}
+        user={user}
+      />
 
-            <button
-              onClick={() => {
-                setActive(false)
-              }}
-              type="button"
-              className="w-full"
-            >
-              <Link href="/blog">
-                <li
-                  className={`mobileNavItem flex items-center justify-center gap-1 bg-white `}
-                >
-                  Blog{' '}
-                </li>
-              </Link>
-            </button>
-
-            <button
-              onClick={() => setActive(false)}
-              className="w-full border-y"
-              type="button"
-            >
-              <Link href="/businesses">
-                <li className="mobileNavItem bg-white">Businesses</li>
-              </Link>
-            </button>
-
-            <button
-              onClick={() => setActive(false)}
-              className="w-full border-b"
-              type="button"
-            >
-              <Link href="/contact">
-                <li className="mobileNavItem bg-white">Contact</li>
-              </Link>
-            </button>
-          </motion.ul>
-        )}
-      </nav>
+      <MainNavigation active={active} navPRef={navPRef} setActive={setActive} />
     </header>
   )
 }
