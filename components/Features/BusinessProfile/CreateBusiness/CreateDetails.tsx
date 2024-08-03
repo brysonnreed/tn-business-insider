@@ -54,19 +54,10 @@ function CreateDetails({ onSubmit, defaultValues, categories }) {
           setValue={setValue}
           categories={categories}
           business={null}
-          defaultCategory={defaultValues.category}
         />
 
-        <ServiceSection
-          setValue={setValue}
-          business={null}
-          defaultService={defaultValues.services}
-        />
-        <AmenitiesSection
-          setValue={setValue}
-          business={null}
-          defaultAmenities={defaultValues.amenities}
-        />
+        <ServiceSection setValue={setValue} business={null} />
+        <AmenitiesSection setValue={setValue} business={null} />
 
         <WebsiteSection register={register} errors={errors} />
         <button type="submit">Next</button>

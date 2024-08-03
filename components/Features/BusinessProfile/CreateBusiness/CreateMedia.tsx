@@ -47,7 +47,6 @@ function CreateMedia({ socials, defaultValues, onSubmit }) {
           setValue={setValue}
           business={null}
           setRemovedImages={null}
-          defaultImages={defaultValues.images}
         />
 
         <SocialMediaSection
@@ -56,7 +55,6 @@ function CreateMedia({ socials, defaultValues, onSubmit }) {
           setValue={setValue}
           business={null}
           errors={errors}
-          defaultSocials={defaultValues.socialMedia}
         />
 
         <button type="submit">Next</button>

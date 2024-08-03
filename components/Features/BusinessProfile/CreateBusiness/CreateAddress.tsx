@@ -43,18 +43,12 @@ function CreateAddress({ cities, onSubmit, defaultValues }) {
         className="flex flex-col gap-4"
         onSubmit={handleSubmit(internalSubmit)}
       >
-        <CitySection
-          cities={cities}
-          setValue={setValue}
-          business={null}
-          defaultCity={defaultValues.city}
-        />
+        <CitySection cities={cities} setValue={setValue} business={null} />
         <MapSection
           register={register}
           setValue={setValue}
           errors={errors}
           business={null}
-          defaultAddress={defaultValues.address}
         />
         <button type="submit">Next</button>
       </motion.form>

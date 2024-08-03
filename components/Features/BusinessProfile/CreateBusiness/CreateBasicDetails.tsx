@@ -56,7 +56,6 @@ function CreateBasicDetails({ onSubmit, defaultValues }) {
           user={null}
           required={true}
           business={null}
-          defaultLogo={defaultValues.logo}
         />
 
         <DescriptionSection register={register} errors={errors} />

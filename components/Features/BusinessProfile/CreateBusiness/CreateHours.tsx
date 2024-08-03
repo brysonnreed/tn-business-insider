@@ -89,13 +89,7 @@ function CreateHours({ onSubmit, defaultValues }) {
         className="flex flex-col gap-4"
         onSubmit={handleSubmit(internalSubmit)}
       >
-        <BusinessHoursSection
-          open247={open247}
-          setOpen247={setOpen247}
-          businessHours={businessHours}
-          handleHoursChange={handleHoursChange}
-          handleIsOpenChange={handleIsOpenChange}
-        />
+        <BusinessHoursSection setValue={setValue} business={null} />
         <button type="submit">Next</button>
       </motion.form>
     </>
