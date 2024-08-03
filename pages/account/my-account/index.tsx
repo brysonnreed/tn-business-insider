@@ -19,7 +19,7 @@ function MyAccount({ businesses, user, posts }) {
       <UserDetails user={user} setShowPage={setShowPage} showPage={showPage} />
 
       <div className="boxContainer">
-        <div className="">
+        <div className="min-h-[80vh]">
           {showPage == 'profile' && <UpdateProfileInformation user={user} />}
           {showPage == 'businesses' && (
             <div
@@ -34,9 +34,7 @@ function MyAccount({ businesses, user, posts }) {
           {showPage == 'posts' && (
             <div
               className={`${
-                posts &&
-                posts.length > 4 &&
-                'max-h-[70vh] min-h-[50vh] overflow-y-scroll'
+                posts && posts.length > 4 && 'h-[50vh] overflow-y-scroll'
               } px-2 scrollbar scrollbar-track-gray-100 scrollbar-thumb-slate-300`}
             >
               <LikedPosts posts={posts} />
