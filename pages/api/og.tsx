@@ -1,5 +1,5 @@
 import { ImageResponse } from '@vercel/og'
-import { apiVersion, dataset, projectId } from 'lib/sanity.api'
+import { apiVersion, dataset, projectId } from 'lib/sanity/sanity.api'
 import type { NextRequest, NextResponse } from 'next/server'
 import type { PageConfig } from 'next/types'
 import { createClient } from 'next-sanity'
