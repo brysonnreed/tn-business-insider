@@ -62,7 +62,6 @@ export default function ResetPassword() {
   const {
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { errors },
   } = useForm()

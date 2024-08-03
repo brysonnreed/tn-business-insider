@@ -1,23 +1,16 @@
 import Button from 'components/Common/Button'
 import BusinessProfileItem from 'components/Features/BusinessProfile/BusinessProfileItem'
 import CategorizedBusinessesMeta from 'components/Pages/Businesses/CategorizedBusinesses/CategorizedBusinessesMeta'
-import FeaturedBlogPosts from 'components/UI/FeaturedBlogPosts'
 import {
   getAllBusinessProfileCategories,
   getAllCities,
-  getAllPosts,
   getBusinessCategoryBySlug,
   getBusinessProfilesByCityAndCategory,
   getCityBySlug,
 } from 'lib/sanity/sanity.client'
 import { getClient } from 'lib/sanity/sanity.client.cdn'
 
-export default function BusinessPage({
-  category,
-  city,
-  businessProfiles,
-  posts,
-}) {
+export default function BusinessPage({ category, city, businessProfiles }) {
   return (
     <>
       <CategorizedBusinessesMeta category={category} city={city} />
@@ -68,7 +61,6 @@ export async function getStaticProps({ params }) {
 
   const categoryData = await getBusinessCategoryBySlug(client, category)
   const cityData = await getCityBySlug(client, city)
-  const posts = await getAllPosts(client)
 
   if (!categoryData || !cityData) {
     return {
@@ -86,7 +78,6 @@ export async function getStaticProps({ params }) {
       businessProfiles,
       category: categoryData,
       city: cityData,
-      posts,
     },
   }
 }

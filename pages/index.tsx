@@ -1,11 +1,6 @@
 import HomePage from 'components/Pages/Home/HomePage'
-import { readToken } from 'lib//sanity/sanity.api'
-import {
-  getAllCities,
-  getAllPosts,
-  getClient,
-  getSettings,
-} from 'lib/sanity/sanity.client'
+import { readToken } from 'lib/sanity/sanity.api'
+import { getAllPosts, getClient, getSettings } from 'lib/sanity/sanity.client'
 import { Post, Settings } from 'lib/sanity/sanity.queries'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
@@ -48,15 +43,12 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
     getSettings(client),
     getAllPosts(client),
   ])
-  const city = await getAllCities(client)
 
   return {
     props: {
       posts,
       settings,
-      draftMode,
       token: draftMode ? readToken : '',
-      city,
     },
   }
 }

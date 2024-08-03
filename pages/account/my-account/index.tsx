@@ -70,6 +70,7 @@ export async function getServerSideProps({ req, res }) {
   const client = getClient()
 
   const userEmail = session.user?.email
+  // Fetch the user document based on the email
   let user = await client.fetch(
     '*[_type == "user" && email == $email][0]{image, _createdAt, _type, name, _id, mainImage, _rev, email, businesses, likedBlogPosts}',
     {
@@ -78,8 +79,6 @@ export async function getServerSideProps({ req, res }) {
   )
 
   try {
-    // Fetch the user document based on the email
-
     // Extract the business references from the user document
     const businessReferences = user.businesses.map((business) => business._ref)
 

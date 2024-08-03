@@ -7,7 +7,6 @@ import { getClient } from 'lib/sanity/sanity.client.cdn'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
-import { getSession, useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
@@ -90,7 +89,6 @@ export default BusinessManagement
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions)
-  // const session = await getSession({ req })
 
   if (!session) {
     // If the session is not active, redirect to the login page with a callback URL

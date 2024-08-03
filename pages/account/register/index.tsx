@@ -19,7 +19,6 @@ import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import logo from 'public/images/logo.jpg'
 import React, { useEffect, useState } from 'react'
-import ReCAPTCHA from 'react-google-recaptcha'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 
@@ -436,7 +435,6 @@ export async function getServerSideProps({ req, res }) {
 
   if (session) {
     // If the session is not active, redirect to the login page with a callback URL
-
     const loginUrl = `/?loggedIn=true`
 
     return {
