@@ -1,6 +1,6 @@
 # 🚀 Tennessee Business Insider
 
-![Tennessee Business Insider Logo](./images/logo.png)
+![Tennessee Business Insider Logo](https://tn-business-insider.vercel.app/images/logo.png)
 
 Welcome to **Tennessee Business Insider**! This platform allows users to search for businesses, list their own businesses, and access valuable blog posts. Leveraging a Headless CMS and modern technologies, it provides a comprehensive solution for both users and business owners.
 
@@ -11,7 +11,7 @@ Welcome to **Tennessee Business Insider**! This platform allows users to search 
 - **Sanity.io Integration**: Manage your content seamlessly with Sanity.io.
 - **Rich Content Support**: Includes text, images, and more.
 
-<img src="./images/sanity-cms.png" alt="Sanity CMS" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/sanity-cms.png" alt="Sanity CMS" style="width:100%; max-width:600px; border-radius:10px;">
 
 ### 🔐 User Management
 
@@ -20,7 +20,7 @@ Welcome to **Tennessee Business Insider**! This platform allows users to search 
 - **Profile Management**: Update profile picture, name, and manage account details.
 - **Dashboard**: View liked blog posts and reviews.
 
-<img src="./images/user-dashboard.png" alt="User Dashboard" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/user-dashboard.png" alt="User Dashboard" style="width:100%; max-width:600px; border-radius:10px;">
 
 ### 🏢 Business Listings
 
@@ -28,7 +28,7 @@ Welcome to **Tennessee Business Insider**! This platform allows users to search 
 - **Analytics**: View performance metrics (work in progress).
 - **Lead Tracking**: Monitor lead generation (work in progress).
 
-<img src="./images/business-listing.png" alt="Business Listings" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/business-listing.png" alt="Business Listings" style="width:100%; max-width:600px; border-radius:10px;">
 
 ### ✔️ Verified Profiles
 
@@ -38,5 +38,5 @@ Welcome to **Tennessee Business Insider**! This platform allows users to search 
 
 - **Receive Reviews**: Gather and showcase reviews from users.
 
-<img src="./images/business-reviews.png" alt="Business Reviews" style="width:100%; max-width:600px; border-radius:10px;">
-<img src="./images/add-business-reviews.png" alt="Adding Business Reviews" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/business-reviews.png" alt="Business Reviews" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/add-business-reviews.png" alt="Adding Business Reviews" style="width:100%; max-width:600px; border-radius:10px;">
