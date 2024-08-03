@@ -1,10 +1,9 @@
-import BlogContainer from 'components/Blog/BlogContainer'
-import LikedPosts from 'components/User/MyAccount/LikedPosts'
-import MyReviews from 'components/User/MyAccount/MyReviews'
-import OwnedBusinesses from 'components/User/MyAccount/OwnedBusinesses'
-import UpdateProfileInformation from 'components/User/MyAccount/UpdateProfileInformation'
-import UserDetails from 'components/User/MyAccount/UserDetails'
-import { getClient } from 'lib/sanity.client'
+import LikedPosts from 'components/Features/User/MyAccount/LikedPosts'
+import MyReviews from 'components/Features/User/MyAccount/MyReviews'
+import OwnedBusinesses from 'components/Features/User/MyAccount/OwnedBusinesses'
+import UpdateProfileInformation from 'components/Features/User/MyAccount/UpdateProfileInformation'
+import UserDetails from 'components/Features/User/MyAccount/UserDetails'
+import { getClient } from 'lib/sanity/sanity.client'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
@@ -19,7 +18,7 @@ function MyAccount({ businesses, user, posts }) {
     <section className="mx-auto min-h-[80vh] max-w-5xl  pt-10 sm:flex">
       <UserDetails user={user} setShowPage={setShowPage} showPage={showPage} />
 
-      <BlogContainer>
+      <div className="boxContainer">
         <div className="">
           {showPage == 'profile' && <UpdateProfileInformation user={user} />}
           {showPage == 'businesses' && (
@@ -45,7 +44,7 @@ function MyAccount({ businesses, user, posts }) {
           )}
           {showPage == 'reviews' && <MyReviews />}
         </div>
-      </BlogContainer>
+      </div>
     </section>
   )
 }

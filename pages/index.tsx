@@ -1,14 +1,12 @@
-import IndexPage from 'components/IndexPage'
-import PreviewIndexPage from 'components/PreviewPages/PreviewIndexPage'
-import { readToken } from 'lib/sanity.api'
+import HomePage from 'components/Pages/Home/HomePage'
+import { readToken } from 'lib//sanity/sanity.api'
 import {
-  getAllCategories,
   getAllCities,
   getAllPosts,
   getClient,
   getSettings,
-} from 'lib/sanity.client'
-import { Category, Post, Settings } from 'lib/sanity.queries'
+} from 'lib/sanity/sanity.client'
+import { Post, Settings } from 'lib/sanity/sanity.queries'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import { useSession } from 'next-auth/react'
@@ -19,7 +17,6 @@ import { toast } from 'react-hot-toast'
 interface PageProps extends SharedPageProps {
   posts: Post[]
   settings: Settings
-  categories: Category[]
 }
 
 interface Query {
@@ -27,47 +24,35 @@ interface Query {
 }
 
 export default function Page(props: PageProps) {
-  const { posts, settings, draftMode, categories } = props
+  const { posts, settings } = props
   const { data: session } = useSession()
   const router = useRouter()
+
   useEffect(() => {
     // Check if the 'protectedPageCallback' query parameter is present in the URL
     const loggedIn = router.query.loggedIn === 'true'
     if (loggedIn) {
-      // Display a toast message informing the user to log in to access the page
-      toast.error('You must sign-out to access this page')
+      // Display a toast message informing the user to log out to access the page
+      toast.error('Sign out to access this page')
     }
   }, [router.query.loggedIn])
 
-  if (draftMode) {
-    return (
-      <PreviewIndexPage
-        posts={posts}
-        settings={settings}
-        categories={categories}
-      />
-    )
-  }
-
-  return <IndexPage posts={posts} settings={settings} categories={categories} />
+  return <HomePage posts={posts} settings={settings} />
 }
 
 export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
   const { draftMode = false } = ctx
   const client = getClient(draftMode ? { token: readToken } : undefined)
 
-  const [settings, posts = [], categories = []] = await Promise.all([
+  const [settings, posts = []] = await Promise.all([
     getSettings(client),
     getAllPosts(client),
-    getAllCategories(client),
-    // Fetch all categories
   ])
   const city = await getAllCities(client)
 
   return {
     props: {
       posts,
-      categories,
       settings,
       draftMode,
       token: draftMode ? readToken : '',

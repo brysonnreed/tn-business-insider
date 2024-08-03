@@ -221,7 +221,7 @@ export async function getServerSideProps({ req, res }) {
   if (session) {
     return {
       redirect: {
-        destination: '/',
+        destination: '/?loggedIn=true',
         permanent: false,
       },
     }

@@ -1,4 +1,4 @@
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import slugify from 'slugify'
 import { v4 as uuidv4 } from 'uuid'
@@ -39,6 +39,7 @@ export default async function createBusinessProfile(
     if (existingSlug) {
       slug = `${slug}-${Math.floor(Math.random() * 10000)}` // append a random number between 0-9999
     }
+
     // Fetch the city _id using the city name
     const cityDoc = await client.fetch(
       `*[_type == "city" && name == $city][0]._id`,

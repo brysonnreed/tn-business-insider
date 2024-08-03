@@ -1,4 +1,4 @@
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 const client = getClient()

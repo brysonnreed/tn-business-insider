@@ -1,0 +1,318 @@
+import {
+  faCaretDown,
+  faSearch,
+  faUser,
+} from '@fortawesome/free-solid-svg-icons'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import UserAvatar from 'components/Features/User/UserAvatar'
+import { motion } from 'framer-motion'
+import { getClient as getuserClient } from 'lib/sanity/sanity.client'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
+import Image from 'next/image'
+import Link from 'next/link'
+import { signIn, signOut, useSession } from 'next-auth/react'
+import { groq } from 'next-sanity'
+import BlankUser from 'public/images/blank-user-image.png'
+import logo from 'public/images/logo.jpg'
+import { useEffect, useRef, useState } from 'react'
+
+import MainNavigation from './MainNavigation'
+import SearchResults from './SearchResults'
+import UserNavigation from './UserNavigation'
+
+type user = {
+  name: string
+  image: any
+  admin: boolean
+}
+
+function Header() {
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [active, setActive] = useState(false)
+
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false)
+
+  const toggleNav = () => {
+    setActive((prevActive) => !prevActive)
+  }
+
+  const toggleDropdown = () => {
+    setIsDropdownVisible((prevIsDropdownVisible) => !prevIsDropdownVisible)
+  }
+
+  const searchRef = useRef<HTMLInputElement>(null)
+  const navRef = useRef<HTMLUListElement>(null)
+  const navPRef = useRef<HTMLUListElement>(null)
+
+  const handleSearch = async (e) => {
+    const query = e.target.value
+    setSearchQuery(query)
+
+    // Perform search logic if query is not empty
+    if (query.trim().length > 0) {
+      const searchResults = await searchBlogPosts(query)
+      setSearchResults(searchResults)
+    } else {
+      setSearchResults([])
+    }
+  }
+
+  const searchBlogPosts = async (query) => {
+    const searchQuery = groq`
+      *[
+        (_type == "post" && title match "${query}*") ||
+        (_type == "businessProfile" && name match "${query}*")
+      ] {
+        _id,
+        _type,
+        title,
+        slug,
+        excerpt,
+        coverImage,
+        name,
+        "categories": categories[]->{name},
+        logo,
+        description
+      }
+    `
+
+    const results = await getClient().fetch(searchQuery, { query })
+    return results
+  }
+
+  const handleClickOutside = (e: MouseEvent) => {
+    if (
+      searchRef.current &&
+      e.target instanceof Node &&
+      !searchRef.current.contains(e.target)
+    ) {
+      setSearchQuery('')
+      setSearchResults([])
+      setIsSearchFocused(false)
+    }
+
+    if (
+      navRef.current &&
+      e.target instanceof Node &&
+      !navRef.current.contains(e.target)
+    ) {
+      setActive(false)
+    }
+
+    if (
+      navPRef.current &&
+      e.target instanceof Node &&
+      !navPRef.current.contains(e.target)
+    ) {
+      setIsDropdownVisible(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside)
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [])
+
+  const handleSearchFocus = () => {
+    setIsSearchFocused(true)
+  }
+
+  const handleSearchBlur = () => {
+    setIsSearchFocused(false)
+  }
+  const handleNavButtonClick = (e) => {
+    if (searchQuery) {
+      return setSearchQuery('') // Stop event propagation
+    } else {
+      return toggleNav(), e.stopPropagation(), setIsDropdownVisible(false)
+    }
+  }
+  const { data: session } = useSession()
+  const [user, setUser] = useState<user>({
+    name: '',
+    image:
+      'https://cdn.sanity.io/images/yuy7c73l/production/08232b0e5971e6f5a4e7a6fe2f8bdd6dd472f7e7-150x151.png',
+    admin: false,
+  })
+
+  const getUser = async (userEmail) => {
+    const client = getuserClient()
+    let user = await client.fetch('*[_type == "user" && email == $email][0]', {
+      email: userEmail,
+    })
+    setUser(user)
+    return user
+  }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userEmail = session?.user?.email
+        if (userEmail) {
+          const userData = await getUser(userEmail)
+          setUser(userData)
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    if (session) {
+      fetchUserData()
+    }
+  }, [session])
+
+  return (
+    <header className="sticky top-0 z-50 ">
+      <nav className="flex flex-col items-center justify-between space-y-4 bg-orange-500 p-2 font-bold shadow-2xl sm:flex-row sm:space-x-2 sm:space-y-0 sm:px-5 sm:py-5 xl:px-40">
+        <div className="flex items-center space-x-2">
+          <Link href="/">
+            <Image
+              src={logo}
+              width={170}
+              height={170}
+              className="h-12 w-auto"
+              alt="TN Business Insider"
+              priority
+            />
+          </Link>
+        </div>
+        <div className="flex w-screen items-center justify-between gap-2 px-3 xs:px-4 sm:w-auto sm:gap-5 sm:px-0">
+          {session ? (
+            <button
+              onClick={toggleDropdown}
+              type="button"
+              aria-label="Open user dropdown menu"
+              className=" flex items-center justify-center gap-1 focus:outline-none xs:gap-2 sm:hidden"
+            >
+              <UserAvatar image={user && user.image ? user.image : BlankUser} />
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                className={`flex h-4 w-4 text-white xs:h-5 xs:w-5 ${
+                  isDropdownVisible
+                    ? `rotate-180 transition-all duration-300`
+                    : ''
+                }`}
+              />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={toggleDropdown}
+              aria-label="Open user dropdown menu"
+              className=" focus:outline-none sm:hidden"
+            >
+              <FontAwesomeIcon icon={faUser} className="h-7 w-7 text-white" />
+            </button>
+          )}
+          <div
+            className="relative flex items-center justify-center"
+            ref={searchRef}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={handleSearch}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              className="w-full rounded-full border-none py-2 pl-4 focus:outline-none active:outline-none  sm:pr-12 "
+            />
+            {searchQuery && (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-300 p-2 focus:outline-none"
+                onClick={() => setSearchQuery('')}
+                type="button"
+              >
+                <FontAwesomeIcon
+                  icon={faTimes}
+                  className="h-5 w-5 cursor-pointer text-gray-500 transition-all hover:scale-105 hover:text-gray-700"
+                />
+              </motion.button>
+            )}
+            {!searchQuery && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute right-[1.95px] top-1/2 -translate-y-1/2 transform rounded-full bg-slate-500/40 p-2"
+              >
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className="h-5 w-5 text-gray-500 transition-all hover:scale-105"
+                />
+              </motion.div>
+            )}
+          </div>
+          {session ? (
+            <button
+              onClick={() => toggleDropdown()}
+              type="button"
+              aria-label="Open user dropdown menu"
+              className=" hidden items-center justify-center gap-2  focus:outline-none sm:flex"
+            >
+              <UserAvatar image={user && user.image ? user.image : BlankUser} />
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
+                  isDropdownVisible
+                    ? `rotate-180 transition-all duration-300`
+                    : 'rotate-360 transition-all duration-300'
+                }`}
+              />
+            </button>
+          ) : (
+            <button
+              onClick={toggleDropdown}
+              type="button"
+              aria-label="Open user dropdown menu"
+              className=" hidden items-center justify-center gap-2 focus:outline-none sm:flex"
+            >
+              <FontAwesomeIcon icon={faUser} className="h-7 w-7 text-white" />
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                className={`flex h-3 w-3 text-white xs:h-5 xs:w-5 ${
+                  isDropdownVisible
+                    ? `rotate-180 transition-all duration-300`
+                    : 'rotate-360 transition-all duration-300'
+                }`}
+              />
+            </button>
+          )}
+
+          <button
+            onClick={handleNavButtonClick}
+            type="button"
+            aria-label="Open the navigation"
+            className={`hamburger  p-2 ${active === true ? 'active' : ''}`}
+          >
+            <span className="bar"></span>
+            <span className="bar"></span>
+            <span className="bar"></span>
+          </button>
+        </div>
+      </nav>
+
+      <SearchResults searchResults={searchResults} />
+
+      <UserNavigation
+        isDropdownVisible={isDropdownVisible}
+        session={session}
+        signIn={signIn}
+        signOut={signOut}
+        navRef={navRef}
+        setIsDropdownVisible={setIsDropdownVisible}
+        user={user}
+      />
+
+      <MainNavigation active={active} navPRef={navPRef} setActive={setActive} />
+    </header>
+  )
+}
+
+export default Header

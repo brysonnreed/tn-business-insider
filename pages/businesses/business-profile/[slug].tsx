@@ -1,13 +1,12 @@
-import BusinessProfilePage from 'components/BusinessProfile/BusinessProfilePage'
-import PreviewBusinessProfilePage from 'components/PreviewPages/PreviewBusinessProfilePage'
-import { readToken } from 'lib/sanity.api'
+import BusinessProfilePage from 'components/Pages/Business-Profile/BusinessProfilePage'
+import { readToken } from 'lib/sanity/sanity.api'
 import {
   getAllBusinessProfileSlugs,
   getBusinessProfileBySlug,
   getClient,
   getSettings,
-} from 'lib/sanity.client'
-import { BusinessProfile, Settings } from 'lib/sanity.queries'
+} from 'lib/sanity/sanity.client'
+import { BusinessProfile, Settings } from 'lib/sanity/sanity.queries'
 import { GetStaticProps } from 'next'
 import type { SharedPageProps } from 'pages/_app'
 import { useEffect } from 'react'
@@ -26,7 +25,7 @@ interface Query {
 }
 
 export default function BusinessProfileSlugRoute(props: PageProps) {
-  const { settings, businessProfile, draftMode } = props
+  const { settings, businessProfile } = props
 
   useEffect(() => {
     if (!hasBusinessBeenViewed(businessProfile._id)) {
@@ -55,15 +54,6 @@ export default function BusinessProfileSlugRoute(props: PageProps) {
     } catch (error) {
       console.error('Error:', error)
     }
-  }
-
-  if (draftMode) {
-    return (
-      <PreviewBusinessProfilePage
-        businessProfile={businessProfile}
-        settings={settings}
-      />
-    )
   }
 
   return (

@@ -1,5 +1,5 @@
 import { hash } from 'argon2'
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import { NextApiHandler } from 'next'
 
 const client = getClient()

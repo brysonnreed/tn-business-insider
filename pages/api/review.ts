@@ -1,5 +1,5 @@
-import { getClient as FastClient } from 'lib/sanity.client'
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient as FastClient } from 'lib/sanity/sanity.client'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { v4 as uuidv4 } from 'uuid'
 

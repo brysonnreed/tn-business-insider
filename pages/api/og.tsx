@@ -6,9 +6,9 @@ import { createClient } from 'next-sanity'
 
 export const config: PageConfig = { runtime: 'edge' }
 
-import { height, OpenGraphImage, width } from 'components/OpenGraphImage'
 import * as demo from 'lib/demo.data'
-import { Settings, settingsQuery } from 'lib/sanity.queries'
+import { Settings, settingsQuery } from 'lib/sanity/sanity.queries'
+import { height, OpenGraphImage, width } from 'utils/OpenGraphImage'
 
 export default async function og(req: NextRequest, res: NextResponse) {
   const font = fetch(new URL('public/Inter-Bold.woff', import.meta.url)).then(

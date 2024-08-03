@@ -1,16 +1,10 @@
-import BlogContainer from 'components/Blog/BlogContainer'
-import Footer from 'components/Footer'
-import Header from 'components/Header/Header'
-import SectionSeparator from 'components/SectionSeparator'
-import Link from 'next/link'
 import React from 'react'
 
 export default function TermsOfService() {
   return (
     <>
-      {/* <Header /> */}
-      <article className="mx-auto min-h-screen max-w-5xl pt-10">
-        <BlogContainer>
+      <article className="boxSection">
+        <div className="boxContainer">
           <div className="mb-10 flex flex-col gap-3 rounded-md bg-orange-500 px-4 py-6 text-white shadow-xl">
             <h1 className="text-3xl font-semibold  sm:text-4xl">
               Terms Of Service
@@ -113,7 +107,7 @@ export default function TermsOfService() {
               Service, please contact us at [Your Contact Email].
             </p>
           </main>
-        </BlogContainer>
+        </div>
       </article>
       {/* <Footer /> */}
     </>

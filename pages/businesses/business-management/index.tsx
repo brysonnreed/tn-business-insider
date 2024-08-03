@@ -1,12 +1,9 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import BlogContainer from 'components/Blog/BlogContainer'
-import Footer from 'components/Footer'
-import Header from 'components/Header/Header'
-import BusinessAccordian from 'components/User/BusinessAccordian'
-import ManageBusinessProfile from 'components/User/ManageBusinessProfile'
+import BusinessAccordian from 'components/Features/User/BusinessAccordian'
+import ManageBusinessProfile from 'components/Features/User/ManageBusinessProfile'
 import { useToastDisplay } from 'context/toastContext'
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
@@ -31,10 +28,8 @@ function BusinessManagement({ businesses }) {
 
   return (
     <>
-      {/* <Header /> */}
-
-      <section className="mx-auto min-h-screen max-w-5xl pt-10">
-        <BlogContainer>
+      <section className="boxSection">
+        <div className="boxContainer">
           <div className="min-h-[75vh]">
             <div className="mb-5 ">
               <div className="flex flex-row items-center justify-between">
@@ -85,9 +80,8 @@ function BusinessManagement({ businesses }) {
             </div>
             <BusinessAccordian />
           </div>
-        </BlogContainer>
+        </div>
       </section>
-      {/* <Footer /> */}
     </>
   )
 }

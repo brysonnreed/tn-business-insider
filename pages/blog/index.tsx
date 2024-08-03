@@ -1,16 +1,16 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import BlogContainer from 'components/Blog/BlogContainer'
-import BlogListContainer from 'components/Blog/BlogListContainer'
-import Footer from 'components/Footer'
-import Header from 'components/Header/Header'
+import Heading from 'components/Common/Heading'
+import Text from 'components/Common/Text'
+import BlogListContainer from 'components/Layout/BlogListContainer'
+import BlogMeta from 'components/Pages/Blog/BlogMeta'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   getAllCategories,
   getAllPosts,
   getPostsByCategory,
-} from 'lib/sanity.client'
-import { getClient } from 'lib/sanity.client.cdn'
+} from 'lib/sanity/sanity.client'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import { GetStaticProps } from 'next'
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -108,15 +108,15 @@ export default function BlogPage({ categories, posts }) {
 
   return (
     <>
-      {/* <Header /> */}
-      <section className="mx-auto min-h-screen max-w-5xl pt-10">
-        <BlogContainer>
+      <BlogMeta />
+      <section className="boxSection">
+        <div className="boxContainer">
           <div className="mb-4 border-b border-black pb-4">
-            <h1 className="mb-2 text-4xl font-semibold">Blog Posts</h1>
-            <p className="text-gray-700">
+            <Heading level={1}>Blog Posts</Heading>
+            <Text>
               Browse all of our blog posts or select a category to easier find
               what you&apos;re looking for.
-            </p>
+            </Text>
           </div>
           <div className="mb-10 pt-2">
             <ul className="flex flex-row flex-wrap justify-center  gap-2 font-semibold text-gray-600 sm:gap-4">
@@ -183,9 +183,8 @@ export default function BlogPage({ categories, posts }) {
               </motion.button>
             </div>
           </div>
-        </BlogContainer>
+        </div>
       </section>
-      {/* <Footer /> */}
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { getClient } from 'lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 import { v4 as uuidv4 } from 'uuid'
 
 export default async function handler(req, res) {

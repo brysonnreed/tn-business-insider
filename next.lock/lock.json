@@ -1,4 +1,4 @@
 {
-  "https://themer.sanity.build/api/hues?default=9e744c&primary=f1721e;400&transparent=927458&positive=43d675;300&caution=fbd024;200&lightest=fdfcfc&darkest=15110d": { "integrity": "sha512-lJ7ljbofWOZtMvL4TlGNaooy4IFQjF2oYEJGBwgfSnqtr5Gmut2beqD/EELj3y1/X1pEaj0mC5x0DbxawYiPaw==", "contentType": "application/javascript; charset=utf-8" },
+  "https://themer.sanity.build/api/hues?default=9e744c&primary=f1721e;400&transparent=927458&positive=43d675;300&caution=fbd024;200&lightest=fdfcfc&darkest=15110d": { "integrity": "sha512-YObj6VIAOHIVyPxankB7qLJiX1eA35c5X7Gg5ye5+XtHmUbVAYN3mEWndSi0bLZcFWxObWcHOI05Y4Lwr8sS2g==", "contentType": "application/javascript; charset=utf-8" },
   "version": 1
 }

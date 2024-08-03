@@ -209,14 +209,12 @@ export default defineType({
           title: 'City',
           type: 'string',
           description: 'City of the address.',
-          validation: (Rule) => Rule.required(),
         },
         {
           name: 'zipCode',
           title: 'Zip Code',
           type: 'string',
           description: 'Zip code of the address.',
-          validation: (Rule) => Rule.required(),
         },
         {
           name: 'geometry', // New field for latitude and longitude

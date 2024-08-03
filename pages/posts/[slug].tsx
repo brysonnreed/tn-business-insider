@@ -1,13 +1,12 @@
-import PostPage from 'components/Post/PostPage'
-import PreviewPostPage from 'components/PreviewPages/PreviewPostPage'
-import { readToken } from 'lib/sanity.api'
+import PostPage from 'components/Pages/Post/PostPage'
+import { readToken } from 'lib/sanity/sanity.api'
 import {
   getAllPostsSlugs,
   getClient,
   getPostAndMoreStories,
   getSettings,
-} from 'lib/sanity.client'
-import { Post, Settings } from 'lib/sanity.queries'
+} from 'lib/sanity/sanity.client'
+import { Post, Settings } from 'lib/sanity/sanity.queries'
 import { GetStaticProps } from 'next'
 import type { SharedPageProps } from 'pages/_app'
 
@@ -22,13 +21,7 @@ interface Query {
 }
 
 export default function ProjectSlugRoute(props: PageProps) {
-  const { settings, post, morePosts, draftMode } = props
-
-  if (draftMode) {
-    return (
-      <PreviewPostPage post={post} morePosts={morePosts} settings={settings} />
-    )
-  }
+  const { settings, post, morePosts } = props
 
   return <PostPage post={post} morePosts={morePosts} settings={settings} />
 }
@@ -53,7 +46,6 @@ export const getStaticProps: GetStaticProps<PageProps, Query> = async (ctx) => {
       post,
       morePosts,
       settings,
-      draftMode,
       token: draftMode ? readToken : '',
     },
   }

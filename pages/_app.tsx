@@ -1,34 +1,27 @@
 import 'tailwindcss/tailwind.css'
-import '../globals.css'
+import 'styles/globals.css'
 
-import Footer from 'components/Footer'
-import Header from 'components/Header/Header'
+import Footer from 'components/Layout/Footer'
+import Header from 'components/Layout/Header/Header'
 import { ToastDisplayProvider } from 'context/toastContext'
 import { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
-import { lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 export interface SharedPageProps {
-  draftMode: boolean
   token: string
 }
-
-const PreviewProvider = lazy(
-  () => import('components/PreviewPages/PreviewProvider')
-)
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps<SharedPageProps & { session: Session }>) {
-  const { draftMode, token } = pageProps
+  const { token } = pageProps
 
   const router = useRouter()
 
-  const isStudioRoute = router.pathname.startsWith('/studio')
   const pathsToExclude = [
     '/studio',
     '/account/register',
@@ -41,20 +34,14 @@ export default function App({
 
   return (
     <>
-      {draftMode ? (
-        <PreviewProvider token={token}>
+      <SessionProvider session={session}>
+        <ToastDisplayProvider>
+          <Toaster />
+          {!isExcludedRoute && <Header />}
           <Component {...pageProps} />
-        </PreviewProvider>
-      ) : (
-        <SessionProvider session={session}>
-          <ToastDisplayProvider>
-            <Toaster />
-            {!isExcludedRoute && <Header />}
-            <Component {...pageProps} />
-            {!isExcludedRoute && <Footer />}
-          </ToastDisplayProvider>
-        </SessionProvider>
-      )}
+          {!isExcludedRoute && <Footer />}
+        </ToastDisplayProvider>
+      </SessionProvider>
     </>
   )
 }

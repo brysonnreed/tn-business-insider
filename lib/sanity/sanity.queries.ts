@@ -1,0 +1,342 @@
+import { groq } from 'next-sanity'
+
+import { description } from '../demo.data'
+
+export const postFields = groq`
+  _id,
+  _createdAt,
+  title,
+  date,
+  _updatedAt,
+  excerpt,
+  metaDescription,
+  keywords,
+  coverImage,
+  "slug": slug.current,
+  "author": author->{name, picture},
+  "categories": categories[]->{_id, name, slug},
+  "LikedPosts": *[_type == 'user' && references(^._id)],
+  "comments":*[_type == 'comment' && post._ref == ^._id]
+  
+`
+// TODO: add queries for specific cases that way were not grabbing all information that isn't needed
+export const businessProfileFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  logo,
+  verified,
+  openAllDay,
+  description,
+  services,
+  images,
+  hours,
+  amenities,
+  socialMedia[] {
+    'platform': platform->platform,
+    url
+  },
+  'address': {
+    'formatted_address': address.formatted_address,
+    'name': address.name,
+    'place_id': address.place_id,
+    'url': address.url,
+    'geometry': address.geometry,
+  },
+  "category": category->name,
+  "city": city->name,
+  website,
+  overallViews,       
+  views[] {           
+    date,
+    count
+  },
+  averageRating,      
+  "reviews": *[_type == 'review' && business._ref == ^._id]{rating, image, business, author, text, _id, _createdAt, _rev},
+  totalReviews,
+  ratingsDistribution[] {
+    rating,
+    count
+  },
+  email
+`
+export const slugBusinessProfileFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  logo,
+  verified,
+  openAllDay,
+  description,
+  services,
+  images,
+  hours,
+  amenities,
+  socialMedia[] {
+    'platform': platform->platform,
+    url
+  },
+  'address': {
+    'formatted_address': address.formatted_address,
+    'name': address.name,
+    'place_id': address.place_id,
+    'url': address.url,
+    'geometry': address.geometry,
+  },
+  "category": category->name,
+  "city": city->name,
+  website,
+  
+  averageRating,      
+  "reviews": *[_type == 'review' && business._ref == ^._id]{rating, image, business, author, text, _id, _createdAt, _rev},
+  totalReviews,
+  ratingsDistribution[] {
+    rating,
+    count
+  },
+  
+`
+export const basicBusinessProfileFields = groq`
+  _id,
+  name,
+  "slug": slug.current,
+  logo,
+  verified,
+  description,
+  socialMedia[] {
+    'platform': platform->platform,
+    url
+  },
+  "category": category->name,
+  "city": city->name,
+  averageRating,      
+`
+
+export const categoryQuery = groq`
+  *[_type == "category"] {
+    _id,
+    name,
+    "slug": slug.current
+  }
+`
+export const cityFields = groq`
+  *[_type == "city"] {
+    name,
+    "slug": slug.current
+  }
+`
+export const businessProfileCategoryFields = groq`
+  *[_type == "businessProfileCategory"] {
+    name,
+    "slug": slug.current,
+  }
+`
+
+export const CitiesSlugsQuery = groq`
+*[_type == "city" && defined(slug.current)][].slug.current
+`
+export const CategoriesSlugsQuery = groq`
+*[_type == "category" && defined(slug.current)][].slug.current
+`
+export const BusinessCategoriesSlugsQuery = groq`
+*[_type == "businessProfileCategory" && defined(slug.current)][].slug.current
+`
+
+export const settingsQuery = groq`*[_type == "settings"][0]`
+
+export const indexQuery = groq`
+*[_type == "post"] | order(date desc, _updatedAt desc) {
+  ${postFields}
+}`
+
+export const postAndMoreStoriesQuery = groq`
+{
+  "post": *[_type == "post" && slug.current == $slug] | order(_updatedAt desc) [0] {
+    content,
+    ${postFields}
+  },
+  "morePosts": *[_type == "post" && slug.current != $slug] | order(date desc, _updatedAt desc) [0...6] {
+    content,
+    ${postFields}
+  }
+}`
+
+export const postSlugsQuery = groq`
+*[_type == "post" && defined(slug.current)][].slug.current
+`
+
+export const postBySlugQuery = groq`
+*[_type == "post" && slug.current == $slug][0] {
+  ${postFields}
+  "categories": categories[]->name
+}
+`
+
+export const postsByCategoryQuery = groq`
+*[_type == "post" && $category in categories[]->name] | order(date desc, _updatedAt desc) {
+  ${postFields}
+}`
+export const businessProfilesQuery = groq`
+*[_type == "businessProfile"] {
+  ${basicBusinessProfileFields}
+}[]
+`
+
+export const businessProfileCategoriesQuery = groq`
+*[_type == "businessProfileCategory"] {
+  name
+}`
+
+export const businessProfileBySlugQuery = groq`
+*[_type == "businessProfile" && slug.current == $slug][0] {
+  ${slugBusinessProfileFields}
+}
+`
+export const businessProfileSlugsQuery = groq`
+*[_type == "businessProfile" && defined(slug.current)][].slug.current 
+`
+
+export interface Author {
+  name?: string
+  picture?: any
+}
+
+export interface Post {
+  metaDescription?: string
+  keywords?: string[]
+  _id: string
+  title?: string
+  coverImage?: any
+  date?: string
+  _updatedAt?: string
+  excerpt?: string
+  author?: Author
+  slug?: string
+  content?: any
+  categories?: any[]
+
+  comments: any
+}
+
+export interface Settings {
+  title?: string
+  description?: any[]
+  ogImage?: {
+    title?: string
+  }
+}
+export interface BusinessProfileCategory {
+  name: string
+  slug: string
+  _id: string
+}
+export interface Category {
+  _id: string
+  name: string
+  slug: string
+}
+export interface Events {
+  _id: string
+  name: string
+  description: string
+  date: any
+  dateEstimate: string
+  link: string
+}
+export interface Cities {
+  _id: string
+  name: string
+  slug: string
+}
+
+export interface SocialMedia {
+  platform: string
+  url: string
+}
+
+export interface User {
+  name: string
+  email: string
+
+  businesses: any[]
+}
+
+export interface BusinessProfile {
+  _id: string
+  name: string
+  slug: string
+  logo?: any
+  description: string
+  services?: string[]
+  images?: any[]
+  verified?: boolean
+  city?: string
+  openAllDay: boolean
+  hours?: {
+    monday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+    tuesday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+    wednesday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+    thursday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+    friday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+    saturday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+    sunday?: {
+      isOpen: boolean
+      hours?: {
+        open: string
+        close: string
+      }
+    }
+  }
+  amenities?: string[]
+  socialMedia?: SocialMedia[]
+  address?: {
+    formatted_address: any
+    url: string
+    name: string
+    place_id: any
+  }
+
+  category?: string
+  overallViews: number
+  reviews: {
+    author: string
+    rating: number
+    text: string
+  }
+}

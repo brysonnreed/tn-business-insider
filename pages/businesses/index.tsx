@@ -1,16 +1,18 @@
-import BusinessProfileIndexPage from 'components/BusinessProfile/BusinessProfileIndexPage'
-import PreviewBusinessProfileIndexPage from 'components/PreviewPages/PreviewBusinessProfileIndexPage'
-import { readToken } from 'lib/sanity.api'
+import BusinessesPage from 'components/Pages/Businesses/BusinessesPage'
+import { readToken } from 'lib/sanity/sanity.api'
 import {
   getAllBusinessProfileCategories,
   getAllBusinessProfiles,
   getAllCities,
-  getBusinessCategoryBySlug,
-  getCityBySlug,
   getClient,
   getSettings,
-} from 'lib/sanity.client'
-import { BusinessProfile, Category, Cities, Settings } from 'lib/sanity.queries'
+} from 'lib/sanity/sanity.client'
+import {
+  BusinessProfile,
+  Category,
+  Cities,
+  Settings,
+} from 'lib/sanity/sanity.queries'
 import { GetStaticProps } from 'next'
 import type { SharedPageProps } from 'pages/_app'
 
@@ -26,19 +28,10 @@ interface Query {
 }
 
 export default function Page(props: PageProps) {
-  const { businessProfiles, settings, draftMode, cities, categories } = props
-
-  if (draftMode) {
-    return (
-      <PreviewBusinessProfileIndexPage
-        businessProfiles={businessProfiles}
-        settings={settings}
-      />
-    )
-  }
+  const { businessProfiles, settings, cities, categories } = props
 
   return (
-    <BusinessProfileIndexPage
+    <BusinessesPage
       businessProfiles={businessProfiles}
       settings={settings}
       cities={cities}

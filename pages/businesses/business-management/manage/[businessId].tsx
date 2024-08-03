@@ -1,16 +1,15 @@
-import BlogContainer from 'components/Blog/BlogContainer'
-import BusinessDashboard from 'components/BusinessProfile/EditBusiness/BusinessDashboard'
-import BusinessDetails from 'components/BusinessProfile/EditBusiness/BusinessDetails'
-import BusinessEmail from 'components/BusinessProfile/EditBusiness/BusinessEmail'
-import BusinessSubscription from 'components/BusinessProfile/EditBusiness/BusinessSubscription'
-import EditBusiness from 'components/User/EditBusiness'
+import BusinessDashboard from 'components/Features/BusinessProfile/EditBusiness/BusinessDashboard'
+import BusinessDetails from 'components/Features/BusinessProfile/EditBusiness/BusinessDetails'
+import BusinessEmail from 'components/Features/BusinessProfile/EditBusiness/BusinessEmail'
+import BusinessSubscription from 'components/Features/BusinessProfile/EditBusiness/BusinessSubscription'
+import EditBusiness from 'components/Features/User/EditBusiness'
 import {
   getAllBusinessProfileCategories,
   getAllCities,
   getSocialMedias,
-} from 'lib/sanity.client'
-import { getClient } from 'lib/sanity.client'
-import { businessProfileFields } from 'lib/sanity.queries'
+} from 'lib/sanity/sanity.client'
+import { getClient } from 'lib/sanity/sanity.client'
+import { businessProfileFields } from 'lib/sanity/sanity.queries'
 import { useRouter } from 'next/router'
 import { getServerSession } from 'next-auth'
 import { authOptions } from 'pages/api/auth/[...nextauth]'
@@ -29,7 +28,7 @@ function BusinessId({ businessProfile, cities, categories, socials }) {
         setShowPage={setShowPage}
         showPage={showPage}
       />
-      <BlogContainer>
+      <div className="boxContainer">
         {showPage == 'dashboard' && (
           <BusinessDashboard business={businessProfile} />
         )}
@@ -44,7 +43,7 @@ function BusinessId({ businessProfile, cities, categories, socials }) {
         )}
         {showPage == 'subscription' && <BusinessSubscription />}
         {showPage == 'email' && <BusinessEmail business={businessProfile} />}
-      </BlogContainer>
+      </div>
     </section>
   )
 }
@@ -73,9 +72,7 @@ export async function getServerSideProps(context) {
   const client = getClient()
   const userEmail = session.user?.email
   // Fetch the user document based on the email
-  let user = await client.fetch('*[_type == "user" && email == $email][0]', {
-    email: userEmail,
-  })
+  let user
   try {
     const user = await client.fetch(
       '*[_type == "user" && email == $email][0]',
