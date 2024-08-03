@@ -1,6 +1,5 @@
 import argon2 from 'argon2'
-
-import { getClient } from '../../../lib/sanity.client.cdn'
+import { getClient } from 'lib/sanity/sanity.client.cdn'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
