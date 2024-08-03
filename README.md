@@ -1,6 +1,6 @@
 # 🚀 Tennessee Business Insider
 
-![Tennessee Business Insider Logo](https://tn-business-insider.vercel.app/images/logo.png)
+![Tennessee Business Insider Logo](https://tn-business-insider.vercel.app/images/logo.jpg)
 
 Welcome to **Tennessee Business Insider**! This platform allows users to search for businesses, list their own businesses, and access valuable blog posts. Leveraging a Headless CMS and modern technologies, it provides a comprehensive solution for both users and business owners.
 
@@ -29,6 +29,8 @@ Welcome to **Tennessee Business Insider**! This platform allows users to search 
 - **Lead Tracking**: Monitor lead generation (work in progress).
 
 <img src="https://tn-business-insider.vercel.app/images/business-listing.png" alt="Business Listings" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/business-management.png" alt="Business Management Dashboard" style="width:100%; max-width:600px; border-radius:10px;">
+<img src="https://tn-business-insider.vercel.app/images/business-update.png" alt="Business Management Dashboard" style="width:100%; max-width:600px; border-radius:10px;">
 
 ### ✔️ Verified Profiles
 

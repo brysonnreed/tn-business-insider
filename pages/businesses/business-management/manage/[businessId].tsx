@@ -28,7 +28,7 @@ function BusinessId({ businessProfile, cities, categories, socials }) {
         setShowPage={setShowPage}
         showPage={showPage}
       />
-      <div className="boxContainer">
+      <div className="boxContainer min-h-[80vh]">
         {showPage == 'dashboard' && (
           <BusinessDashboard business={businessProfile} />
         )}
