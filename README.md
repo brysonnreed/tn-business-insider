@@ -70,3 +70,18 @@ The folder structure follows /businesses/[category]/[city], and I utilized getSt
 
 **_Implementation Details_**
 To protect sensitive routes, I used getServerSideProps to check if a session exists before rendering the page. If a session is not active, users are redirected to the login page with a callback URL, ensuring that only authenticated users can access certain pages.
+
+## 🎨 Technologies Used
+
+- React
+- Next.js
+- Tailwind CSS
+- Sanity.io
+- Axios
+- Chart.js
+- Framer Motion
+- Lodash
+- Next-Auth
+- Nodemailer
+- React-Hook-Form
+- Argon2
